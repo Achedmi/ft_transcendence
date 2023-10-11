@@ -7,3 +7,12 @@ services:
             - 4000:4000
         volumes:
             - ./back-end/src:/usr/src/app/src
+    frontend:
+        container_name: frontend
+        build: front-end/
+        ports:
+            - 5000:5000
+        volumes:
+            - ./front-end/src:/
+        depends_on:
+            - backend
