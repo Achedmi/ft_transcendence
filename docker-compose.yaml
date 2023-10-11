@@ -4,15 +4,15 @@ services:
         container_name: backend
         build: back-end/
         ports:
-            - 4000:4000
+            - 9696:4000
         volumes:
             - ./back-end/src:/usr/src/app/src
     frontend:
         container_name: frontend
         build: front-end/
         ports:
-            - 5000:5000
+            - 6969:4000
         volumes:
-            - ./front-end/src:/
+            - ./front-end/src:/usr/src/app/src
         depends_on:
             - backend
