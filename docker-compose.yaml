@@ -2,8 +2,8 @@ version: "3.7"
 services:
     backend:
         container_name: backend
-        build: trans-back/.
+        build: back-end/
         ports:
             - 4000:4000
         volumes:
-            - ./trans-back/src:/usr/src/app/src
+            - ./back-end/src:/usr/src/app/src
