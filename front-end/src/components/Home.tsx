@@ -1,12 +1,16 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Router, useLocation, Outlet } from "react-router-dom";
+import NavBar from "./NavBar";
+
 
 
 function Home () {
-	return (
-		<>
-			
 
-		</>
+	return (
+				<div className="flex flex-col">
+					<NavBar/>
+					
+					<Outlet/>
+				</div>
 	);
 }
 export default Home;
