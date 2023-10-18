@@ -1,6 +1,6 @@
-import RedBlock from '../assets/RedBlock.svg?react';
-import HomePong from '../assets/HomePong.svg?react';
-import BlueBlock from '../assets/BlueBlock.svg?react';
+import RedBlock from '../assets/redblock.svg?react';
+import HomePong from '../assets/homepong.svg?react';
+import BlueBlock from '../assets/blueblock.svg?react';
 function Home () {
     return (
         <div className='zwa9 flex items-center h-full justify-around'>
