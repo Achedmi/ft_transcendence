@@ -1,6 +1,7 @@
 
 import Logo from '../assets/logo.svg?react';
 import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 function NavBar() {
     const location = useLocation();
@@ -8,7 +9,14 @@ function NavBar() {
     return (
         <div className="">
             <div className="flex  justify-between bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-16 border-solid border-dark-cl border-[4px] rounded-2xl items-center" >
-                <Logo className='p-1 ml-1'/>
+                <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.5 }}
+                    >
+                    <Link to="/home">
+                        <Logo className='h-12 w-12 ml-1'/>
+                    </Link>
+                </motion.div>
                 <div className='text-2xl '>
                     <Link to="/home" className={location.pathname.startsWith('/home') ? 'p-2' : "p-2 opacity-50 hover:opacity-100"}>Home</Link>
                     <Link to="/play" className={location.pathname.startsWith('/play') ? 'p-2' : "p-2 opacity-50 hover:opacity-100"}>Play</Link>
