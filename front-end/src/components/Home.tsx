@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 function Home () {
     return (
-        <div className='zwa9 flex items-center h-full justify-around '>
+        <div className='zwa9 bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl flex items-center h-full justify-around '>
 
             <div className='flex flex-end h-full justify-center'>
                 <motion.div 
@@ -22,7 +22,7 @@ function Home () {
             </div>
 
 
-            <div className='flex  h-full flex-col items-center justify-center gap-6'>
+            <div className='flex  h-full flex-col ithttp://localhost:6969/ems-center justify-center gap-6'>
                 <Link to="/play" className='w-full h-[20%]'>
                     <motion.div 
                         className="h-full w-full"

@@ -8,7 +8,7 @@ function NavBar() {
     return (
         <div className="">
             <div className="flex  justify-between bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-16 border-solid border-dark-cl border-[4px] rounded-2xl items-center" >
-                <Link to="/home" className=''>
+                <Link to="/" className=''>
                 <motion.div
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.5 }}>
@@ -16,7 +16,7 @@ function NavBar() {
                 </motion.div>
                     </Link>
                 <div className='text-2xl '>
-                    <Link to="/home" className={location.pathname.startsWith('/home') ? 'p-2' : "p-2 opacity-50 hover:opacity-100"}>Home</Link>
+                    <Link to="/" className={location.pathname ==='/' ? 'p-2' : "p-2 opacity-50 hover:opacity-100"}>Home</Link>
                     <Link to="/play" className={location.pathname.startsWith('/play') ? 'p-2' : "p-2 opacity-50 hover:opacity-100"}>Play</Link>
                     <Link to="/ranking" className={location.pathname.startsWith('/ranking') ? 'p-2' : "p-2 opacity-50 hover:opacity-100"}>Ranking</Link>
                 </div>

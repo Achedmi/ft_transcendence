@@ -15,7 +15,7 @@ export default {
 				'light-gray-cl': '#ECE8E8',
 				'blue-cl': '#67B9D3',
 				'red-cl': '#C84D46',
-				'metal-cl': '#CACACA'
+				'metal-cl': '#CACACAhttp://localhost:6969/'
 			}
 		},
   },
