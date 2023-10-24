@@ -1,31 +1,122 @@
+import Logo from "../assets/logo.svg?react";
+import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { Profile, Settings, Logout } from "./icons/icons";
 
-import Logo from '../assets/logo.svg?react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+const DropDown = () => {
+  const dropShadowStyle = {
+    filter: "drop-shadow(2px 3px 0 #433650)",
+  };
+  const [itemsHovered, setItemsHovered] = useState([
+    false,
+    false,
+    false,
+  ] as boolean[]);
+  return (
+    <motion.div
+      className="flex flex-col justify-center items-center text-2xl bg-[#D9D9D9]  w-44 absolute right-6 top-[5rem] z-20 border-solid border-dark-cl border-[4px] rounded-2xl "
+      style={dropShadowStyle}
+      initial={{ opacity: 0, y: -30 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <div
+        className="flex flex-start gap-4 items-center w-full p-2  hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] hover:rounded-b-2xl"
+        onMouseEnter={() => setItemsHovered([true, false, false])}
+        onMouseLeave={() => setItemsHovered([false, false, false])}
+      >
+        <Profile
+          size="2rem"
+          fillColor={itemsHovered[0] ? "#D9D9D9" : "#433650"}
+        />
+        <span>profile</span>
+      </div>
+      <div
+        className="flex flex-start gap-4 items-center w-full p-2 hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] hover:rounded-2xl"
+        onMouseEnter={() => setItemsHovered([false, true, false])}
+        onMouseLeave={() => setItemsHovered([false, false, false])}
+      >
+        <Settings
+          size="2rem"
+          fillColor={itemsHovered[1] ? "#D9D9D9" : "#433650"}
+        />
+        <span>Settings</span>
+      </div>
+      <div
+        className="flex flex-start gap-4 items-center w-full p-2 hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] hover:rounded-t-2xl"
+        onMouseEnter={() => setItemsHovered([false, false, true])}
+        onMouseLeave={() => setItemsHovered([false, false, false])}
+      >
+        <Logout
+          size="2rem"
+          fillColor={itemsHovered[2] ? "#D9D9D9" : "#433650"}
+        />
+        <span>Log out</span>
+      </div>
+    </motion.div>
+  );
+};
 
 function NavBar() {
-    const location = useLocation();
-    return (
-        <div className="">
-            <div className="flex  justify-between bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-16 border-solid border-dark-cl border-[4px] rounded-2xl items-center" >
-                <Link to="/" className=''>
-                <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.5 }}>
-                    <Logo className='h-12 terminw-12 ml-1'/>
-                </motion.div>
-                    </Link>
-                <div className='text-2xl '>
-                    <Link to="/" className={location.pathname ==='/' ? 'p-2' : "p-2 opacity-50 hover:opacity-100"}>Home</Link>
-                    <Link to="/play" className={location.pathname.startsWith('/play') ? 'p-2' : "p-2 opacity-50 hover:opacity-100"}>Play</Link>
-                    <Link to="/ranking" className={location.pathname.startsWith('/ranking') ? 'p-2' : "p-2 opacity-50 hover:opacity-100"}>Ranking</Link>
-                </div>
-                <img  className='h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]' src="https://i.pinimg.com/564x/90/74/c0/9074c097723d1832ea5c80cafa384104.jpg" alt="profile" />
-            </div>
+  const location = useLocation();
+  const [showDropDown, setShowDropDown] = useState(false);
+  return (
+    <div className="">
+      <div className="flex  justify-between bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-16 border-solid border-dark-cl border-[4px] rounded-2xl items-center">
+        <Link to="/" className="">
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.5 }}>
+            <Logo className="h-12 terminw-12 ml-1" />
+          </motion.div>
+        </Link>
+        <div className="text-2xl ">
+          <Link
+            to="/"
+            className={
+              location.pathname === "/"
+                ? "p-2"
+                : "p-2 opacity-50 hover:opacity-100"
+            }
+          >
+            Home
+          </Link>
+          <Link
+            to="/play"
+            className={
+              location.pathname.startsWith("/play")
+                ? "p-2"
+                : "p-2 opacity-50 hover:opacity-100"
+            }
+          >
+            Play
+          </Link>
+          <Link
+            to="/ranking"
+            className={
+              location.pathname.startsWith("/ranking")
+                ? "p-2"
+                : "p-2 opacity-50 hover:opacity-100"
+            }
+          >
+            Ranking
+          </Link>
         </div>
- 
- );
+        <motion.div
+          className="hover:cursor-pointer"
+          whileHover={{ scale: 1.1 }}
+          onClick={() => {
+            setShowDropDown(!showDropDown);
+          }}
+        >
+          <img
+            className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]"
+            src="https://i.pinimg.com/564x/90/74/c0/9074c097723d1832ea5c80cafa384104.jpg"
+            alt="profile"
+          />
+        </motion.div>
+        {showDropDown && <DropDown />}
+      </div>
+    </div>
+  );
 }
-
 
 export default NavBar;
