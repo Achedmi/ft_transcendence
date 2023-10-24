@@ -3,6 +3,39 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Profile, Settings, Logout } from "./icons/icons";
+import { SetStateAction, Dispatch } from "react";
+
+interface DropDownItemProps {
+  Icon: any;
+  text: string;
+  setItemsHovered: Dispatch<SetStateAction<boolean[]>>;
+  itemsHovered: boolean[];
+  id: number;
+}
+
+const DropDownItem = (prop: DropDownItemProps) => {
+  return (
+    <div
+      className="flex flex-start gap-4 items-center w-full p-2  hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] "
+      onMouseEnter={() => {
+        let temp = [false, false, false];
+        temp[prop.id] = true;
+        prop.setItemsHovered(temp);
+      }}
+        onMouseLeave={() => {
+            let temp = [false, false, false];
+            temp[prop.id] = false;
+            prop.setItemsHovered(temp);
+        }}
+    >
+      <prop.Icon
+        size="2rem"
+        fillColor={prop.itemsHovered[prop.id] ? "#D9D9D9" : "#433650"}
+      />
+      <span>{prop.text}</span>
+    </div>
+  );
+};
 
 const DropDown = () => {
   const dropShadowStyle = {
@@ -20,39 +53,9 @@ const DropDown = () => {
       initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <div
-        className="flex flex-start gap-4 items-center w-full p-2  hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] hover:rounded-b-2xl"
-        onMouseEnter={() => setItemsHovered([true, false, false])}
-        onMouseLeave={() => setItemsHovered([false, false, false])}
-      >
-        <Profile
-          size="2rem"
-          fillColor={itemsHovered[0] ? "#D9D9D9" : "#433650"}
-        />
-        <span>profile</span>
-      </div>
-      <div
-        className="flex flex-start gap-4 items-center w-full p-2 hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] hover:rounded-2xl"
-        onMouseEnter={() => setItemsHovered([false, true, false])}
-        onMouseLeave={() => setItemsHovered([false, false, false])}
-      >
-        <Settings
-          size="2rem"
-          fillColor={itemsHovered[1] ? "#D9D9D9" : "#433650"}
-        />
-        <span>Settings</span>
-      </div>
-      <div
-        className="flex flex-start gap-4 items-center w-full p-2 hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] hover:rounded-t-2xl"
-        onMouseEnter={() => setItemsHovered([false, false, true])}
-        onMouseLeave={() => setItemsHovered([false, false, false])}
-      >
-        <Logout
-          size="2rem"
-          fillColor={itemsHovered[2] ? "#D9D9D9" : "#433650"}
-        />
-        <span>Log out</span>
-      </div>
+        <DropDownItem Icon={Profile} text="Profile" setItemsHovered={setItemsHovered} itemsHovered={itemsHovered} id={0} />
+        <DropDownItem Icon={Settings} text="Settings" setItemsHovered={setItemsHovered} itemsHovered={itemsHovered} id={1} />
+        <DropDownItem Icon={Logout} text="Logout" setItemsHovered={setItemsHovered} itemsHovered={itemsHovered} id={2} />
     </motion.div>
   );
 };
