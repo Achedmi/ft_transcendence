@@ -67,3 +67,23 @@ export const Logout = (icon: IconProps) => {
     </svg>
   );
 };
+
+export const Edit = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      viewBox="0 0 38 38"
+    >
+      <path
+        stroke="#433650"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="4"
+        d="M19 6.333H9.5A3.167 3.167 0 006.333 9.5v19A3.167 3.167 0 009.5 31.667h19a3.167 3.167 0 003.167-3.167V19m-2.511-5.678l1.72-1.719a3.167 3.167 0 00-4.48-4.478l-1.718 1.72m4.478 4.477l-9.557 9.558a3.167 3.167 0 01-1.619.866l-4.657.931.931-4.657a3.167 3.167 0 01.866-1.618l9.558-9.558m4.478 4.478l-4.478-4.478"
+      ></path>
+    </svg>
+  );
+}

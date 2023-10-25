@@ -4,7 +4,7 @@ import Login from './components/Login.tsx'
 import Layout from './components/Layout.tsx'
 import Ranking from './components/Ranking'
 import Home from './components/Home.tsx'
-
+import Profile from './components/Profile.tsx'
 import  { Play }  from './components/Play'
 import { BrowserRouter as Router , Routes, Route } from "react-router-dom";
 
@@ -19,6 +19,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="play" element={<Play/>}>
           </Route>
           <Route path="ranking" element={<Ranking/>} />
+          <Route path="profile" element={<Profile/>} />
         </Route>
       </Routes>
     </Router>
