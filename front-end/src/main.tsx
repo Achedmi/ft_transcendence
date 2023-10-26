@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route index element={<Home/>} />
           <Route path="play" element={<Play/>}>
           </Route>
-          <Route path="ranking" element={<Ranking/>} />
+          <Route path="ranking" element={<Ranking/>} />dis
           <Route path="profile" element={<Profile/>} />
         </Route>
       </Routes>
