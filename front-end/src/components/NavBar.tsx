@@ -16,7 +16,7 @@ interface DropDownItemProps {
 const DropDownItem = (prop: DropDownItemProps) => {
   return (
     <motion.div
-      className="flex flex-start gap-4 items-center w-full p-2  hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] "
+      className="flex flex-start gap-4 items-center w-full p-2  hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] non-selectable"
       onMouseEnter={() => {
         let temp = [false, false, false];
         temp[prop.id] = true;
@@ -27,7 +27,7 @@ const DropDownItem = (prop: DropDownItemProps) => {
         temp[prop.id] = false;
         prop.setItemsHovered(temp);
       }}
-      whileTap={{ scale: 0.9, transition: { duration: 0.1 },  }}
+      whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
     >
       <prop.Icon
         size="2rem"
@@ -48,36 +48,42 @@ const DropDown = (setShowDropDown: any) => {
     false,
   ] as boolean[]);
   return (
-  
-      <motion.div
-        className="flex flex-col justify-center items-center text-2xl bg-[#D9D9D9]  w-44 absolute right-6 top-[5rem] z-20 border-solid border-dark-cl border-[4px] rounded-2xl "
-        style={dropShadowStyle}
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -30, transition: { duration: 0.1 }, }}
+    <motion.div
+      className="flex flex-col justify-center items-center text-2xl bg-[#D9D9D9]  w-44 absolute right-6 top-[5rem] z-20 border-solid border-dark-cl border-[4px] rounded-2xl "
+      style={dropShadowStyle}
+      initial={{ opacity: 0, y: -30 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -30, transition: { duration: 0.1 } }}
+    >
+      <Link
+        to="/profile"
+        className="w-full"
+        onClick={() => {
+          setShowDropDown(false);
+        }}
       >
-        <Link
-          to="/profile"
-          className="w-full"
-          onClick={() => {
-            setShowDropDown(false);
-          }}
-        >
-          <DropDownItem
-            Icon={Profile}
-            text="Profile"
-            setItemsHovered={setItemsHovered}
-            itemsHovered={itemsHovered}
-            id={0}
-          />
-        </Link>
         <DropDownItem
-          Icon={Settings}
-          text="Settings"
+          Icon={Profile}
+          text="Profile"
           setItemsHovered={setItemsHovered}
           itemsHovered={itemsHovered}
-          id={1}
+          id={0}
         />
+      </Link>
+      <DropDownItem
+        Icon={Settings}
+        text="Settings"
+        setItemsHovered={setItemsHovered}
+        itemsHovered={itemsHovered}
+        id={1}
+      />
+      <Link
+        to="/login"
+        className="w-full"
+        onClick={() => {
+          setShowDropDown(false);
+        }}
+      >
         <DropDownItem
           Icon={Logout}
           text="Logout"
@@ -85,8 +91,8 @@ const DropDown = (setShowDropDown: any) => {
           itemsHovered={itemsHovered}
           id={2}
         />
-      </motion.div>
-  
+      </Link>
+    </motion.div>
   );
 };
 

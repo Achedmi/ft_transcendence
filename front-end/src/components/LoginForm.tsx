@@ -4,23 +4,32 @@ import LockIcon from "../assets/lockicon.svg?react";
 import FtIcon from "../assets/fticon.svg?react";
 import { Link } from "react-router-dom";
 
+import { useForm, SubmitHandler } from "react-hook-form";
+
+type Inputs = {
+  username: string;
+  password: string;
+};
+
 function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<Inputs>();
 
-    username!= "" && password!="" && alert(`${username} ${password}`) ;
-  };
-  // const intraLogin = () => {
-  //   alert("intra auth");
-  // };
+  const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => alert(data);
+
+  console.log(watch("username")); // watch input value by passing the name of it
 
   return (
     <form
       className="font-Baloo font-bold text-dark-cl bg-gray-cl border-solid border-4 border-dark-cl rounded-lg m-3 p-6  flex flex-col  items-center max-h-[600px] hover:shadow-[4px_4px_0px_0px_rgba(67,54,80,1)] transition-shadow max-w-[500px]"
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <div className="w-[90%]">
         <div className="text-5xl my-5 truncate">Login</div>
@@ -56,11 +65,14 @@ function LoginForm() {
             sign in
           </button>
         </div>
-        <Link to="/home"  className="flex  items-center justify-center bg-blue-cl m-3 h-16 rounded-lg border-[3px] border-solid gap-5 w-full">
-            <FtIcon className="w-9 h-9" />
-            <span className="text-white text-2xl max-[375px]:hidden ">
+        <Link
+          to="/"
+          className="flex  items-center justify-center bg-blue-cl m-3 h-16 rounded-lg border-[3px] border-solid gap-5 w-full"
+        >
+          <FtIcon className="w-9 h-9" />
+          <span className="text-white text-2xl max-[375px]:hidden ">
             Sign in with the intra
-            </span>
+          </span>
         </Link>
       </div>
     </form>

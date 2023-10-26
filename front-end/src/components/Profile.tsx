@@ -20,7 +20,7 @@ function Profile() {
           title="Edit profile"
         >
           <Edit />
-          <span className="hidden sm:block">Edit profile</span>
+          <span className="hidden sm:block non-selectable">Edit profile</span>
         </motion.div>
       </div>
     </div>
