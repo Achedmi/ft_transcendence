@@ -12,9 +12,6 @@ type Inputs = {
 };
 
 function LoginForm() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
   const {
     register,
     handleSubmit,
@@ -22,7 +19,8 @@ function LoginForm() {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => alert(data);
+  const onSubmit: SubmitHandler<Inputs> = (data: Inputs) =>
+    alert(JSON.stringify(data));
 
   console.log(watch("username")); // watch input value by passing the name of it
 
@@ -38,29 +36,56 @@ function LoginForm() {
         </div>
       </div>
       <div className="flex flex-col items-center m-3 gap-2 w-[90%] h-full truncate">
-        <div className="flex bg-light-gray-cl items-center border-solid border-[3px] border-dark-cl m-3 rounded-lg justify-start gap-2 h-16 my-5 w-full">
-          <UserIcon className="w-7 h-7 ml-1" />{" "}
+        <div
+          className={
+            "relative flex bg-light-gray-cl items-center border-solid border-[3px] border-dark-cl m-3 rounded-lg justify-start gap-2 h-16 my-5 w-full"
+          }
+        >
+          <UserIcon className="w-7 h-7 ml-1" />
           <input
-            className="border-none bg-transparent text-2xl placeholder-dark-cl placeholder-opacity-50 focus:outline-none w-full"
+            className=" border-none bg-transparent text-2xl placeholder-dark-cl placeholder-opacity-50 focus:outline-none w-full"
             type="text"
-            id="username"
             placeholder="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            {...register("username", {
+              required: true,
+              maxLength: 20,
+              minLength: 3,
+              pattern: /^[a-zA-Z0-9]+$/,
+            })}
           />
+          {errors.username && (
+            <span className="text-red-500 absolute -bottom-7 ">
+              {errors.username.type === "required"
+                ? "Username is required"
+                : errors.username.type === "maxLength"
+                ? "Username is too long"
+                : errors.username.type === "minLength"
+                ? "Username is too short"
+                : errors.username.type === "pattern"
+                ? "Username must be alphanumeric"
+                : ""}
+            </span>
+          )}
         </div>
-        <div className="flex bg-light-gray-cl items-center border-solid border-[3px] border-dark-cl m-3 rounded-lg justify-start gap-2 h-16 w-full">
+        <div className="relative flex bg-light-gray-cl items-center border-solid border-[3px] border-dark-cl m-3 rounded-lg justify-start gap-2 h-16 w-full">
           <LockIcon className="w-6 h-6 ml-1" />
           <input
             className="border-none bg-transparent text-2xl placeholder-dark-cl placeholder-opacity-50 focus:outline-none w-full"
             type="password"
-            id="password"
             placeholder="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register("password", { required: true, minLength: 8 })}
           />
+          {errors.password && (
+            <span className="text-red-500 absolute -bottom-7">
+              {errors.password.type === "required"
+                ? "Password is required"
+                : errors.password.type === "minLength"
+                ? "Password is too short"
+                : ""}
+            </span>
+          )}
         </div>
-        <div className="bg-dark-cl m-3 h-16 rounded-lg w-full">
+        <div className="bg-dark-cl m-3 h-16 rounded-lg w-full mt-12">
           <button type="submit" className="text-2xl text-white w-full h-full">
             sign in
           </button>
