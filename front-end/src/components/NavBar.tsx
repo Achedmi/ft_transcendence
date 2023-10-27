@@ -101,13 +101,13 @@ function NavBar() {
   const [showDropDown, setShowDropDown] = useState(false);
   return (
     <div className="">
-      <div className="flex  justify-between bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-16 border-solid border-dark-cl border-[4px] rounded-2xl items-center">
+      <div className="min-w-[300px]  flex  justify-between bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-16 border-solid border-dark-cl border-[4px] rounded-2xl items-center">
         <Link to="/" className="">
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.5 }}>
             <Logo className="h-12 terminw-12 ml-1" />
           </motion.div>
         </Link>
-        <div className="text-2xl ">
+        <div className="text-lg sm:text-2xl flex sm:gap-6">
           <Link
             to="/"
             className={

@@ -23,6 +23,14 @@ function Profile() {
           <span className="hidden sm:block non-selectable">Edit profile</span>
         </motion.div>
       </div>
+      <span className="text-3xl sm:text-4xl font-bold text-center mt-24">
+        ainzsoup
+      </span>
+      <div className="flex gap-8 w-full justify-center mt-8 sm:text-xl">
+        <span>666 Wins</span>
+        <span>|</span>
+        <span>17 Losses</span>
+      </div>
     </div>
   );
 }

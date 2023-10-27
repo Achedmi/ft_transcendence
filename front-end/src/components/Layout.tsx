@@ -9,7 +9,7 @@ function Layout () {
 	return (
     <div className="flex flex-col p-3 gap-4 h-screen font-Baloo font-bold ">
       <NavBar />
-      <div className="outlet  h-full w-full">
+      <div className="outlet  h-full w-full min-w-[300px]">
         <Outlet />
       </div>
     </div>

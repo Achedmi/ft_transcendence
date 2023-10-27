@@ -46,7 +46,7 @@ const Play = () => {
             <div className="bg-white rounded-full border-[2px] absolute aspect-[1] h-[30%] top-[5%] left-[15%]"></div>
           </div>
           <div className="bg-[#C84D46] aspect-w-4 aspect-h-5 h-[80%] border-b-[4px] border-solid border-dark-cl"></div>
-          <div className="h-[20%] bg-white flex justify-center items-center text-xl md:text-2xl lg:text-3xl text-dark-cl">
+          <div className="h-[20%] bg-white flex justify-center items-center text-md sm:text-xl md:text-2xl lg:text-3xl text-dark-cl">
             Classic Mode
           </div>
         </motion.div>
@@ -70,7 +70,7 @@ const Play = () => {
             <div className="bg-white rounded-full border-[2px] absolute aspect-[1] h-[30%] top-[5%] left-[15%]"></div>
           </div>
           <div className="bg-blue-cl aspect-w-4 aspect-h-5 h-[80%] border-b-[4px]  border-solid border-dark-cl"></div>
-          <div className="h-[20%] bg-white flex justify-center items-center text-xl md:text-2xl lg:text-3xl text-dark-cl">
+          <div className="h-[20%] bg-white flex  justify-center items-center text-md sm:text-xl md:text-2xl lg:text-3xl text-dark-cl">
             Powerups Mode
           </div>
         </motion.div>
