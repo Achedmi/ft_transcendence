@@ -32,12 +32,10 @@ function Profile() {
           <span>|</span>
           <span>17 Losses</span>
         </div>
-        
-        <div className=" h-16 w-[50%] bg-white border-solid border-dark-cl rounded-xl border-[4px] mt-14 relative flex justify-center items-center">
-            <span className="absolute -top-8 left-0 text-xl">About me</span>
-            <span>
-              Please be Patient i have autism .
-            </span>
+
+        <div className="BIO  h-16 w-[50%] bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-14 relative flex justify-center items-center">
+          <span className="absolute -top-8 left-0 text-xl">About me</span>
+          <span className="text-white text-sm sm:text-lg">Please be Patient i have autism .</span>
         </div>
       </div>
     </div>
