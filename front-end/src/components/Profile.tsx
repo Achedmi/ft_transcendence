@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 function Profile() {
   return (
-    <div className="flex flex-col bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full">
+    <div className="flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full">
       <div className="bg-dark-cl h-48 relative">
         <motion.div>
           <img
@@ -23,13 +23,22 @@ function Profile() {
           <span className="hidden sm:block non-selectable">Edit profile</span>
         </motion.div>
       </div>
-      <span className="text-3xl sm:text-4xl font-bold text-center mt-24">
-        ainzsoup
-      </span>
-      <div className="flex gap-8 w-full justify-center mt-8 sm:text-xl">
-        <span>666 Wins</span>
-        <span>|</span>
-        <span>17 Losses</span>
+      <div className="flex flex-col justify-center items-center">
+        <span className="text-3xl sm:text-4xl font-bold text-center mt-24">
+          ainzsoup
+        </span>
+        <div className="flex gap-8 w-full justify-center mt-8 sm:text-xl">
+          <span>666 Wins</span>
+          <span>|</span>
+          <span>17 Losses</span>
+        </div>
+        
+        <div className=" h-16 w-[50%] bg-white border-solid border-dark-cl rounded-xl border-[4px] mt-14 relative flex justify-center items-center">
+            <span className="absolute -top-8 left-0 text-xl">About me</span>
+            <span>
+              Please be Patient i have autism .
+            </span>
+        </div>
       </div>
     </div>
   );
