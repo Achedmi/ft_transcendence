@@ -10,9 +10,6 @@ const fetchProfile = async () => {
   return response.data;
 };
 
-const handleEditProfile = () => {
-  alert("edit profile");
-};
 
 function Profile() {
   const { data, isLoading } = useQuery("profile", fetchProfile);
@@ -47,7 +44,7 @@ function Profile() {
   return (
     <div className="flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full relative">
       {showEditProfile && (
-        <motion.div className="absolute h-[600px] w-[500px] max-h-[80%] max-w-[75%] bg-[#D9D9D9] z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-dark-cl border-[3px] border-solid rounded-xl">
+        <motion.div className="absolute  w-[500px]  max-w-[75%] bg-[#D9D9D9] z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-dark-cl border-[3px] border-solid rounded-xl">
           <EditProfile
             showEditProfile={showEditProfile}
             setShowEditProfile={setShowEditProfile}

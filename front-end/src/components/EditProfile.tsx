@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import { Close, Edit } from "./icons/icons";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { set } from "react-hook-form";
 interface EditProfileProps {
   showEditProfile: boolean;
   setShowEditProfile: Dispatch<SetStateAction<boolean>>;
@@ -9,11 +10,33 @@ interface EditProfileProps {
 
 function EditProfile(props: EditProfileProps) {
   const [closeHovered, setCloseHovered] = useState(false);
+  const [file, setFile] = useState(
+    "https://i.pinimg.com/564x/90/74/c0/9074c097723d1832ea5c80cafa384104.jpg"
+  );
+
+  const [username, setUsername] = useState("ainzsoup");
+  const [bio, setBio] = useState("i have autism please slow down");
+
+  const handleImageChange = (file: File) => {
+    setFile(URL.createObjectURL(file));
+  };
+
+  const handleEditClick = () => {
+    const fileInput = document.getElementById("pfpInput") as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
+  const handleOnSave = () => {
+    // alert neew info
+	alert("new username: " + username + "\nnew bio: " + bio);
+  };
 
   return (
     <motion.div className="flex flex-col mt-1 w-full h-full">
       <div className="flex justify-between items-center px-1 pb-2 border-b-2 border-solid border-dark-cl">
-        <Edit size="38" />
+        <Edit size="38" fillColor="#433650" />
         <h1 className="text-2xl">Edit Profile</h1>
         <motion.div
           className="hover:cursor-pointer"
@@ -24,23 +47,56 @@ function EditProfile(props: EditProfileProps) {
           <Close size="38" fillColor={!closeHovered ? "#433650" : "#C84D46"} />
         </motion.div>
       </div>
-      <div className="flex justify-center items-center gap-8 pt-4 pb-2 border-b-2 border-solid border-dark-cl">
-        <img
-          className="w-40 h-40 rounded-full border-solid border-4 border-dark-cl"
-          src="https://i.pinimg.com/564x/90/74/c0/9074c097723d1832ea5c80cafa384104.jpg"
-          alt="pfp"
-        />
-        <motion.div
-          className=" h-14  bg-dark-cl rounded-full flex flex-center items-center hover:cursor-pointer"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Edit size="30" fillColor="#ffffff" />
-          <h1 className="hidden sm:block text-white sm:mx-3">
-            Import profile picture
-          </h1>
+
+      <div className="flex justify-center items-center pt-4 pb-2 border-b-2 border-solid border-dark-cl">
+        <motion.div className="relative">
+          <img
+            className="w-40 h-40 rounded-full border-solid border-4 border-dark-cl"
+            src={file}
+            alt="pfp"
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-gray-800 flex  items-center justify-center bg-opacity-75 
+		  hover:cursor-pointer hover:bg-opacity-100 hover:h-12 hover:w-12 transition-all"
+            onClick={handleEditClick}
+          >
+            <input
+              type="file"
+              className="hidden"
+              id="pfpInput"
+              accept="image/*"
+              onChange={(e) => handleImageChange(e.target.files![0])}
+            />
+
+            <Edit size="28" fillColor="#ffffff" />
+          </motion.div>
         </motion.div>
       </div>
+      <div className="username and bio flex flex-col border-b-2 border-solid border-dark-cl">
+        <div className="flex  justify-around items-center gap-2 py-4 ">
+          <div className="text-xl w-10 text-center">Name</div>
+          <input
+            className="border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64"
+            type="text"
+            placeholder={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div className="flex  justify-around items-center gap-2 py-4">
+          <div className="text-xl w-10 text-center">Bio</div>
+          <input
+            type="text"
+            className="border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden"
+            placeholder={bio}
+            onChange={(e) => setBio(e.target.value)}
+          />
+        </div>
+      </div>
+      <button className="bg-dark-cl text-white sm:text-2xl rounded-b-lg w-full h-10  ml-auto mr-auto hover:bg-blue-cl transition-all"
+	  onClick={handleOnSave}
+	  >
+        Save
+      </button>
     </motion.div>
   );
 }
