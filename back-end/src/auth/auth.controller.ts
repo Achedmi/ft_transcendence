@@ -93,6 +93,7 @@ export class AuthController {
     const { accessToken, refreshToken } = await this.authService.signUp(
       req.user.profile.id,
       req.user.profile.username,
+      req.user.profile._json.image.link,
     );
 
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
