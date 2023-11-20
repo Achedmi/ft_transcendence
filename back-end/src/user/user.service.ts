@@ -57,7 +57,7 @@ export class UserService {
   async update(file) {
     if (file) {
       await this.cloudinaryService.uploadImage(file).catch(() => {
-        throw new BadRequestException('Invalid file type.');
+        throw new BadRequestException('Something went wrong.');
       });
     }
   }

@@ -12,20 +12,19 @@ import { QueryClientProvider, QueryClient } from "react-query";
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="play" element={<Play />}></Route>
-            <Route path="ranking" element={<Ranking />} />
-            dis
-            <Route path="profile" element={<Profile />} />
-          </Route>
-        </Routes>
-      </Router>
-    </QueryClientProvider>
-  </React.StrictMode>
+	<React.StrictMode>
+		<QueryClientProvider client={queryClient}>
+			<Router>
+				<Routes>
+					<Route path="/login" element={<Login />} />
+					<Route path="/" element={<Layout />}>
+						<Route index element={<Home />} />
+						<Route path="play" element={<Play />}></Route>
+						<Route path="ranking" element={<Ranking />} />
+						<Route path="profile" element={<Profile />} />
+					</Route>
+				</Routes>
+			</Router>
+		</QueryClientProvider>
+	</React.StrictMode>
 );
