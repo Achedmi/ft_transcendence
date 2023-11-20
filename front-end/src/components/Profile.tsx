@@ -4,41 +4,66 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import EditProfile from "./EditProfile";
 import { useState } from "react";
+import { User} from "./store/userStore";
+import { Navigate } from "react-router-dom";
 
 const fetchProfile = async () => {
 	const response = await axios.get("https://randomuser.me/api/");
 	return response.data;
 };
 
-function Profile() {
-	const { data, isLoading } = useQuery("profile", fetchProfile);
-	type User = {
-		username: string;
-		picture: {
-			large: string;
-			medium: string;
-			small: string;
-		};
-		bio: string;
-		wins: number;
-		losses: number;
-	};
-	const imgSrc: string =
-		"https://i.pinimg.com/564x/90/74/c0/9074c097723d1832ea5c80cafa384104.jpg";
+const getUser = async ( ) => {
+  try {
+    const response = await axios.get("http://localhost:9696/user/whoami");
+    console.log(response.data);
+    return response.data;
+  }
+  catch (error) {
+    console.log(error);
+    return { username: "asdasd", bio: "", image: "", wins: 0, losses: 0, loggedIn: false };
+  }
+}
 
-	const user: User = {
-		username: isLoading ? "..." : data.results[0].login.username,
-		picture: {
-			large: isLoading ? imgSrc : data.results[0].picture.large,
-			medium: isLoading ? imgSrc : data.results[0].picture.medium,
-			small: isLoading ? imgSrc : data.results[0].picture.thumbnail,
-		},
-		bio: isLoading ? "..." : data.results[0].login.password,
-		wins: isLoading ? 0 : Math.floor(Math.random() * 100),
-		losses: isLoading ? 0 : Math.floor(Math.random() * 100),
-	};
+function Profile () {
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  // const { loggedIn } = useUserStore();
+	const { data, isLoading, isError } = useQuery("profile", getUser);
 
-	const [showEditProfile, setShowEditProfile] = useState(false);
+  const user: User  = {
+    loggedIn: true,
+    username: isLoading ? "..." : isError ? "hamid" : data.username,
+    picture: {
+      large: isLoading ? "" : data.image,
+      medium: isLoading ? "" : data.image,
+      small: isLoading ? "" : data.image,
+    },
+    bio: isLoading ? "..." : data.bio,
+    wins: isLoading ? 0 : data.wins,
+    losses: isLoading ? 0 : data.losses,
+  };
+  console.log(user);
+  if (!user.loggedIn) {
+    return <Navigate to="/login" />
+  }
+  // const { data, isLoading } = useQuery("profile", fetchProfile);
+
+	// const imgSrc: string =
+	// 	"https://i.pinimg.com/564x/90/74/c0/9074c097723d1832ea5c80cafa384104.jpg";
+
+	// const user: User = {
+	// 	username: isLoading ? "..." : data.results[0].login.username,
+	// 	picture: {
+	// 		large: isLoading ? imgSrc : data.results[0].picture.large,
+	// 		medium: isLoading ? imgSrc : data.results[0].picture.medium,
+	// 		small: isLoading ? imgSrc : data.results[0].picture.thumbnail,
+	// 	},
+	// 	bio: isLoading ? "..." : data.results[0].login.password,
+	// 	wins: isLoading ? 0 : Math.floor(Math.random() * 100),
+	// 	losses: isLoading ? 0 : Math.floor(Math.random() * 100),
+	// };
+
+
+
 
 	return (
 		<div className="flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full relative">
