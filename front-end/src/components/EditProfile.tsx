@@ -3,7 +3,7 @@ import { Close, Edit } from "./icons/icons";
 import { motion } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
-import { set } from "react-hook-form";
+
 interface EditProfileProps {
 	showEditProfile: boolean;
 	setShowEditProfile: Dispatch<SetStateAction<boolean>>;
