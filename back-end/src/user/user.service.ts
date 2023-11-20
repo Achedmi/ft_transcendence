@@ -1,10 +1,11 @@
 import { SocketModule } from './../socket/socket.module';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HelpersService } from 'src/helpers/helpers.service';
 import { SocketGateway } from 'src/socket/socket.gateway';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
@@ -12,6 +13,7 @@ export class UserService {
     private readonly prisma: PrismaService,
     private readonly helpersService: HelpersService,
     private readonly socketGateway: SocketGateway,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -52,15 +54,12 @@ export class UserService {
     return result;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    if (updateUserDto.password)
-      updateUserDto.password = this.helpersService.hash(updateUserDto.password);
-    const user = await this.prisma.user.update({
-      where: { id },
-      data: updateUserDto,
-    });
-    const { password, ...result } = user;
-    return result;
+  async update(file) {
+    if (file) {
+      await this.cloudinaryService.uploadImage(file).catch(() => {
+        throw new BadRequestException('Invalid file type.');
+      });
+    }
   }
 
   async remove(id: number) {

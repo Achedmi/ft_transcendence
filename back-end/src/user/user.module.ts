@@ -4,9 +4,10 @@ import { UserController } from './user.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HelpersModule } from 'src/helpers/helpers.module';
 import { SocketModule } from 'src/socket/socket.module';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
-  imports: [HelpersModule, SocketModule],
+  imports: [HelpersModule, SocketModule, CloudinaryModule],
   controllers: [UserController],
   providers: [UserService, PrismaService],
   exports: [UserService],
