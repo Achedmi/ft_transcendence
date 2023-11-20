@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Profile, Settings, Logout } from "./icons/icons";
 import { SetStateAction, Dispatch } from "react";
+import { useUserStore } from "./store/userStore";
 
 interface DropDownItemProps {
 	Icon: any;
@@ -97,6 +98,7 @@ const DropDown = ({ setShowDropDown }: any) => {
 };
 
 function NavBar() {
+  const { image } = useUserStore();
 	const location = useLocation();
 	const [showDropDown, setShowDropDown] = useState(false);
 	return (
@@ -151,7 +153,7 @@ function NavBar() {
 				>
 					<img
 						className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]"
-						src="https://i.pinimg.com/564x/90/74/c0/9074c097723d1832ea5c80cafa384104.jpg"
+						src={image}
 						alt="profile"
 					/>
 				</motion.div>
