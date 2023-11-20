@@ -96,7 +96,7 @@ export class AuthController {
     );
 
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
-    response.redirect('http://localhost:9696/auth/intra/SignUp');
+    response.redirect('http://localhost:6969/');
   }
 
   @UseGuards(UserATGuard)
