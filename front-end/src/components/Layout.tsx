@@ -4,8 +4,8 @@ import NavBar from "./NavBar";
 
 
 
-function Layout () {
-
+function Layout () {  
+  console.log("layout");
 	return (
     <div className="flex flex-col p-3 gap-4 h-screen font-Baloo font-bold ">
       <NavBar />
