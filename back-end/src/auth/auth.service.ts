@@ -13,11 +13,16 @@ export class AuthService {
     private readonly socketGateway: SocketGateway,
   ) {}
 
-  async signUp(intraId: string) {
-    const user = await this.userService.create({ intraId, avatar: '' });
-    const payload = { id: user.id, username: user.username };
+  async signUp(intraId: string, username: string) {
+    const user = await this.userService.create({
+      username,
+      intraId,
+      avatar: 'https://randomuser.me/api/portraits/women/76.jpg',
+    });
+    const payload = { id: user.id, username };
     const { accessToken, refreshToken } =
       await this.helpersService.generateRefreshAndAccessToken(payload);
+    console.log(accessToken, refreshToken);
     return {
       user,
       accessToken,

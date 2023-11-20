@@ -75,25 +75,28 @@ export class AuthController {
     @Req() req,
     @Res({ passthrough: true }) response: Response,
   ) {
+    const user = await this.userService.findUnique({
+      intraId: req.user.profile.id,
+    });
     console.log(req.user.profile);
-    // const user = await this.userService.findUnique({
-    //   intraId: req.user.profile.id,
-    // });
-    // if (user) {
-    //   const { accessToken, refreshToken } =
-    //     await this.helpersService.generateRefreshAndAccessToken({
-    //       id: user.id,
-    //       username: user.username,
-    //     });
-    //   this.helpersService.setTokenCookies(response, accessToken, refreshToken);
-    response.redirect('http://localhost:6969/play');
-    //   return;
-    // }
-    // const { accessToken, refreshToken } = await this.authService.signUp(
-    //   req.user.profile.id,
-    // );
-    // this.helpersService.setTokenCookies(response, accessToken, refreshToken);
-    // response.redirect('http://localhost:9696/auth/intra/SignUp');
+    if (user) {
+      const { accessToken, refreshToken } =
+        await this.helpersService.generateRefreshAndAccessToken({
+          id: user.id,
+          username: user.username,
+        });
+      this.helpersService.setTokenCookies(response, accessToken, refreshToken);
+      response.redirect('http://localhost:6969/');
+      return;
+    }
+    console.log('signup');
+    const { accessToken, refreshToken } = await this.authService.signUp(
+      req.user.profile.id,
+      req.user.profile.username,
+    );
+
+    this.helpersService.setTokenCookies(response, accessToken, refreshToken);
+    response.redirect('http://localhost:9696/auth/intra/SignUp');
   }
 
   @UseGuards(UserATGuard)

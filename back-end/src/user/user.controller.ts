@@ -27,10 +27,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Get()
-  // findAll() {
-  //   return this.userService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.userService.findAll();
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
@@ -62,10 +62,16 @@ export class UserController {
     // return await this.userService.update(id, updateUserDto);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.userService.remove(+id);
+  }
+
+  @UseGuards(UserATGuard)
+  @Get('whoami')
+  whoami(@GetCurrent() user) {
+    return user;
+  }
 
   // @Get('me')
   // @UseGuards(UserATGuard)
