@@ -11,6 +11,6 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
   app.use(cookieParser());
 
-  await app.listen(3000);
+  await app.listen(4000);
 }
 bootstrap();
