@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  ONLINE
+  OFFLINE
+  INGAME
+  INQUEE
+}
+
+enum ChatType {
+  DM
+  CHANNEL
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+  PROTECTED
+}
+
+model Message {
+  id        Int      @default(autoincrement()) @id
+  content   String
+  createdAt DateTime @default(now())
+  chat Chat? @relation(fields: [chatId], references: [id])
+  chatId Int?
+  user User? @relation(fields: [userId], references: [id])
+  userId Int?
+}
+
+model Chat {
+  id        Int      @default(autoincrement()) @id
+  type ChatType
+  visibility Visibility
+  createdAt DateTime @default(now())
+  name String?
+  owner User? @relation("owner", fields: [ownerId], references: [id])
+  ownerId Int?
+  members User[] 
+  messages Message[]
+}
+
+model User {
+  id    Int     @default(autoincrement()) @id
+  username String?  @unique
+  password String?
+  avatar String
+  level Float  @default(0)
+  intraId String @unique
+  status  Status @default(ONLINE)
+  createdAt DateTime @default(now())
+  player1 Game[] @relation("player1")
+  player2 Game[] @relation("player2")
+  winnerPlayer Game[] @relation("winnerPlayer")
+  chats Chat[]
+  owner Chat[]  @relation("owner")
+  messages Message[]
+}
+
+model Game {
+  createdAt DateTime @default(now())
+  id        Int      @default(autoincrement()) @id
+  player1    User?    @relation("player1", fields: [player1Id], references: [id])
+  player2    User?    @relation("player2", fields: [player2Id], references: [id])
+  player1Score Int
+  player2Score Int
+  winnerPlayer User? @relation("winnerPlayer", fields: [winnerPlayerId], references: [id])
+  player1Id  Int?
+  player2Id  Int?
+  winnerPlayerId Int?
+}
+

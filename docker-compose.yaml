@@ -7,6 +7,8 @@ services:
             - 9696:4000
         volumes:
             - ./back-end/src:/usr/src/app/src
+        depends_on:
+            - postgres_db
     frontend:
         container_name: frontend
         build: front-end/
@@ -16,3 +18,15 @@ services:
             - ./front-end/src:/usr/src/app/src
         depends_on:
             - backend
+    postgres_db:
+        image: postgres:latest
+        container_name: Postgres
+        restart: always
+        environment:
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_USER}
+            - POSTGRES_DB=mydb
+        ports:
+            - 5432:5432
+        volumes:
+            - ./postgres_db:/var/lib/postgresql/data
