@@ -23,7 +23,7 @@ function EditProfile(props: EditProfileProps) {
     getUser(setLoggedIn, setImage)
   );
   const [username, setUsername] = useState(isLoading ? "" : data.username);
-  const [bio, setBio] = useState("i have autism please slow down");
+  const [bio, setBio] = useState(isLoading ? "" : data.bio);
 
   const handleImageChange = (file: File) => {
     setNewImage(file);
