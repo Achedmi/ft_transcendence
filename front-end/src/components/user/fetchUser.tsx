@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const getUser = async (setLoggedIn: any, setImage: any) => {
   try {
-    const response = await axios.get("http://localhost:9696/user/whoami", {
+    const response = await axios.get("http://localhost:9696/user/me", {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",

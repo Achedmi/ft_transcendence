@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { Close, Edit } from "./icons/icons";
-import { motion } from "framer-motion";
+import { addScaleCorrector, motion } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useUserStore } from "./user/userStore";
@@ -19,9 +19,8 @@ function EditProfile(props: EditProfileProps) {
   const [newImage, setNewImage] = useState<File>();
   const { setLoggedIn, setImage } = useUserStore();
 
-
   const { data, isLoading } = useQuery("profile", () =>
-  getUser(setLoggedIn, setImage)
+    getUser(setLoggedIn, setImage)
   );
   const [username, setUsername] = useState(isLoading ? "" : data.username);
   const [bio, setBio] = useState("i have autism please slow down");
@@ -41,7 +40,7 @@ function EditProfile(props: EditProfileProps) {
   const handleOnSave = async () => {
     const formData = new FormData();
     formData.append("username", username);
-    // formData.append("bio", bio);
+    formData.append("bio", bio);
     if (newImage) formData.append("image", newImage);
     try {
       const response = await axios.patch(

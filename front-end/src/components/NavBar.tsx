@@ -7,7 +7,7 @@ import { SetStateAction, Dispatch } from "react";
 import { useUserStore } from "./user/userStore";
 import { getUser } from "./user/fetchUser";
 import { useQuery } from "react-query";
-import axios, {AxiosError} from "axios";
+import axios, { AxiosError } from "axios";
 
 interface DropDownItemProps {
   Icon: any;
@@ -58,7 +58,7 @@ const DropDown = ({ setShowDropDown }: any) => {
       console.log(error);
       if (error instanceof AxiosError) alert(error.response?.data.message);
     }
-  }
+  };
   const dropShadowStyle = {
     filter: "drop-shadow(2px 3px 0 #433650)",
   };
@@ -90,18 +90,7 @@ const DropDown = ({ setShowDropDown }: any) => {
           id={0}
         />
       </Link>
-      <DropDownItem
-        Icon={Settings}
-        text="Settings"
-        setItemsHovered={setItemsHovered}
-        itemsHovered={itemsHovered}
-        id={1}
-      />
-      <Link
-        to="/login"
-        className="w-full"
-        onClick={handleLogout}
-      >
+      <Link to="/login" className="w-full" onClick={handleLogout}>
         <DropDownItem
           Icon={Logout}
           text="Logout"
@@ -116,8 +105,9 @@ const DropDown = ({ setShowDropDown }: any) => {
 
 function NavBar() {
   const { loggedIn, setLoggedIn, setImage } = useUserStore();
-  const { data, isLoading } = useQuery("profile", () =>
-    getUser(setLoggedIn, setImage)
+  const { data, isLoading } = useQuery(
+    "profile",
+    async () => await getUser(setLoggedIn, setImage)
   );
   const image = isLoading ? "" : data.avatar;
   const location = useLocation();
