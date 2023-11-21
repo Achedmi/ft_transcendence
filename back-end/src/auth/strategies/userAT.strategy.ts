@@ -1,5 +1,5 @@
 import { AuthService } from 'src/auth/auth.service';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
@@ -26,6 +26,7 @@ export class UserAccessTokenStrategy extends PassportStrategy(
     let user = await this.userService.findOne(payload.id);
     return {
       ...user,
+      isTFAVerified: payload.isTFAVerified,
       userAT: request.cookies?.userAT,
       userRT: request.cookies?.userRT,
     };

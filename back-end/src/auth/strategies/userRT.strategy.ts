@@ -27,11 +27,10 @@ export class UserRefreshTokenStrategy extends PassportStrategy(
   }
 
   async validate(request, payload) {
-    const user: Omit<User, 'password'> = await this.userService.findOne(
-      payload.id,
-    );
+    const user: User = await this.userService.findOne(payload.id);
     return {
       ...user,
+      isTFAVerified: payload.isTFAVerified,
       userAT: request.cookies?.userAT,
       userRT: request.cookies?.userRT,
     };

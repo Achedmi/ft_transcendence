@@ -18,12 +18,12 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserATGuard } from 'src/auth/guards/userATGuard.guard';
 import { GetCurrent } from 'src/auth/decorator/current.decorator';
-import { HelpersService } from 'src/helpers/helpers.service';
-import { Response } from 'express';
-import { User } from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { TFAGuard } from 'src/auth/guards/TFAGuard.guard';
 
 @Controller('user')
+@UseGuards(TFAGuard)
+@UseGuards(UserATGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -32,7 +32,6 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @UseGuards(UserATGuard)
   @UseInterceptors(FileInterceptor('image'))
   @Patch()
   async update(
@@ -53,13 +52,12 @@ export class UserController {
     return { message: 'user updated' };
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.userService.remove(+id);
+  // }
 
-  @UseGuards(UserATGuard)
-  @Get('whoami')
+  @Get('me')
   whoami(@GetCurrent() user) {
     return user;
   }

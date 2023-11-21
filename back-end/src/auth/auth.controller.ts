@@ -18,6 +18,7 @@ import { UserRTGuard } from './guards/userRTGuard.guard';
 import { UserATGuard } from './guards/userATGuard.guard';
 import { UserService } from 'src/user/user.service';
 import { HelpersService } from 'src/helpers/helpers.service';
+import { TFAGuard } from './guards/TFAGuard.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -27,37 +28,28 @@ export class AuthController {
     private readonly helpersService: HelpersService,
   ) {}
 
-  //===================================loging with username and password=====================================
-  @Post('defaultLogin')
-  async defaultLogin(
-    @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const { user, accessToken, refreshToken } =
-      await this.authService.defaultLogin(loginDto);
-    this.helpersService.setTokenCookies(response, accessToken, refreshToken);
-    return user;
-  }
-
   //===================================refreshing access token=====================================
-  @UseGuards(UserRTGuard)
+
+  @UseGuards(UserRTGuard, TFAGuard)
   @Post('refresh')
   async refresh(
     @Res({ passthrough: true }) response: Response,
-    @GetCurrent() user: User,
+    @GetCurrent() user: User & { isTFAVerified },
   ) {
     const { accessToken, refreshToken } =
       await this.helpersService.generateRefreshAndAccessToken({
         id: user.id,
         username: user.username,
+        isTFAVerified: user.isTFAVerified,
       });
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
     return { accessToken, refreshToken };
   }
 
   //===================================logout=====================================
+
   @HttpCode(200)
-  @UseGuards(UserATGuard)
+  @UseGuards(UserATGuard, TFAGuard)
   @Post('logout')
   async logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('userAT');
@@ -78,18 +70,17 @@ export class AuthController {
     const user = await this.userService.findUnique({
       intraId: req.user.profile.id,
     });
-    console.log(req.user.profile);
     if (user) {
       const { accessToken, refreshToken } =
         await this.helpersService.generateRefreshAndAccessToken({
           id: user.id,
           username: user.username,
+          isTFAVerified: false,
         });
       this.helpersService.setTokenCookies(response, accessToken, refreshToken);
       response.redirect('http://localhost:6969/');
       return;
     }
-    console.log('signup');
     const { accessToken, refreshToken } = await this.authService.signUp(
       req.user.profile.id,
       req.user.profile.username,
@@ -100,16 +91,22 @@ export class AuthController {
     response.redirect('http://localhost:6969/');
   }
 
-  @UseGuards(UserATGuard)
-  @Get('intra/SignUp')
-  intraSignup(@GetCurrent() user: User) {
-    if (user.username) return 'HOME';
-    return 'SIGNUP';
-  }
+  //enable TFA by sending the qr code and verifing it and auth number, by that, we ganna set
+  //isTFAenabled as true in the DB and isTFAverified as true as well
 
   @UseGuards(UserATGuard)
-  @Get('intra/home')
-  intraHome(@GetCurrent() user: User) {
-    return 'HOME';
+  @Post('verifyTFA')
+  async vefityTFA(
+    @GetCurrent() user,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { accessToken, refreshToken } =
+      await this.helpersService.generateRefreshAndAccessToken({
+        id: user.id,
+        username: user.username,
+        isTFAVerified: true,
+      });
+    this.helpersService.setTokenCookies(response, accessToken, refreshToken);
+    return 'verified';
   }
 }

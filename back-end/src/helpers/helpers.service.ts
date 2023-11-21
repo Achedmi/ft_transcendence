@@ -21,10 +21,9 @@ export class HelpersService {
     });
   }
 
-  async generateRefreshAndAccessToken(payload: {
-    id: number;
-    username: string;
-  }): Promise<{ accessToken: string; refreshToken: string }> {
+  async generateRefreshAndAccessToken(
+    payload,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const refreshToken = await this.generateRefreshToken(payload);
     const accessToken = await this.generateAccessToken(payload);
     return {

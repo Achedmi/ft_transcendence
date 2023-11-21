@@ -53,11 +53,12 @@ model Chat {
 model User {
   id    Int     @default(autoincrement()) @id
   username String?  @unique
-  password String?
   avatar String
   level Float  @default(0)
   intraId String @unique
   status  Status @default(ONLINE)
+  isTFAenabled Boolean @default(false)
+  Bio String? @default("🏜🐪")
   createdAt DateTime @default(now())
   player1 Game[] @relation("player1")
   player2 Game[] @relation("player2")

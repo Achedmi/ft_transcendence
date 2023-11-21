@@ -17,10 +17,9 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { password, ...user } = await this.prisma.user.create({
+    return await this.prisma.user.create({
       data: createUserDto,
     });
-    return user;
   }
 
   async findAll() {
@@ -50,8 +49,7 @@ export class UserService {
 
   async findOne(id: number) {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id } });
-    const { password, ...result } = user;
-    return result;
+    return user;
   }
 
   async update(image, id: number, updateUserDto: UpdateUserDto) {
