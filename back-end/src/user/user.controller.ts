@@ -32,34 +32,25 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userService.findOne(+id);
-  // }
-
-  // @UseGuards(UserATGuard)
+  @UseGuards(UserATGuard)
   @UseInterceptors(FileInterceptor('image'))
   @Patch()
   async update(
-    // @GetCurrent('id') id: number,
+    @GetCurrent('id') id,
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
           new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
-          new MaxFileSizeValidator({ maxSize: 19385 }),
+          new MaxFileSizeValidator({ maxSize: 24000000 }),
         ],
         fileIsRequired: false,
       }),
     )
     image,
   ) {
-    console.log(updateUserDto?.username);
-    console.log(image);
-    await this.userService.update(image);
+    await this.userService.update(image, id, updateUserDto);
     return { message: 'user updated' };
-
-    // return await this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')

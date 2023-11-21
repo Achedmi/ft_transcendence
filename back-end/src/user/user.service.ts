@@ -54,12 +54,21 @@ export class UserService {
     return result;
   }
 
-  async update(file) {
-    if (file) {
-      await this.cloudinaryService.uploadImage(file).catch(() => {
-        throw new BadRequestException('Something went wrong.');
-      });
+  async update(image, id: number, updateUserDto: UpdateUserDto) {
+    if (image) {
+      const { url } = await this.cloudinaryService
+        .uploadImage(image)
+        .catch(() => {
+          throw new BadRequestException('Something went wrong.');
+        });
+      updateUserDto.avatar = url;
     }
+    await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: updateUserDto,
+    });
   }
 
   async remove(id: number) {
