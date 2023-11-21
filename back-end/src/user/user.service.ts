@@ -23,17 +23,7 @@ export class UserService {
   }
 
   async findAll() {
-    const users = await this.prisma.user.findMany({
-      select: {
-        id: true,
-        avatar: true,
-        level: true,
-        username: true,
-        status: true,
-        intraId: true,
-        createdAt: true,
-      },
-    });
+    const users = await this.prisma.user.findMany();
     return users;
   }
 

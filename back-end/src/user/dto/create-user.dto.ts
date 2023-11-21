@@ -7,7 +7,4 @@ export class CreateUserDto {
   avatar: string;
   @IsString()
   intraId: string;
-  @IsString()
-  @IsOptional()
-  bio?: string;
 }
