@@ -1,10 +1,12 @@
 import Logo from "../assets/logo.svg?react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Profile, Settings, Logout } from "./icons/icons";
 import { SetStateAction, Dispatch } from "react";
 import { useUserStore } from "./user/userStore";
+import { getUser } from "./user/fetchUser";
+import { useQuery } from "react-query";
 
 interface DropDownItemProps {
   Icon: any;
@@ -98,9 +100,17 @@ const DropDown = ({ setShowDropDown }: any) => {
 };
 
 function NavBar() {
-  const { image } = useUserStore();
+  const { loggedIn, setLoggedIn, setImage } = useUserStore();
+  const { data, isLoading } = useQuery("profile", () =>
+    getUser(setLoggedIn, setImage)
+  );
+  const image = isLoading ? "" : data.avatar;
   const location = useLocation();
   const [showDropDown, setShowDropDown] = useState(false);
+
+  if (!loggedIn) {
+    return <Navigate to="/login" />;
+  }
   return (
     <div className="">
       <div className="min-w-[300px]  flex  justify-between bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-16 border-solid border-dark-cl border-[4px] rounded-2xl items-center">

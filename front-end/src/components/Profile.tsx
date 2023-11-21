@@ -9,9 +9,7 @@ import { getUser } from "./user/fetchUser";
 
 function Profile() {
   const { loggedIn, setLoggedIn, setImage } = useUserStore();
-
   const [showEditProfile, setShowEditProfile] = useState(false);
-
   const { data, isLoading } = useQuery("profile", () =>
     getUser(setLoggedIn, setImage)
   );
