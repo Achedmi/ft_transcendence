@@ -163,11 +163,14 @@ function NavBar() {
             setShowDropDown(!showDropDown);
           }}
         >
-          <img
+          {
+            !isLoading ? (<img
             className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]"
             src={image}
             alt="profile"
-          />
+          />) : (<div className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px] bg-dark-cl"></div>)
+          }
+          
         </motion.div>
         <AnimatePresence>
           {showDropDown && <DropDown setShowDropDown={setShowDropDown} />}
