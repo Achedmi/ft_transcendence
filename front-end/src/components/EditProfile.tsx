@@ -3,7 +3,7 @@ import { Close, Edit } from "./icons/icons";
 import { motion } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
-import { useUserStore } from "./store/userStore";
+import { useUserStore } from "./user/userStore";
 
 interface EditProfileProps {
   showEditProfile: boolean;

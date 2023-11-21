@@ -1,46 +1,20 @@
 import { Edit } from "./icons/icons";
 import { motion } from "framer-motion";
-import axios from "axios";
 import { useQuery } from "react-query";
 import EditProfile from "./EditProfile";
 import { useState } from "react";
-import { User } from "./store/userStore";
 import { Navigate } from "react-router-dom";
-import { useUserStore } from "./store/userStore";
+import { useUserStore } from "./user/userStore";
+import { getUser } from "./user/fetchUser";
 
 function Profile() {
-  const { loggedIn, setLoggedIn, setImage} = useUserStore();
+  const { loggedIn, setLoggedIn, setImage } = useUserStore();
+
   const [showEditProfile, setShowEditProfile] = useState(false);
 
-  const getUser = async () => {
-    try {
-      const response = await axios.get("http://localhost:9696/user/whoami", {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      setLoggedIn(true);
-      setImage(response.data.avatar);
-      return response.data;
-    } catch (error) {
-      setLoggedIn(false);
-    }
-  };
-
-  const { data, isLoading } = useQuery("profile", getUser);
-  const user: User = {
-    loggedIn: true,
-    username: isLoading ? "..." : data.username,
-    picture: {
-      large: isLoading ? "" : data.avatar,
-      medium: isLoading ? "" : data.avatar,
-      small: isLoading ? "" : data.avatar,
-    },
-    bio: isLoading ? "..." : data.bio,
-    wins: isLoading ? 0 : Math.floor(Math.random() * 100),
-    losses: isLoading ? 0 : Math.floor(Math.random() * 100),
-  };
+  const { data, isLoading } = useQuery("profile", () =>
+    getUser(setLoggedIn, setImage)
+  );
 
   if (!loggedIn) {
     return <Navigate to="/login" />;
@@ -67,7 +41,7 @@ function Profile() {
               </div>
             ) : (
               <img
-                src={user.picture.large}
+                src={isLoading ? "" : data.avatar}
                 alt=""
                 className="h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-24 left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px]"
               />
@@ -86,17 +60,21 @@ function Profile() {
         </div>
         <div className="flex flex-col justify-center items-center ">
           <span className="text-3xl sm:text-4xl font-bold text-center mt-24">
-            {user.username}
+            {isLoading ? "..." : data.username}
           </span>
           <div className="flex gap-8 w-full justify-center mt-8 sm:text-xl">
-            <span> {user.wins} Wins</span>
+            <span> {isLoading ? 0 : Math.floor(Math.random() * 100)} Wins</span>
             <span>|</span>
-            <span> {user.losses} Losses</span>
+            <span>
+              {isLoading ? 0 : Math.floor(Math.random() * 100)} Losses
+            </span>
           </div>
 
           <div className="BIO  h-16 w-[50%] bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-14 relative flex justify-center items-center">
             <span className="absolute -top-8 left-0 text-xl">About me</span>
-            <span className="text-white text-sm sm:text-lg">{user.bio}</span>
+            <span className="text-white text-sm sm:text-lg">
+              {isLoading ? "..." : data.bio}
+            </span>
           </div>
         </div>
       </div>
