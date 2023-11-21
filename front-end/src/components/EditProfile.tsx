@@ -35,7 +35,7 @@ function EditProfile(props: EditProfileProps) {
   const handleOnSave = async () => {
     const formData = new FormData();
     formData.append("username", username);
-    formData.append("bio", bio);
+    // formData.append("bio", bio);
     if (newImage) formData.append("image", newImage);
     try {
       const response = await axios.patch(
@@ -45,6 +45,7 @@ function EditProfile(props: EditProfileProps) {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         }
       );
       alert(response.data.message);

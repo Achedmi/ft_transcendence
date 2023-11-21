@@ -7,6 +7,7 @@ import { SetStateAction, Dispatch } from "react";
 import { useUserStore } from "./user/userStore";
 import { getUser } from "./user/fetchUser";
 import { useQuery } from "react-query";
+import axios, {AxiosError} from "axios";
 
 interface DropDownItemProps {
   Icon: any;
@@ -42,6 +43,22 @@ const DropDownItem = (prop: DropDownItemProps) => {
 };
 
 const DropDown = ({ setShowDropDown }: any) => {
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:9696/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      alert(response.data.message);
+      window.location.href = "/";
+    } catch (error: AxiosError | any) {
+      console.log(error);
+      if (error instanceof AxiosError) alert(error.response?.data.message);
+    }
+  }
   const dropShadowStyle = {
     filter: "drop-shadow(2px 3px 0 #433650)",
   };
@@ -83,9 +100,7 @@ const DropDown = ({ setShowDropDown }: any) => {
       <Link
         to="/login"
         className="w-full"
-        onClick={() => {
-          setShowDropDown(false);
-        }}
+        onClick={handleLogout}
       >
         <DropDownItem
           Icon={Logout}
