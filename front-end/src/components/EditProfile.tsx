@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useUserStore } from "./user/userStore";
-
+import { useQuery } from "react-query";
+import { getUser } from "./user/fetchUser";
 interface EditProfileProps {
   showEditProfile: boolean;
   setShowEditProfile: Dispatch<SetStateAction<boolean>>;
@@ -16,8 +17,13 @@ function EditProfile(props: EditProfileProps) {
   const [file, setFile] = useState(image);
 
   const [newImage, setNewImage] = useState<File>();
+  const { setLoggedIn, setImage } = useUserStore();
 
-  const [username, setUsername] = useState("ainzsoup");
+
+  const { data, isLoading } = useQuery("profile", () =>
+  getUser(setLoggedIn, setImage)
+  );
+  const [username, setUsername] = useState(isLoading ? "" : data.username);
   const [bio, setBio] = useState("i have autism please slow down");
 
   const handleImageChange = (file: File) => {
