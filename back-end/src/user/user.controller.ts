@@ -58,7 +58,7 @@ export class UserController {
   // }
 
   @Get('me')
-  whoami(@GetCurrent() user) {
+  me(@GetCurrent() user) {
     return user;
   }
 
