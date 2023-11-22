@@ -14,15 +14,4 @@ export class CloudinaryService {
       toStream(file.buffer).pipe(upload);
     });
   }
-
-  async removeImage(imageId: string) {
-    await v2.uploader
-      .destroy(imageId, function (error, result) {})
-      .then((resp) => console.log(resp))
-      .catch((_err) =>
-        console.log(
-          'Something went wrong on destroying the image, please try again later.',
-        ),
-      );
-  }
 }

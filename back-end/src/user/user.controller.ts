@@ -52,19 +52,8 @@ export class UserController {
     return { message: 'user updated' };
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userService.remove(+id);
-  // }
-
   @Get('me')
   me(@GetCurrent() user) {
     return user;
   }
-
-  // @Get('me')
-  // @UseGuards(UserATGuard)
-  // async me(@GetCurrent() user: User) {
-  //   return user;
-  // }
 }

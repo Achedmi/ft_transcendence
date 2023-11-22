@@ -31,9 +31,6 @@ export class HelpersService {
       accessToken,
     };
   }
-  hash(password: string): string {
-    return bcrypt.hashSync(password, 10);
-  }
   setTokenCookies(
     response: Response,
     accessToken: string,
