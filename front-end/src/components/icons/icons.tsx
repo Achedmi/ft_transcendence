@@ -104,3 +104,23 @@ export const Close = (icon: IconProps) => {
     </svg>
   );
 };
+
+export const Toggle = ({ on }) => {
+  return (
+    <div
+      className={
+        on
+          ? "relative bg h-4 w-9  bg-blue-cl rounded-full border-solid border-dark-cl border-2 hover:cursor-pointer"
+          : "relative bg h-4 w-9  bg-red-cl rounded-full border-solid border-dark-cl border-2 hover:cursor-pointer"
+      }
+    >
+      <div
+        className={
+          on
+            ? "h-5 w-5 bg-white rounded-full relative border-solid border-dark-cl border-2 top-[50%] transform -translate-y-1/2 left-[20%] -translate-x-1/2"
+            : "h-5 w-5 bg-white rounded-full relative border-solid border-dark-cl border-2 top-[50%] transform -translate-y-1/2 left-[80%] -translate-x-1/2"
+        }
+      ></div>
+    </div>
+  );
+};

@@ -1,4 +1,4 @@
-import { Edit } from "./icons/icons";
+import { Edit, Toggle } from "./icons/icons";
 import { motion } from "framer-motion";
 import { useQuery } from "react-query";
 import EditProfile from "./EditProfile";
@@ -46,7 +46,7 @@ function Profile() {
             )}
           </motion.div>
           <motion.div
-            className="bg-[#D9D9D9] hover:cursor-pointer  flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 right-0 mr-4 p-2"
+            className="bg-[#D9D9D9] hover:cursor-pointer  flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 right-0 mr-4 p-2 h-11"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             title="Edit profile"
@@ -55,6 +55,10 @@ function Profile() {
             <Edit size="26" fillColor="#433650" />
             <span className="hidden sm:block non-selectable">Edit profile</span>
           </motion.div>
+          <div className="bg-[#D9D9D9] flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 left-0 ml-4 p-2 h-11">
+            <span className="non-selectable ">2FA</span>
+            <Toggle on={false} />
+          </div>
         </div>
         <div className="flex flex-col justify-center items-center ">
           <span className="text-3xl sm:text-4xl font-bold text-center mt-24">
