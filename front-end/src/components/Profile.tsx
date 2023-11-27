@@ -6,10 +6,12 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useUserStore } from "./user/userStore";
 import { getUser } from "./user/fetchUser";
+import HandleTfa from "./HandleTfa";
 
 function Profile() {
   const { loggedIn, setLoggedIn, setImage } = useUserStore();
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showTfa, setShowTfa] = useState(false);
   const { data, isLoading } = useQuery("profile", () =>
     getUser(setLoggedIn, setImage)
   );
@@ -28,8 +30,19 @@ function Profile() {
           />
         </motion.div>
       )}
+      {showTfa && (
+        <motion.div className="absolute  w-[500px]  max-w-[75%] bg-[#D9D9D9] z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-dark-cl border-[3px] border-solid rounded-xl">
+          <HandleTfa showTfa={showTfa} setShowTfa={setShowTfa} />
+        </motion.div>
+      )}
 
-      <div className={showEditProfile ? "blur-sm z-0" : "z-0"}>
+      <div
+        className={
+          showEditProfile || showTfa
+            ? "blur-md z-0 non-selectable pointer-events-none"
+            : "z-0"
+        }
+      >
         <div className="bg-dark-cl h-48  relative">
           <motion.div>
             {isLoading ? (
@@ -57,7 +70,9 @@ function Profile() {
           </motion.div>
           <div className="bg-[#D9D9D9] flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 left-0 ml-4 p-2 h-11">
             <span className="non-selectable ">2FA</span>
-            <Toggle on={false} />
+            <div onClick={() => setShowTfa(true)}>
+              <Toggle on={false} />
+            </div>
           </div>
         </div>
         <div className="flex flex-col justify-center items-center ">
