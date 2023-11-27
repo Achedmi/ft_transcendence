@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { Close, Edit } from "./icons/icons";
-import { addScaleCorrector, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useUserStore } from "./user/userStore";
@@ -64,7 +64,7 @@ function EditProfile(props: EditProfileProps) {
     <motion.div className="flex flex-col mt-1 w-full h-full">
       <div className="flex justify-between items-center px-1 pb-2 border-b-2 border-solid border-dark-cl">
         <Edit size="38" fillColor="#433650" />
-        <h1 className="text-2xl">Edit Profile</h1>
+        <h1 className="text-xl mt-2">Edit Profile</h1>
         <motion.div
           className="hover:cursor-pointer"
           onHoverStart={() => setCloseHovered(true)}
