@@ -58,6 +58,7 @@ model User {
   intraId String @unique
   status  Status @default(ONLINE)
   isTFAenabled Boolean @default(false)
+  TFAsecret String? 
   bio String? @default("Nothing to see here...")
   createdAt DateTime @default(now())
   player1 Game[] @relation("player1")

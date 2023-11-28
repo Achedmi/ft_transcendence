@@ -8,6 +8,7 @@ import {
   Req,
   UseGuards,
   HttpCode,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/loginDto';
@@ -19,6 +20,7 @@ import { UserATGuard } from './guards/userATGuard.guard';
 import { UserService } from 'src/user/user.service';
 import { HelpersService } from 'src/helpers/helpers.service';
 import { TFAGuard } from './guards/TFAGuard.guard';
+import { toFileStream } from 'qrcode';
 
 @Controller('auth')
 export class AuthController {
@@ -95,11 +97,26 @@ export class AuthController {
   //isTFAenabled as true in the DB and isTFAverified as true as well
 
   @UseGuards(UserATGuard)
-  @Post('verifyTFA')
-  async vefityTFA(
-    @GetCurrent() user,
+  @Get('generateTFAQrCode')
+  async generateTFAQrCode(@GetCurrent() user, @Res() response: Response) {
+    const { otpAuthUrl } = await this.authService.generateTFASecret(user);
+    response.setHeader('content-type', 'image/png');
+    return this.authService.qrCodeStreamPipe(response, otpAuthUrl);
+  }
+
+  @UseGuards(UserATGuard)
+  @Post('enableTFA')
+  async enableTFA(
+    @GetCurrent() user: User,
     @Res({ passthrough: true }) response: Response,
+    @Body('TFAcode') TFAcode,
   ) {
+    const isValidCode = await this.authService.verifyTFA(
+      TFAcode,
+      user.TFAsecret,
+    );
+    if (!isValidCode) throw new BadRequestException('invalid code');
+    await this.authService.toggleTFA(user);
     const { accessToken, refreshToken } =
       await this.helpersService.generateRefreshAndAccessToken({
         id: user.id,
@@ -107,6 +124,61 @@ export class AuthController {
         isTFAVerified: true,
       });
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
-    return 'verified';
+    return { message: 'TFA enabled' };
+  }
+
+  @UseGuards(TFAGuard)
+  @Post('disableTFA')
+  async disableTFA(
+    @GetCurrent() user: User,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    await this.authService.toggleTFA(user);
+    const { accessToken, refreshToken } =
+      await this.helpersService.generateRefreshAndAccessToken({
+        id: user.id,
+        username: user.username,
+        isTFAVerified: false,
+      });
+    this.helpersService.setTokenCookies(response, accessToken, refreshToken);
+    return { message: 'TFA disabled' };
+  }
+
+  @UseGuards(UserATGuard)
+  @Post('verifyTFAcode')
+  async vefityTFA(
+    @GetCurrent() user,
+    @Res({ passthrough: true }) response: Response,
+    @Body('TFAcode') TFAcode,
+  ) {
+    const isValidCode = await this.authService.verifyTFA(
+      TFAcode,
+      user.TFAsecret,
+    );
+    if (!isValidCode) throw new BadRequestException('invalid code');
+    const { accessToken, refreshToken } =
+      await this.helpersService.generateRefreshAndAccessToken({
+        id: user.id,
+        username: user.username,
+        isTFAVerified: true,
+      });
+    this.helpersService.setTokenCookies(response, accessToken, refreshToken);
+    return { message: 'TFA verified' };
+  }
+
+  //this login is just for postman
+  @Post('defaultLogin')
+  async defaultLogin(
+    @Body() credentials,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { accessToken, refreshToken } =
+      await this.helpersService.generateRefreshAndAccessToken({
+        id: credentials.id,
+        username: credentials.username,
+        isTFAVerified: false,
+      });
+    this.helpersService.setTokenCookies(response, accessToken, refreshToken);
+    return { accessToken, refreshToken };
   }
 }

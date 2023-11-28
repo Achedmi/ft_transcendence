@@ -10,6 +10,7 @@ import { UserRefreshTokenStrategy } from './auth/strategies/userRT.strategy';
 import { IntraStrategy } from './auth/strategies/intra.stategy';
 import { HelpersModule } from './helpers/helpers.module';
 import { SocketGateway } from './socket/socket.gateway';
+import { TFAStrategy } from './auth/strategies/TFA.strategy';
 
 @Module({
   imports: [ConfigModule.forRoot(), UserModule, AuthModule, HelpersModule],
@@ -20,7 +21,7 @@ import { SocketGateway } from './socket/socket.gateway';
     UserAccessTokenStrategy,
     UserRefreshTokenStrategy,
     IntraStrategy,
-    // ,
+    TFAStrategy,
   ],
 })
 export class AppModule {}
