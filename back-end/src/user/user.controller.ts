@@ -23,7 +23,7 @@ import { TFAGuard } from 'src/auth/guards/TFAGuard.guard';
 
 @Controller('user')
 @UseGuards(TFAGuard)
-@UseGuards(UserATGuard)
+// @UseGuards(UserATGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

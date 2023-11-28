@@ -42,7 +42,14 @@ export class UserService {
     return user;
   }
 
-  async update(image, id: number, updateUserDto: UpdateUserDto) {
+  async update(
+    image,
+    id: number,
+    updateUserDto: UpdateUserDto & {
+      TFAsecret?: string;
+      isTFAenabled?: boolean;
+    },
+  ) {
     if (image) {
       const { url } = await this.cloudinaryService
         .uploadImage(image)
