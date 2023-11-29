@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Close, Tfa } from "./icons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
+import axios, { AxiosError } from "axios";
 
 interface HandleTfaProps {
   showTfa: boolean;
@@ -10,6 +11,28 @@ interface HandleTfaProps {
 
 function HandleTfa(props: HandleTfaProps) {
   const [closeHovered, setCloseHovered] = useState(false);
+  const [code, setCode] = useState("");
+  async function handleVerify() {
+    if (code != "") {
+      try {
+        await axios.post(
+          "http://localhost:9696/auth/enableTFA",
+          { TFAcode: code },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+        window.location.reload();
+      } catch (error: AxiosError | any) {
+        if (error instanceof AxiosError) {
+          alert("invalid code");
+        }
+      }
+    }
+  }
 
   return (
     <motion.div className="flex flex-col items-center mt-1 w-full h-full">
@@ -49,13 +72,17 @@ function HandleTfa(props: HandleTfaProps) {
           type="text"
           className=" border-solid border-2 border-dark-cl rounded-full px-4  w-full h-10"
           placeholder="XXXXXX"
+          onChange={(e) => setCode(e.target.value)}
           required
         />
-        <motion.div className="bg-blue-cl rounded-full text-white hover:cursor-pointer h-10 border-solid border-2 border-dark-cl"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        <motion.div
+          className="bg-blue-cl rounded-full text-white hover:cursor-pointer h-10 border-solid border-2 border-dark-cl"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
-          <button className="w-full h-full">Continue</button>
+          <button className="w-full h-full" onClick={handleVerify}>
+            Continue
+          </button>
         </motion.div>
       </div>
     </motion.div>

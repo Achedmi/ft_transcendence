@@ -2,7 +2,7 @@ import Logo from "../assets/logo.svg?react";
 import { Link, useLocation, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Profile, Settings, Logout } from "./icons/icons";
+import { Profile, Logout } from "./icons/icons";
 import { SetStateAction, Dispatch } from "react";
 import { useUserStore } from "./user/userStore";
 import { getUser } from "./user/fetchUser";

@@ -6,6 +6,7 @@ import Ranking from "./components/Ranking";
 import Home from "./components/Home.tsx";
 import Profile from "./components/Profile.tsx";
 import { Play } from "./components/Play";
+import VerifyTfa from "./components/VerifyTfa";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "react-query";
 
@@ -15,6 +16,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="tfa" element={<VerifyTfa />} />
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="play" element={<Play />}></Route>
@@ -26,11 +28,11 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-	<React.StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<Router>
-				<App />
-			</Router>
-		</QueryClientProvider>
-	</React.StrictMode>
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <App />
+      </Router>
+    </QueryClientProvider>
+  </React.StrictMode>
 );

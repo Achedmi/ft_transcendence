@@ -8,7 +8,7 @@ function Login() {
             <LoginForm />
             <Drawing className="min-h-screen hidden lg:block "/>
           </div>
-  ); 
+  );
 }
 
 export default Login;

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export const getUser = async (setLoggedIn: any, setImage: any) => {
   try {
@@ -12,6 +12,9 @@ export const getUser = async (setLoggedIn: any, setImage: any) => {
     setImage(response.data.avatar);
     return response.data;
   } catch (error) {
+    if (error instanceof AxiosError && error.response?.status == 403) {
+      window.location.replace("http://localhost:6969/tfa");
+    } else 
     setLoggedIn(false);
   }
 };

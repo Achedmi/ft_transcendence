@@ -7,7 +7,7 @@ import { Navigate } from "react-router-dom";
 import { useUserStore } from "./user/userStore";
 import { getUser } from "./user/fetchUser";
 import HandleTfa from "./HandleTfa";
-
+import axios, { AxiosError } from "axios";
 function Profile() {
   const { loggedIn, setLoggedIn, setImage } = useUserStore();
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -15,6 +15,23 @@ function Profile() {
   const { data, isLoading } = useQuery("profile", () =>
     getUser(setLoggedIn, setImage)
   );
+  async function hanfleToggleTfa() {
+    if (data.isTFAenabled) {
+      try {
+        await axios.post("http://localhost:9696/auth/disableTFA", 
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+        window.location.reload();
+      } catch (error: AxiosError | any) {
+        console.log(error);
+      }
+    } else setShowTfa(true);
+  }
 
   if (!loggedIn) {
     return <Navigate to="/login" />;
@@ -70,8 +87,8 @@ function Profile() {
           </motion.div>
           <div className="bg-[#D9D9D9] flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 left-0 ml-4 p-2 h-11">
             <span className="non-selectable ">2FA</span>
-            <div onClick={() => setShowTfa(true)}>
-              <Toggle on={false} />
+            <div onClick={hanfleToggleTfa}>
+              <Toggle on={isLoading ? false : data.isTFAenabled} />
             </div>
           </div>
         </div>

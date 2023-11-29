@@ -117,8 +117,8 @@ export const Toggle = ({ on }) => {
       <div
         className={
           on
-            ? "h-5 w-5 bg-white rounded-full relative border-solid border-dark-cl border-2 top-[50%] transform -translate-y-1/2 left-[20%] -translate-x-1/2"
-            : "h-5 w-5 bg-white rounded-full relative border-solid border-dark-cl border-2 top-[50%] transform -translate-y-1/2 left-[80%] -translate-x-1/2"
+            ? "h-5 w-5 bg-white rounded-full relative border-solid border-dark-cl border-2 top-[50%] transform -translate-y-1/2 left-[80%] -translate-x-1/2"
+            : "h-5 w-5 bg-white rounded-full relative border-solid border-dark-cl border-2 top-[50%] transform -translate-y-1/2 left-[20%] -translate-x-1/2  "
         }
       ></div>
     </div>
