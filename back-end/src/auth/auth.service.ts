@@ -44,9 +44,6 @@ export class AuthService {
       otpAuthUrl,
     };
   }
-  async qrCodeStreamPipe(stream: Response, otpPathUrl: string) {
-    return toFileStream(stream, otpPathUrl);
-  }
 
   async verifyTFA(code: string, TFAsecret: string) {
     return authenticator.verify({

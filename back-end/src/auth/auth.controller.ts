@@ -98,10 +98,9 @@ export class AuthController {
 
   @UseGuards(UserATGuard)
   @Get('generateTFAQrCode')
-  async generateTFAQrCode(@GetCurrent() user, @Res() response: Response) {
+  async generateTFAQrCode(@GetCurrent() user) {
     const { otpAuthUrl } = await this.authService.generateTFASecret(user);
-    response.setHeader('content-type', 'image/png');
-    return this.authService.qrCodeStreamPipe(response, otpAuthUrl);
+    return otpAuthUrl;
   }
 
   @UseGuards(UserATGuard)
