@@ -3,6 +3,9 @@ import { Close, Tfa } from "./icons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
+import { useQuery } from "react-query";
+import { getQrCode } from "./fetchQrCode";
+import { QRCodeSVG } from "qrcode.react";
 
 interface HandleTfaProps {
   showTfa: boolean;
@@ -12,6 +15,8 @@ interface HandleTfaProps {
 function HandleTfa(props: HandleTfaProps) {
   const [closeHovered, setCloseHovered] = useState(false);
   const [code, setCode] = useState("");
+  const { data, isLoading } = useQuery("qrcode", getQrCode);
+
   async function handleVerify() {
     if (code != "") {
       try {
@@ -58,11 +63,11 @@ function HandleTfa(props: HandleTfaProps) {
       </div>
 
       <div className="flex justify-center items-center pt-4 pb-2 w-52  ">
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Rickrolling_QR_code.png"
-          alt="QR code"
-          className="h-52 w-full"
-        />
+        {isLoading ? (
+          <div className="h-52 w-full bg-dark-cl"></div>
+        ) : (
+          <QRCodeSVG value={data} />
+        )}
       </div>
       <div className="p-3">
         <span>verify the code from the app</span>

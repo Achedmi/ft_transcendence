@@ -24,8 +24,8 @@ interface UserState {
   setImage: (image: string) => void;
   loggedIn: boolean;
   setLoggedIn: (loggedIn: boolean) => void;
-  isTFAVerified: boolean;
-  setIsTFAVerified: (isTFAVerified: boolean) => void;
+  isTfaVerified: boolean;
+  setisTfaVerified: (isTfaVerified: boolean) => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -37,6 +37,6 @@ export const useUserStore = create<UserState>((set) => ({
   setImage: (image: string) => set({ image }),
   loggedIn: true,
   setLoggedIn: (loggedIn: boolean) => set({ loggedIn }),
-  isTFAVerified: true,
-  setIsTFAVerified: (isTFAVerified: boolean) => set({ isTFAVerified }),
+  isTfaVerified: false,
+  setisTfaVerified: (isTfaVerified: boolean) => set({ isTfaVerified }),
 }));

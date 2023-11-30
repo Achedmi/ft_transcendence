@@ -116,6 +116,7 @@ function NavBar() {
   if (!loggedIn) {
     return <Navigate to="/login" />;
   }
+
   return (
     <div className="">
       <div className="min-w-[300px]  flex  justify-between bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-16 border-solid border-dark-cl border-[4px] rounded-2xl items-center">
@@ -163,14 +164,15 @@ function NavBar() {
             setShowDropDown(!showDropDown);
           }}
         >
-          {
-            !isLoading ? (<img
-            className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]"
-            src={image}
-            alt="profile"
-          />) : (<div className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px] bg-dark-cl"></div>)
-          }
-          
+          {!isLoading ? (
+            <img
+              className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]"
+              src={image}
+              alt="profile"
+            />
+          ) : (
+            <div className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px] bg-dark-cl"></div>
+          )}
         </motion.div>
         <AnimatePresence>
           {showDropDown && <DropDown setShowDropDown={setShowDropDown} />}
