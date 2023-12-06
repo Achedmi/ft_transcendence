@@ -11,7 +11,6 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/loginDto';
 import { Response } from 'express';
 import { GetCurrent } from './decorator/current.decorator';
 import { User } from '@prisma/client';
@@ -59,6 +58,8 @@ export class AuthController {
     return { message: `Logged out successfully` };
   }
 
+  //===================================Intra Login=====================================
+
   @UseGuards(IntraGuard)
   @Get('intra/login')
   intraLogin() {}
@@ -70,7 +71,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = await this.userService.findUnique({
-      intraId: req.user.profile.id,
+      username: req.user.profile.username,
     });
     if (user) {
       const { accessToken, refreshToken } =
@@ -84,7 +85,6 @@ export class AuthController {
       return;
     }
     const { accessToken, refreshToken } = await this.authService.signUp(
-      req.user.profile.id,
       req.user.profile.username,
       req.user.profile._json.image.link,
     );
@@ -93,8 +93,7 @@ export class AuthController {
     response.redirect('http://localhost:6969/');
   }
 
-  //enable TFA by sending the qr code and verifing it and auth number, by that, we ganna set
-  //isTFAenabled as true in the DB and isTFAverified as true as well
+  //===================================TFA=====================================
 
   @UseGuards(UserATGuard)
   @Get('generateTFAQrCode')
@@ -165,16 +164,15 @@ export class AuthController {
     return { message: 'TFA verified' };
   }
 
-  //this login is just for postman
+  //===================================Postman Login=====================================
+
   @Post('defaultLogin')
-  async defaultLogin(
-    @Body() credentials,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async defaultLogin(@Res({ passthrough: true }) response: Response) {
+    const user = (await this.userService.findAll())[0];
     const { accessToken, refreshToken } =
       await this.helpersService.generateRefreshAndAccessToken({
-        id: credentials.id,
-        username: credentials.username,
+        id: user.id,
+        username: user.username,
         isTFAVerified: false,
       });
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);

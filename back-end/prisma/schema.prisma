@@ -52,10 +52,10 @@ model Chat {
 
 model User {
   id    Int     @default(autoincrement()) @id
-  username String?  @unique
+  username String  @unique
+  displayName String
   avatar String
   level Float  @default(0)
-  intraId String @unique
   status  Status @default(ONLINE)
   isTFAenabled Boolean @default(false)
   TFAsecret String? 

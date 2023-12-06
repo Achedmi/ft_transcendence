@@ -3,7 +3,7 @@ import { CreateUserDto } from './create-user.dto';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDto extends PartialType(
-  OmitType(CreateUserDto, ['intraId']),
+  OmitType(CreateUserDto, ['username']),
 ) {
   @IsString()
   @IsOptional()

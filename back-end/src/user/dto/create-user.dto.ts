@@ -2,9 +2,9 @@ import { IsOptional, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
-  username?: string;
+  username: string;
   @IsString()
   avatar: string;
   @IsString()
-  intraId: string;
+  displayName: string;
 }
