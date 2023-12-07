@@ -22,7 +22,7 @@ function EditProfile(props: EditProfileProps) {
   const { data, isLoading } = useQuery("profile", () =>
     getUser(setLoggedIn, setImage)
   );
-  const [username, setUsername] = useState(isLoading ? "" : data.username);
+  const [displayName , setDisplayName] = useState(isLoading? "" : data.displayName);
   const [bio, setBio] = useState(isLoading ? "" : data.bio);
 
   const handleImageChange = (file: File) => {
@@ -39,7 +39,7 @@ function EditProfile(props: EditProfileProps) {
 
   const handleOnSave = async () => {
     const formData = new FormData();
-    formData.append("displayName", username);
+    formData.append("displayName", displayName);
     formData.append("bio", bio);
     if (newImage) formData.append("image", newImage);
     try {
@@ -100,17 +100,17 @@ function EditProfile(props: EditProfileProps) {
         </motion.div>
       </div>
       <div className="username and bio flex flex-col border-b-2 border-solid border-dark-cl">
-        <div className="flex  justify-around items-center gap-2 py-4 ">
-          <div className="text-xl w-10 text-center">Name</div>
+        <div className="flex  justify-center items-center gap-8 py-4 ">
+          <div className="text-xl w-10 text-center">Name:</div>
           <input
             className="border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64"
             type="text"
-            placeholder={username}
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
           />
         </div>
-        <div className="flex  justify-around items-center gap-2 py-4">
-          <div className="text-xl w-10 text-center">Bio</div>
+        <div className="flex  justify-center items-center gap-8 py-4">
+          <div className="text-xl w-10 text-center">Bio:</div>
           <input
             type="text"
             className="border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden"
