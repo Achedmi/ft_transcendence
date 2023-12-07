@@ -96,6 +96,9 @@ function Profile() {
           <span className="text-3xl sm:text-4xl font-bold text-center mt-24">
             {isLoading ? "..." : data.displayName}
           </span>
+          <span className="text-md opacity-75">
+            {isLoading ? "" : ("@" + data.username)}
+          </span>
           <div className="flex gap-8 w-full justify-center mt-8 sm:text-xl">
             <span> {isLoading ? 0 : Math.floor(Math.random() * 100)} Wins</span>
             <span>|</span>
