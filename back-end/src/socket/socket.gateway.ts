@@ -1,13 +1,10 @@
 // import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import {
   SubscribeMessage,
-  MessageBody,
-  ConnectedSocket,
   WebSocketServer,
   WebSocketGateway,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway()
 export class SocketGateway {

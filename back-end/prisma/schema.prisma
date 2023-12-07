@@ -31,21 +31,21 @@ enum Visibility {
 model Message {
   id        Int      @default(autoincrement()) @id
   content   String
-  createdAt DateTime @default(now())
-  chat Chat? @relation(fields: [chatId], references: [id])
-  chatId Int?
-  user User? @relation(fields: [userId], references: [id])
   userId Int?
+  chatId Int?
+  chat Chat? @relation(fields: [chatId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Chat {
   id        Int      @default(autoincrement()) @id
   type ChatType
   visibility Visibility
-  createdAt DateTime @default(now())
   name String?
-  owner User? @relation("owner", fields: [ownerId], references: [id])
   ownerId Int?
+  createdAt DateTime @default(now())
+  owner User? @relation("owner", fields: [ownerId], references: [id])
   members User[] 
   messages Message[]
 }
