@@ -1,12 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Login from "./components/Login.tsx";
+import Login from "./components/pages/login/Login.tsx";
 import Layout from "./components/Layout.tsx";
-import Ranking from "./components/Ranking";
-import Home from "./components/Home.tsx";
-import Profile from "./components/Profile.tsx";
-import { Play } from "./components/Play";
-import VerifyTfa from "./components/VerifyTfa";
+import Ranking from "./components/pages/Profile/Ranking.tsx";
+import Home from "./components/pages/Home.tsx";
+import Profile from "./components/pages/Profile/Profile.tsx";
+import { Play } from "./components/pages/Play.tsx";
+import VerifyTfa from "./components/2fa/VerifyTfa.tsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "react-query";
 

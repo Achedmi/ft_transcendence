@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
-import { Close, Edit } from "./icons/icons";
+import { Close, Edit } from "../../icons/icons";
 import { motion } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
-import { useUserStore } from "./user/userStore";
+import { useUserStore } from "../../../user/userStore";
 import { useQuery } from "react-query";
-import { getUser } from "./user/fetchUser";
+import { getUser } from "../../../user/fetchUser";
 interface EditProfileProps {
   showEditProfile: boolean;
   setShowEditProfile: Dispatch<SetStateAction<boolean>>;
@@ -39,7 +39,7 @@ function EditProfile(props: EditProfileProps) {
 
   const handleOnSave = async () => {
     const formData = new FormData();
-    formData.append("username", username);
+    formData.append("displayName", username);
     formData.append("bio", bio);
     if (newImage) formData.append("image", newImage);
     try {

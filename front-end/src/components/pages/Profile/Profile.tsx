@@ -1,12 +1,12 @@
-import { Edit, Toggle } from "./icons/icons";
+import { Edit, Toggle } from "../../icons/icons";
 import { motion } from "framer-motion";
 import { useQuery } from "react-query";
 import EditProfile from "./EditProfile";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { useUserStore } from "./user/userStore";
-import { getUser } from "./user/fetchUser";
-import HandleTfa from "./HandleTfa";
+import { useUserStore } from "../../../user/userStore";
+import { getUser } from "../../../user/fetchUser";
+import HandleTfa from "../../2fa/HandleTfa";
 import axios, { AxiosError } from "axios";
 function Profile() {
   const { loggedIn, setLoggedIn, setImage } = useUserStore();
@@ -94,7 +94,7 @@ function Profile() {
         </div>
         <div className="flex flex-col justify-center items-center ">
           <span className="text-3xl sm:text-4xl font-bold text-center mt-24">
-            {isLoading ? "..." : data.username}
+            {isLoading ? "..." : data.displayName}
           </span>
           <div className="flex gap-8 w-full justify-center mt-8 sm:text-xl">
             <span> {isLoading ? 0 : Math.floor(Math.random() * 100)} Wins</span>

@@ -1,6 +1,6 @@
-import RedBlock from '../assets/redblock.svg?react';
-import HomePong from '../assets/homepong.svg?react';
-import BlueBlock from '../assets/blueblock.svg?react';
+import RedBlock from '../../assets/redblock.svg?react';
+import HomePong from '../../assets/homepong.svg?react';
+import BlueBlock from '../../assets/blueblock.svg?react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
@@ -24,7 +24,7 @@ function Home () {
             </div>
 
 
-            <div className='pong flex  h-full flex-col ithttp://localhost:6969/ems-center justify-center gap-6 items-center'>
+            <div className='pong flex  h-full flex-col  justify-center gap-6 items-center'>
                 <Link to="/play" className='w-full h-[20%]'>
                     <motion.div 
                         className="h-full w-full"

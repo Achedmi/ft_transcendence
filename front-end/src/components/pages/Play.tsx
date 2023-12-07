@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import ChatButton from "../assets/chatButton.svg?react";
+import ChatButton from "../../assets/chatButton.svg?react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 

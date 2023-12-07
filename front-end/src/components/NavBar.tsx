@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Profile, Logout } from "./icons/icons";
 import { SetStateAction, Dispatch } from "react";
-import { useUserStore } from "./user/userStore";
-import { getUser } from "./user/fetchUser";
+import { useUserStore } from "../user/userStore";
+import { getUser } from "../user/fetchUser";
 import { useQuery } from "react-query";
 import axios, { AxiosError } from "axios";
 
