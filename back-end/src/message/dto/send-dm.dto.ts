@@ -9,5 +9,5 @@ export class SendDmDto {
 
   @IsString()
   @IsNotEmpty()
-  content: string;
+  message: string;
 }

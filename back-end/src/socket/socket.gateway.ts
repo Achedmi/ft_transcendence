@@ -11,36 +11,31 @@ export class SocketGateway {
   @WebSocketServer()
   server: Server;
 
-  socket: Socket;
-
-  //on init
   afterInit(server: Server) {
-    // Handle initialization event
     console.log('Socket initialized');
-    // this.createRoom(, 'aRoom');
   }
 
   handleConnection(client: Socket) {
-    console.log('New client connected');
-    // Handle connection event
+    console.log('New client connected: ', client.id);
   }
 
   handleDisconnect(client: Socket) {
-    console.log('Client disconnected');
-    // Handle disconnection event
+    console.log('Client disconnected: ', client.id);
   }
 
-  @SubscribeMessage('createRoom')
-  createRoom(socket: Socket, data: string) {
-    console.log('createRoom');
-    socket.join('aRoom');
-    socket.to('aRoom').emit('roomCreated', { room: 'aRoom' });
-    // return { event: 'roomCreated', room: 'aRoom' };
+  @SubscribeMessage('joinChat')
+  joinChat(client: Socket, data) {
+    console.log(client.id, 'joining room: ', data.chatId);
+    client.join(data.chatId);
   }
 
-  @SubscribeMessage('toRoom')
-  toRoom(socket: Socket, data: string) {
-    console.log('toRoom');
-    socket.to('aRoom').emit('toClient', { message: 'this message is toRoom' });
+  @SubscribeMessage('leaveChat')
+  leaveChat(client: Socket, data) {
+    console.log(client.id, ' leaving room: ', data.chatId);
+    client.leave(data.chatId);
+  }
+
+  toChat(data) {
+    this.server.to(data.chatId).emit('message', data);
   }
 }

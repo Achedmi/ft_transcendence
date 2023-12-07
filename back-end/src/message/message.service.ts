@@ -1,5 +1,6 @@
+import { SocketGateway } from 'src/socket/socket.gateway';
 import { Injectable } from '@nestjs/common';
-import { sendMessageDto } from './dto/create-message.dto';
+import { SendMessageDto } from './dto/create-message.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChatType, Visibility } from '@prisma/client';
 import { SendDmDto } from './dto/send-dm.dto';
@@ -10,16 +11,22 @@ export class MessageService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly chatService: ChatService,
+    private readonly socketService: SocketGateway,
   ) {}
-  async sendMessage(from: number, sendMessageDto: sendMessageDto) {
+  async sendMessage(from: number, sendMessageDto: SendMessageDto) {
     const chat = await this.prisma.chat.findFirstOrThrow({
       where: { id: sendMessageDto.chatId },
     });
 
+    this.socketService.toChat({
+      chatId: chat.id,
+      message: sendMessageDto.message,
+      from: from,
+    });
     return await this.prisma.message.create({
       data: {
         chatId: chat.id,
-        content: sendMessageDto.content,
+        message: sendMessageDto.message,
         userId: from,
       },
     });
@@ -34,10 +41,16 @@ export class MessageService {
         members: [from, sendDmDto.to],
       });
     }
+
+    this.socketService.toChat({
+      chatId: chat.id,
+      message: sendDmDto.message,
+      from: from,
+    });
     return await this.prisma.message.create({
       data: {
         chatId: chat.id,
-        content: sendDmDto.content,
+        message: sendDmDto.message,
         userId: from,
       },
     });

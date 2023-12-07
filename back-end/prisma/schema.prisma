@@ -30,7 +30,7 @@ enum Visibility {
 
 model Message {
   id        Int      @default(autoincrement()) @id
-  content   String
+  message   String
   userId Int?
   chatId Int?
   chat Chat? @relation(fields: [chatId], references: [id])

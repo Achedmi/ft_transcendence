@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { MessageService } from './message.service';
-import { sendMessageDto } from './dto/create-message.dto';
+import { SendMessageDto } from './dto/create-message.dto';
 import { TFAGuard } from 'src/auth/guards/TFAGuard.guard';
 import { GetCurrent } from 'src/auth/decorator/current.decorator';
 import { SendDmDto } from './dto/send-dm.dto';
@@ -12,7 +12,7 @@ export class MessageController {
   @UseGuards(TFAGuard)
   @Post('sendMessage')
   create(
-    @Body() createMessageDto: sendMessageDto,
+    @Body() createMessageDto: SendMessageDto,
     @GetCurrent('id') userId: number,
   ) {
     return this.messageService.sendMessage(userId, createMessageDto);
