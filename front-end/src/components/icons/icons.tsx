@@ -105,7 +105,7 @@ export const Close = (icon: IconProps) => {
   );
 };
 
-export const Toggle = ({ on }) => {
+export const Toggle = ({ on }:{on :any}) => {
   return (
     <div
       className={

@@ -1,40 +1,37 @@
-import { Edit, Toggle } from "./icons/icons";
+import { Edit, Toggle } from "../../icons/icons";
 import { motion } from "framer-motion";
 import { useQuery } from "react-query";
 import EditProfile from "./EditProfile";
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
-import { useUserStore } from "./user/userStore";
-import { getUser } from "./user/fetchUser";
-import HandleTfa from "./HandleTfa";
+import { useUserStore } from "../../../user/userStore";
+import HandleTfa from "../../2fa/HandleTfa";
 import axios, { AxiosError } from "axios";
+
 function Profile() {
-  const { loggedIn, setLoggedIn, setImage } = useUserStore();
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showTfa, setShowTfa] = useState(false);
-  const { data, isLoading } = useQuery("profile", () =>
-    getUser(setLoggedIn, setImage)
-  );
+  const { userData, setUserData } = useUserStore();
+
+  console.log("userData", userData);
+
   async function hanfleToggleTfa() {
-    if (data.isTFAenabled) {
+    if (userData.isTFAenabled) {
       try {
-        await axios.post("http://localhost:9696/auth/disableTFA", 
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        });
+        await axios.post(
+          "http://localhost:9696/auth/disableTFA",
+          {},
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
         window.location.reload();
       } catch (error: AxiosError | any) {
         console.log(error);
       }
     } else setShowTfa(true);
-  }
-
-  if (!loggedIn) {
-    return <Navigate to="/login" />;
   }
 
   return (
@@ -62,18 +59,12 @@ function Profile() {
       >
         <div className="bg-dark-cl h-48  relative">
           <motion.div>
-            {isLoading ? (
-              <div className="h-44 w-44 max-h-44 max-w-44 rounded-full overflow-hidden absolute top-24 left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px] bg-dark-cl">
-                <div className="bg-[#D9D9D9] h-20 w-20 rounded-full absolute top-7 left-1/2 -translate-x-1/2"></div>
-                <div className="issue bg-[#D9D9D9] h-40 w-40 rounded-full absolute left-1/2 -translate-x-1/2 top-[70%] "></div>
-              </div>
-            ) : (
               <img
-                src={isLoading ? "" : data.avatar}
+                src={userData.avatar}
                 alt=""
                 className="h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-24 left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px]"
               />
-            )}
+            
           </motion.div>
           <motion.div
             className="bg-[#D9D9D9] hover:cursor-pointer  flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 right-0 mr-4 p-2 h-11"
@@ -88,26 +79,29 @@ function Profile() {
           <div className="bg-[#D9D9D9] flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 left-0 ml-4 p-2 h-11">
             <span className="non-selectable ">2FA</span>
             <div onClick={hanfleToggleTfa}>
-              <Toggle on={isLoading ? false : data.isTFAenabled} />
+              <Toggle on={userData.isTFAenabled} />
             </div>
           </div>
         </div>
         <div className="flex flex-col justify-center items-center ">
-          <span className="text-3xl sm:text-4xl font-bold text-center mt-24">
-            {isLoading ? "..." : data.username}
+          <span className="text-3xl sm:text-4xl font-bold text-center mt-24 ">
+            { userData.displayName}
+          </span>
+          <span className="text-md opacity-75">
+            {"@" + userData.username}
           </span>
           <div className="flex gap-8 w-full justify-center mt-8 sm:text-xl">
-            <span> {isLoading ? 0 : Math.floor(Math.random() * 100)} Wins</span>
+            <span> {Math.floor(Math.random() * 100)} Wins</span>
             <span>|</span>
             <span>
-              {isLoading ? 0 : Math.floor(Math.random() * 100)} Losses
+              {Math.floor(Math.random() * 100)} Losses
             </span>
           </div>
 
           <div className="BIO  h-16 w-[50%] bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-14 relative flex justify-center items-center">
             <span className="absolute -top-8 left-0 text-xl">About me</span>
             <span className="text-white text-sm sm:text-lg">
-              {isLoading ? "..." : data.bio}
+              {userData.bio}
             </span>
           </div>
         </div>

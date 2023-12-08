@@ -1,4 +1,4 @@
-import FtIcon from "../assets/fticon.svg?react";
+import FtIcon from "../../../assets/fticon.svg?react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 

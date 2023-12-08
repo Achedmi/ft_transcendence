@@ -1,33 +1,29 @@
 import { Dispatch, SetStateAction } from "react";
-import { Close, Edit } from "./icons/icons";
+import { Close, Edit } from "../../icons/icons";
 import { motion } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
-import { useUserStore } from "./user/userStore";
-import { useQuery } from "react-query";
-import { getUser } from "./user/fetchUser";
+import { useUserStore } from "../../../user/userStore";
+import { toast } from "react-toastify";
+
 interface EditProfileProps {
   showEditProfile: boolean;
   setShowEditProfile: Dispatch<SetStateAction<boolean>>;
 }
 
 function EditProfile(props: EditProfileProps) {
-  const { image } = useUserStore();
+  const { userData, setUserData } = useUserStore();
   const [closeHovered, setCloseHovered] = useState(false);
-  const [file, setFile] = useState(image);
+  const [avatar, setAvatar] = useState(userData.avatar);
+
+  const [displayName, setDisplayName] = useState(userData.displayName);
+  const [bio, setBio] = useState(userData.bio);
 
   const [newImage, setNewImage] = useState<File>();
-  const { setLoggedIn, setImage } = useUserStore();
-
-  const { data, isLoading } = useQuery("profile", () =>
-    getUser(setLoggedIn, setImage)
-  );
-  const [username, setUsername] = useState(isLoading ? "" : data.username);
-  const [bio, setBio] = useState(isLoading ? "" : data.bio);
 
   const handleImageChange = (file: File) => {
     setNewImage(file);
-    setFile(URL.createObjectURL(file));
+    setAvatar(URL.createObjectURL(file));
   };
 
   const handleEditClick = () => {
@@ -39,8 +35,8 @@ function EditProfile(props: EditProfileProps) {
 
   const handleOnSave = async () => {
     const formData = new FormData();
-    formData.append("username", username);
-    formData.append("bio", bio);
+    if (displayName) formData.append("displayName", displayName);
+    if (bio) formData.append("bio", bio);
     if (newImage) formData.append("image", newImage);
     try {
       const response = await axios.patch(
@@ -53,10 +49,14 @@ function EditProfile(props: EditProfileProps) {
           withCredentials: true,
         }
       );
-      alert(response.data.message);
+      setUserData(response.data);
+      toast.success("User updated successfully!");
     } catch (error: AxiosError | any) {
       console.log(error);
-      if (error instanceof AxiosError) alert(error.response?.data.message);
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message);
+        setAvatar(userData.avatar);
+      }
     }
   };
 
@@ -79,7 +79,7 @@ function EditProfile(props: EditProfileProps) {
         <motion.div className="relative">
           <img
             className="w-40 h-40 rounded-full border-solid border-4 border-dark-cl"
-            src={file}
+            src={avatar}
             alt="pfp"
           />
           <motion.div
@@ -100,21 +100,21 @@ function EditProfile(props: EditProfileProps) {
         </motion.div>
       </div>
       <div className="username and bio flex flex-col border-b-2 border-solid border-dark-cl">
-        <div className="flex  justify-around items-center gap-2 py-4 ">
-          <div className="text-xl w-10 text-center">Name</div>
+        <div className="flex  justify-center items-center gap-8 py-4 ">
+          <div className="text-xl w-10 text-center">Name:</div>
           <input
             className="border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64"
             type="text"
-            placeholder={username}
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder={userData.displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
           />
         </div>
-        <div className="flex  justify-around items-center gap-2 py-4">
-          <div className="text-xl w-10 text-center">Bio</div>
+        <div className="flex  justify-center items-center gap-8 py-4">
+          <div className="text-xl w-10 text-center">Bio:</div>
           <input
             type="text"
             className="border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden"
-            placeholder={bio}
+            placeholder={userData.bio}
             onChange={(e) => setBio(e.target.value)}
           />
         </div>

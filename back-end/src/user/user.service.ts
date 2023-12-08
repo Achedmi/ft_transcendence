@@ -57,12 +57,13 @@ export class UserService {
         });
       updateUserDto.avatar = url;
     }
-    await this.prisma.user.update({
+    const { TFAsecret, ...user } = await this.prisma.user.update({
       where: {
         id,
       },
       data: updateUserDto,
     });
+    return user;
   }
 
   async remove(id: number) {

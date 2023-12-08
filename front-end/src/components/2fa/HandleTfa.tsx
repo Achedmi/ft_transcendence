@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Close, Tfa } from "./icons/icons";
+import { Close, Tfa } from "../icons/icons";
 import { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
