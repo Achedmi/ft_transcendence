@@ -104,7 +104,7 @@ const DropDown = ({ setShowDropDown }: any) => {
 };
 
 function NavBar() {
-  const { loggedIn, setLoggedIn, setImage } = useUserStore();
+  const { setLoggedIn, setImage } = useUserStore();
   const { data, isLoading } = useQuery(
     "profile",
     async () => await getUser(setLoggedIn, setImage)
@@ -113,71 +113,70 @@ function NavBar() {
   const location = useLocation();
   const [showDropDown, setShowDropDown] = useState(false);
 
-  if (!loggedIn) {
-    return <Navigate to="/login" />;
-  }
 
   return (
     <div className="">
-      <div className="min-w-[300px]  flex  justify-between bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-16 border-solid border-dark-cl border-[4px] rounded-2xl items-center">
-        <Link to="/" className="">
-          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.5 }}>
-            <Logo className="h-12 terminw-12 ml-1" />
+      {!isLoading && (
+        <div className="min-w-[300px]  flex  justify-between bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-16 border-solid border-dark-cl border-[4px] rounded-2xl items-center">
+          <Link to="/" className="">
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.5 }}>
+              <Logo className="h-12 terminw-12 ml-1" />
+            </motion.div>
+          </Link>
+          <div className="text-lg sm:text-2xl flex sm:gap-6">
+            <Link
+              to="/"
+              className={
+                location.pathname === "/"
+                  ? "p-2"
+                  : "p-2 opacity-50 hover:opacity-100"
+              }
+            >
+              Home
+            </Link>
+            <Link
+              to="play"
+              className={
+                location.pathname.startsWith("/play")
+                  ? "p-2"
+                  : "p-2 opacity-50 hover:opacity-100"
+              }
+            >
+              Play
+            </Link>
+            <Link
+              to="ranking"
+              className={
+                location.pathname.startsWith("/ranking")
+                  ? "p-2"
+                  : "p-2 opacity-50 hover:opacity-100"
+              }
+            >
+              Ranking
+            </Link>
+          </div>
+          <motion.div
+            className="hover:cursor-pointer"
+            whileHover={{ scale: 1.1 }}
+            onClick={() => {
+              setShowDropDown(!showDropDown);
+            }}
+          >
+            {!isLoading ? (
+              <img
+                className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]"
+                src={image}
+                alt="profile"
+              />
+            ) : (
+              <div className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px] bg-dark-cl"></div>
+            )}
           </motion.div>
-        </Link>
-        <div className="text-lg sm:text-2xl flex sm:gap-6">
-          <Link
-            to="/"
-            className={
-              location.pathname === "/"
-                ? "p-2"
-                : "p-2 opacity-50 hover:opacity-100"
-            }
-          >
-            Home
-          </Link>
-          <Link
-            to="play"
-            className={
-              location.pathname.startsWith("/play")
-                ? "p-2"
-                : "p-2 opacity-50 hover:opacity-100"
-            }
-          >
-            Play
-          </Link>
-          <Link
-            to="ranking"
-            className={
-              location.pathname.startsWith("/ranking")
-                ? "p-2"
-                : "p-2 opacity-50 hover:opacity-100"
-            }
-          >
-            Ranking
-          </Link>
+          <AnimatePresence>
+            {showDropDown && <DropDown setShowDropDown={setShowDropDown} />}
+          </AnimatePresence>
         </div>
-        <motion.div
-          className="hover:cursor-pointer"
-          whileHover={{ scale: 1.1 }}
-          onClick={() => {
-            setShowDropDown(!showDropDown);
-          }}
-        >
-          {!isLoading ? (
-            <img
-              className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]"
-              src={image}
-              alt="profile"
-            />
-          ) : (
-            <div className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px] bg-dark-cl"></div>
-          )}
-        </motion.div>
-        <AnimatePresence>
-          {showDropDown && <DropDown setShowDropDown={setShowDropDown} />}
-        </AnimatePresence>
-      </div>
+      )}
     </div>
   );
 }

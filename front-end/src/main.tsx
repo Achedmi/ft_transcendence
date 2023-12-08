@@ -2,13 +2,15 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import Login from "./components/pages/login/Login.tsx";
 import Layout from "./components/Layout.tsx";
-import Ranking from "./components/pages/Profile/Ranking.tsx";
+import Ranking from "./components/pages/Ranking.tsx";
 import Home from "./components/pages/Home.tsx";
 import Profile from "./components/pages/Profile/Profile.tsx";
 import { Play } from "./components/pages/Play.tsx";
 import VerifyTfa from "./components/2fa/VerifyTfa.tsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "react-query";
+import { ToastContainer } from "react-toastify";
+ import "react-toastify/dist/ReactToastify.css";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,7 @@ function App() {
         <Route path="profile" element={<Profile />} />
       </Route>
     </Routes>
+    
   );
 }
 
@@ -31,6 +34,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <Router>
+        <ToastContainer />
         <App />
       </Router>
     </QueryClientProvider>

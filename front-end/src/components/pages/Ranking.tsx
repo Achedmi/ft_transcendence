@@ -9,6 +9,7 @@ const Ranking = () => {
       <motion.div className="text-4xl text-white overflow-ellipsis">
         🛠️ Work in progress... 🛠️
       </motion.div>
+      
     </div>
   );
 };

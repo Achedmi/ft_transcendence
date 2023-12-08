@@ -1,23 +1,12 @@
 import { create } from "zustand";
 
-export type User = {
-  username: string;
-  picture: {
-    large: string;
-    medium: string;
-    small: string;
-  };
-
-  bio: string;
-  wins: number;
-  losses: number;
-  loggedIn: boolean;
-  isTFAVerified: boolean;
-};
-
-interface UserState {
+export interface UserState {
+  isLoading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
   username: string;
   setUsername: (username: string) => void;
+  displayName: string;
+  setDisplayName: (displayName: string) => void;
   bio: string;
   setBio: (bio: string) => void;
   image: string;
@@ -29,8 +18,12 @@ interface UserState {
 }
 
 export const useUserStore = create<UserState>((set) => ({
+  isLoading: true,
+  setIsLoading: (isLoading: boolean) => set({ isLoading }),
   username: "",
   setUsername: (username: string) => set({ username }),
+  displayName: "",
+  setDisplayName: (displayName: string) => set({ displayName }),
   bio: "",
   setBio: (bio: string) => set({ bio }),
   image: "",

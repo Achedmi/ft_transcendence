@@ -6,13 +6,15 @@ import { useState } from "react";
 import { useUserStore } from "../../../user/userStore";
 import { useQuery } from "react-query";
 import { getUser } from "../../../user/fetchUser";
+import { toast } from "react-toastify";
+
 interface EditProfileProps {
   showEditProfile: boolean;
   setShowEditProfile: Dispatch<SetStateAction<boolean>>;
 }
 
 function EditProfile(props: EditProfileProps) {
-  const { image } = useUserStore();
+  const { image,  } = useUserStore();
   const [closeHovered, setCloseHovered] = useState(false);
   const [file, setFile] = useState(image);
 
@@ -25,6 +27,7 @@ function EditProfile(props: EditProfileProps) {
   const [displayName , setDisplayName] = useState(isLoading? "" : data.displayName);
   const [bio, setBio] = useState(isLoading ? "" : data.bio);
 
+ 
   const handleImageChange = (file: File) => {
     setNewImage(file);
     setFile(URL.createObjectURL(file));
@@ -53,13 +56,15 @@ function EditProfile(props: EditProfileProps) {
           withCredentials: true,
         }
       );
-      alert(response.data.message);
+      toast.success(response.data.message);
+      
     } catch (error: AxiosError | any) {
       console.log(error);
       if (error instanceof AxiosError) alert(error.response?.data.message);
     }
   };
 
+ 
   return (
     <motion.div className="flex flex-col mt-1 w-full h-full">
       <div className="flex justify-between items-center px-1 pb-2 border-b-2 border-solid border-dark-cl">

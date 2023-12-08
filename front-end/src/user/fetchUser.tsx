@@ -12,10 +12,6 @@ export const getUser = async (setLoggedIn?: any, setImage?: any) => {
       setLoggedIn(true);
       setImage(response.data.avatar);
     }
-
-    // if (window.location.pathname == "/tfa")
-    //   window.location.replace("http://localhost:6969");
-
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError && error.response?.status == 403) {
