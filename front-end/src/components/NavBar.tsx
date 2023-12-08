@@ -104,14 +104,10 @@ const DropDown = ({ setShowDropDown }: any) => {
 };
 
 function NavBar() {
-  const { data, isLoading } = useQuery(
-    "profile",
-    async () => await getUser()
-  );
-  const image = isLoading ? "" : data?.user.avatar;
+  const { isLoading } = useQuery("profile", async () => await getUser());
+  const { userData } = useUserStore();
   const location = useLocation();
   const [showDropDown, setShowDropDown] = useState(false);
-    // console.log("daaaaataaa:", data?.user);
   return (
     <div className="">
       {!isLoading && (
@@ -163,7 +159,7 @@ function NavBar() {
             {!isLoading ? (
               <img
                 className="h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]"
-                src={image}
+                src={userData.avatar}
                 alt="profile"
               />
             ) : (

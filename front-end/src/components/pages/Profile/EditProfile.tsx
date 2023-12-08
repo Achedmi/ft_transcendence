@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useUserStore } from "../../../user/userStore";
-import { useQuery } from "react-query";
-import { getUser } from "../../../user/fetchUser";
 import { toast } from "react-toastify";
 
 interface EditProfileProps {
@@ -16,17 +14,16 @@ interface EditProfileProps {
 function EditProfile(props: EditProfileProps) {
   const { userData, setUserData } = useUserStore();
   const [closeHovered, setCloseHovered] = useState(false);
-  const [file, setFile] = useState(userData.avatar);
+  const [avatar, setAvatar] = useState(userData.avatar);
 
   const [displayName, setDisplayName] = useState(userData.displayName);
   const [bio, setBio] = useState(userData.bio);
 
   const [newImage, setNewImage] = useState<File>();
-  
- 
+
   const handleImageChange = (file: File) => {
     setNewImage(file);
-    setFile(URL.createObjectURL(file));
+    setAvatar(URL.createObjectURL(file));
   };
 
   const handleEditClick = () => {
@@ -52,16 +49,17 @@ function EditProfile(props: EditProfileProps) {
           withCredentials: true,
         }
       );
-      setUserData({ displayName, bio });
-      toast.success(response.data.message);
-      
+      setUserData(response.data);
+      toast.success("User updated successfully!");
     } catch (error: AxiosError | any) {
       console.log(error);
-      if (error instanceof AxiosError) toast.error(error.response?.data.message);
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message);
+        setAvatar(userData.avatar);
+      }
     }
   };
 
- 
   return (
     <motion.div className="flex flex-col mt-1 w-full h-full">
       <div className="flex justify-between items-center px-1 pb-2 border-b-2 border-solid border-dark-cl">
@@ -81,7 +79,7 @@ function EditProfile(props: EditProfileProps) {
         <motion.div className="relative">
           <img
             className="w-40 h-40 rounded-full border-solid border-4 border-dark-cl"
-            src={file}
+            src={avatar}
             alt="pfp"
           />
           <motion.div
