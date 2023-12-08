@@ -1,5 +1,5 @@
 import Logo from "../assets/logo.svg?react";
-import { Link, useLocation, Navigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Profile, Logout } from "./icons/icons";
@@ -104,16 +104,14 @@ const DropDown = ({ setShowDropDown }: any) => {
 };
 
 function NavBar() {
-  const { setLoggedIn, setImage } = useUserStore();
   const { data, isLoading } = useQuery(
     "profile",
-    async () => await getUser(setLoggedIn, setImage)
+    async () => await getUser()
   );
-  const image = isLoading ? "" : data.avatar;
+  const image = isLoading ? "" : data?.user.avatar;
   const location = useLocation();
   const [showDropDown, setShowDropDown] = useState(false);
-
-
+    // console.log("daaaaataaa:", data?.user);
   return (
     <div className="">
       {!isLoading && (

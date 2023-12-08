@@ -1,35 +1,52 @@
 import { create } from "zustand";
 
+export interface User {
+  username?: string;
+  displayName?: string;
+  bio?: string;
+  avatar?: string;
+  loggedIn?: boolean;
+  isTfaVerified?: boolean;
+  isTFAenabled?: boolean;
+}
+
 export interface UserState {
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
-  username: string;
-  setUsername: (username: string) => void;
-  displayName: string;
-  setDisplayName: (displayName: string) => void;
-  bio: string;
-  setBio: (bio: string) => void;
-  image: string;
-  setImage: (image: string) => void;
-  loggedIn: boolean;
-  setLoggedIn: (loggedIn: boolean) => void;
-  isTfaVerified: boolean;
-  setisTfaVerified: (isTfaVerified: boolean) => void;
+  userData: User;
+  setUserData: (userData: Partial<User>) => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
-  isLoading: true,
-  setIsLoading: (isLoading: boolean) => set({ isLoading }),
-  username: "",
-  setUsername: (username: string) => set({ username }),
-  displayName: "",
-  setDisplayName: (displayName: string) => set({ displayName }),
-  bio: "",
-  setBio: (bio: string) => set({ bio }),
-  image: "",
-  setImage: (image: string) => set({ image }),
-  loggedIn: true,
-  setLoggedIn: (loggedIn: boolean) => set({ loggedIn }),
-  isTfaVerified: false,
-  setisTfaVerified: (isTfaVerified: boolean) => set({ isTfaVerified }),
+  userData: {
+    username: "",
+    displayName: "",
+    bio: "",
+    avatar: "",
+    loggedIn: false,
+    isTfaVerified: false,
+    isTFAenabled: false,
+  },
+  setUserData: (userData: User) => {
+    set((state) => ({
+      ...state,
+      userData: { ...state.userData, ...userData },
+    }));
+  },
 }));
+
+/*
+state => {
+    userData: =>{
+      username: "",
+      displayName: "",
+      bio: "",
+      avatar: "",
+      loggedIn: false,
+      isTfaVerified: false,
+      isTFAenabled: false,
+    },
+    setUserData:=>fun
+  }
+}
+
+
+*/

@@ -14,19 +14,15 @@ interface EditProfileProps {
 }
 
 function EditProfile(props: EditProfileProps) {
-  const { image,  } = useUserStore();
+  const { userData, setUserData } = useUserStore();
   const [closeHovered, setCloseHovered] = useState(false);
-  const [file, setFile] = useState(image);
+  const [file, setFile] = useState(userData.avatar);
+
+  const [displayName, setDisplayName] = useState(userData.displayName);
+  const [bio, setBio] = useState(userData.bio);
 
   const [newImage, setNewImage] = useState<File>();
-  const { setLoggedIn, setImage } = useUserStore();
-
-  const { data, isLoading } = useQuery("profile", () =>
-    getUser(setLoggedIn, setImage)
-  );
-  const [displayName , setDisplayName] = useState(isLoading? "" : data.displayName);
-  const [bio, setBio] = useState(isLoading ? "" : data.bio);
-
+  
  
   const handleImageChange = (file: File) => {
     setNewImage(file);
@@ -42,8 +38,8 @@ function EditProfile(props: EditProfileProps) {
 
   const handleOnSave = async () => {
     const formData = new FormData();
-    formData.append("displayName", displayName);
-    formData.append("bio", bio);
+    if (displayName) formData.append("displayName", displayName);
+    if (bio) formData.append("bio", bio);
     if (newImage) formData.append("image", newImage);
     try {
       const response = await axios.patch(
@@ -56,11 +52,12 @@ function EditProfile(props: EditProfileProps) {
           withCredentials: true,
         }
       );
+      setUserData({ displayName, bio });
       toast.success(response.data.message);
       
     } catch (error: AxiosError | any) {
       console.log(error);
-      if (error instanceof AxiosError) alert(error.response?.data.message);
+      if (error instanceof AxiosError) toast.error(error.response?.data.message);
     }
   };
 
@@ -110,7 +107,7 @@ function EditProfile(props: EditProfileProps) {
           <input
             className="border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64"
             type="text"
-            placeholder={displayName}
+            placeholder={userData.displayName}
             onChange={(e) => setDisplayName(e.target.value)}
           />
         </div>
@@ -119,7 +116,7 @@ function EditProfile(props: EditProfileProps) {
           <input
             type="text"
             className="border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden"
-            placeholder={bio}
+            placeholder={userData.bio}
             onChange={(e) => setBio(e.target.value)}
           />
         </div>
