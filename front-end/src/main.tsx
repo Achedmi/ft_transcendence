@@ -11,6 +11,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { ToastContainer } from "react-toastify";
  import "react-toastify/dist/ReactToastify.css";
+import Users from "./components/pages/Users.tsx";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ function App() {
         <Route path="play" element={<Play />}></Route>
         <Route path="ranking" element={<Ranking />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="user/:username" element={<Users />} />
       </Route>
     </Routes>
     
