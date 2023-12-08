@@ -48,8 +48,7 @@ export class UserController {
     )
     image,
   ) {
-    await this.userService.update(image, id, updateUserDto);
-    return { message: 'user updated' };
+    return await this.userService.update(image, id, updateUserDto);
   }
 
   @Get('me')

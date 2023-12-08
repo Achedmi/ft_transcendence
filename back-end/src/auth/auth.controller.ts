@@ -166,7 +166,7 @@ export class AuthController {
 
   //===================================Postman Login=====================================
 
-  @Post('defaultLogin')
+  @Get('defaultLogin')
   async defaultLogin(@Res({ passthrough: true }) response: Response) {
     const user = (await this.userService.findAll())[0];
     const { accessToken, refreshToken } =
