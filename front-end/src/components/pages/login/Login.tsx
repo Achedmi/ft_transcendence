@@ -1,5 +1,5 @@
 import LoginForm from "./LoginForm";
-import Drawing from "../assets/art.svg?react";
+import Drawing from "../../../assets/art.svg?react";
 
 
 function Login() {
