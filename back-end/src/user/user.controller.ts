@@ -55,4 +55,9 @@ export class UserController {
   me(@GetCurrent() user) {
     return user;
   }
+
+  @Get(':username')
+  findUser(@Param('username') username: string) {
+    return this.userService.findOneByUsername(username);
+  }
 }
