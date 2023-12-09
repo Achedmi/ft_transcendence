@@ -55,6 +55,11 @@ export class UserController {
     return await this.userService.addFriend(id, friendId);
   }
 
+  @Get('friendsOf/:username')
+  async friendsOf(@Param('username') username: string) {
+    return await this.userService.friendsOf(username);
+  }
+
   @Get('me')
   me(@GetCurrent() user) {
     return user;
