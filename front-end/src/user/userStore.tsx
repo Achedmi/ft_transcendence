@@ -1,52 +1,44 @@
 import { create } from "zustand";
 
+import axios from "../utils/axios";
+
 export interface User {
-  username?: string;
-  displayName?: string;
-  bio?: string;
-  avatar?: string;
-  loggedIn?: boolean;
-  isTfaVerified?: boolean;
-  isTFAenabled?: boolean;
+	username?: string;
+	displayName?: string;
+	bio?: string;
+	avatar?: string;
+	isTfaVerified?: boolean;
+	isTFAenabled?: boolean;
 }
 
 export interface UserState {
-  userData: User;
-  setUserData: (userData: Partial<User>) => void;
+	userData: User;
+	setUserData: (userData: Partial<User>) => void;
+	fetchUserProfile: () => Promise<boolean>;
 }
 
 export const useUserStore = create<UserState>((set) => ({
-  userData: {
-    username: "",
-    displayName: "",
-    bio: "",
-    avatar: "",
-    loggedIn: false,
-    isTfaVerified: false,
-    isTFAenabled: false,
-  },
-  setUserData: (userData: User) => {
-    set((state) => ({
-      ...state,
-      userData: { ...state.userData, ...userData },
-    }));
-  },
+	userData: {
+		username: "",
+		displayName: "",
+		bio: "",
+		avatar: "",
+		isTfaVerified: false,
+		isTFAenabled: false,
+	},
+	setUserData: (userData: User) => {
+		set((state) => ({
+			...state,
+			userData: { ...state.userData, ...userData },
+		}));
+	},
+	fetchUserProfile: async () => {
+		try {
+			const response = await axios.get("/user/me");
+			set({ userData: { ...response.data } });
+			return true;
+		} catch (error) {
+			return false;
+		}
+	},
 }));
-
-/*
-state => {
-    userData: =>{
-      username: "",
-      displayName: "",
-      bio: "",
-      avatar: "",
-      loggedIn: false,
-      isTfaVerified: false,
-      isTFAenabled: false,
-    },
-    setUserData:=>fun
-  }
-}
-
-
-*/
