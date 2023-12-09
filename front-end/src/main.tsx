@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import Login from "./components/pages/login/Login.tsx";
 import Layout from "./components/Layout.tsx";

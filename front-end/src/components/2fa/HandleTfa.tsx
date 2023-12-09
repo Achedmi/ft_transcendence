@@ -6,6 +6,7 @@ import axios, { AxiosError } from "axios";
 import { useQuery } from "react-query";
 import { getQrCode } from "./fetchQrCode";
 import { QRCodeSVG } from "qrcode.react";
+import { toast } from "react-toastify";
 
 interface HandleTfaProps {
   showTfa: boolean;
@@ -33,7 +34,12 @@ function HandleTfa(props: HandleTfaProps) {
         window.location.reload();
       } catch (error: AxiosError | any) {
         if (error instanceof AxiosError) {
-          alert("invalid code");
+          toast.error("invalid code", {
+            style: {
+              color: "#433650",
+
+            },
+          });
         }
       }
     }

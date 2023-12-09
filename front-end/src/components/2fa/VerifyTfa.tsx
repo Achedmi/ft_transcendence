@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 function VerifyTfa() {
   const [code, setCode] = useState("");
@@ -18,7 +19,7 @@ function VerifyTfa() {
       window.location.replace("http://localhost:6969/");
     } catch (error: AxiosError | any) {
       if (error instanceof AxiosError) {
-        // alert("invalid code");
+        toast.error("invalid code");
         console.log(error.request);
       }
     }

@@ -1,10 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
-import { Close, Edit } from "../../icons/icons";
+import { Close, Edit, Check, Error} from "../../icons/icons";
 import { motion } from "framer-motion";
-import axios, { AxiosError } from "axios";
 import { useState, useCallback } from "react";
 import { useUserStore } from "../../../user/userStore";
 import { toast } from "react-toastify";
+import axios from "../../../utils/axios";
+import '../../../styles/customToastStyles.css'
 
 interface EditProfileProps {
   showEditProfile: boolean;
@@ -28,14 +29,6 @@ function EditProfile(props: EditProfileProps) {
     avatar: userData.avatar || "",
   });
 
-  const handleImageChange = useCallback(
-    (file: File) => {
-      setNewImage(file);
-      setNewProfile({ ...newProfile, avatar: URL.createObjectURL(file) });
-    },
-    [newProfile]
-  );
-
   const handleEditClick = useCallback(() => {
     const fileInput = document.getElementById("pfpInput") as HTMLInputElement;
     if (fileInput) {
@@ -49,26 +42,43 @@ function EditProfile(props: EditProfileProps) {
       formData.append("displayName", newProfile.displayName);
     if (newProfile.bio) formData.append("bio", newProfile.bio);
     if (newImage) formData.append("image", newImage);
-    try {
-      const response = await axios.patch(
-        "http://localhost:9696/user",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
+    toast.promise(
+      async () => {
+        try {
+          const response = await axios.patch("/user", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          });
+          console.log(response);
+          setUserData(response.data);
+          return response;
+        } catch (error) {
+          setNewProfile({ ...newProfile, ...userData });
+          throw error;
         }
-      );
-      setUserData(response.data);
-      toast.success("User updated successfully!");
-    } catch (error: AxiosError | any) {
-      console.log(error);
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data.message);
-        setNewProfile({ ...newProfile, ...userData });
+      },
+      {
+        pending: {
+          className: "toast-pending",
+          render: "Updating user...",
+        },
+        success: {
+          className: "toast-success",
+          render: "User updated!",
+          icon: <Check />,
+          progressClassName: "Toastify__progress-bar-success",
+        },
+
+        error: {
+          className: "toast-error",
+          render: "Error updating user!",
+          icon: <Error />,
+          progressClassName: "Toastify__progress-bar-error",
+        },
       }
-    }
+    );
   }, [newImage, newProfile, setUserData, userData]);
 
   return (

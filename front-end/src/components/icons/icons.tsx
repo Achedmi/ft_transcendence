@@ -105,7 +105,7 @@ export const Close = (icon: IconProps) => {
   );
 };
 
-export const Toggle = ({ on }:{on :any}) => {
+export const Toggle = ({ on }: { on: any }) => {
   return (
     <div
       className={
@@ -126,7 +126,7 @@ export const Toggle = ({ on }:{on :any}) => {
 };
 
 export const Tfa = (icon: IconProps) => {
-    return (
+  return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={icon.size}
@@ -145,4 +145,36 @@ export const Tfa = (icon: IconProps) => {
       </defs>
     </svg>
   );
-}
+};
+
+export const Check = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        fill="#67B9D3"
+        fillRule="evenodd"
+        d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10zm-5.97-3.03a.75.75 0 010 1.06l-5 5a.75.75 0 01-1.06 0l-2-2a.75.75 0 111.06-1.06l1.47 1.47 2.235-2.236L14.97 8.97a.75.75 0 011.06 0z"
+        clipRule="evenodd"
+      ></path>
+    </svg>
+  );
+};
+
+export const Error = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <path
+        fill="#C84D46"
+        fillRule="evenodd"
+        d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm-1.5-5.009c0-.867.659-1.491 1.491-1.491.85 0 1.509.624 1.509 1.491 0 .867-.659 1.509-1.509 1.509-.832 0-1.491-.642-1.491-1.509zM11.172 6a.5.5 0 00-.499.522l.306 7a.5.5 0 00.5.478h1.043a.5.5 0 00.5-.478l.305-7a.5.5 0 00-.5-.522h-1.655z"
+        clipRule="evenodd"
+      ></path>
+    </svg>
+  );
+};
