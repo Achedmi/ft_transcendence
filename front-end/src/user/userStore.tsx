@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 import axios from "../utils/axios";
+import { AxiosError } from "axios";
 
 export interface User {
 	username?: string;
@@ -27,10 +28,7 @@ export const useUserStore = create<UserState>((set) => ({
 		isTFAenabled: false,
 	},
 	setUserData: (userData: User) => {
-		set((state) => ({
-			...state,
-			userData: { ...state.userData, ...userData },
-		}));
+		set({ userData });
 	},
 	fetchUserProfile: async () => {
 		try {

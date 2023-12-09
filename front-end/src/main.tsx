@@ -32,12 +32,12 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-	<React.StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<Router>
-				<ToastContainer />
-				<App />
-			</Router>
-		</QueryClientProvider>
-	</React.StrictMode>
+	// <React.StrictMode>
+	<QueryClientProvider client={queryClient}>
+		<Router>
+			<ToastContainer />
+			<App />
+		</Router>
+	</QueryClientProvider>
+	// </React.StrictMode>
 );

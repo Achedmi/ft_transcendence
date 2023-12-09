@@ -8,9 +8,10 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
 	(response) => response,
 	(error) => {
-		if (location.pathname !== "/login" && error.response.status === 401) {
+		if (error.response.status === 401 && location.pathname !== "/login")
 			window.location.href = "/login";
-		}
+		else if (error.response?.status === 403 && location.pathname !== "/tfa")
+			window.location.href = "/tfa";
 		return Promise.reject(error);
 	}
 );
