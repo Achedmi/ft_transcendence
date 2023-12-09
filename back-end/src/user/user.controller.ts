@@ -16,7 +16,6 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserATGuard } from 'src/auth/guards/userATGuard.guard';
 import { GetCurrent } from 'src/auth/decorator/current.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { TFAGuard } from 'src/auth/guards/TFAGuard.guard';
@@ -49,6 +48,11 @@ export class UserController {
     image,
   ) {
     return await this.userService.update(image, id, updateUserDto);
+  }
+
+  @Post('addFriend/:id')
+  async addFriend(@GetCurrent('id') id, @Param('id') friendId: number) {
+    return await this.userService.addFriend(id, friendId);
   }
 
   @Get('me')

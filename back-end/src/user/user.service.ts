@@ -71,4 +71,36 @@ export class UserService {
     await this.prisma.user.delete({ where: { id: user.id } });
     return user;
   }
+
+  async addFriend(id: number, friendId: number) {
+    // const user = await this.findOne(id);
+    // const friend = await this.findOne(friendId);
+    // if (!user.friends.includes(friendId)) {
+    //   await this.prisma.user.update({
+    //     where: { id },
+    //     data: { friends: [...user.friends, friendId] },
+    //   });
+    // }
+    // if (!friend.friends.includes(id)) {
+    //   await this.prisma.user.update({
+    //     where: { id: friendId },
+    //     data: { friends: [...friend.friends, id] },
+    //   });
+    // }
+
+    // return { id: friend.id, username: friend.username };
+    if (id === friendId) {
+      throw new BadRequestException('You cannot add yourself as a friend.');
+    }
+
+    await this.prisma.user.update({
+      where: { id },
+      data: { friends: { connect: { id: +friendId } } },
+    });
+    await this.prisma.user.update({
+      where: { id: +friendId },
+      data: { friends: { connect: { id } } },
+    });
+    return { message: 'Friend added successfully.' };
+  }
 }
