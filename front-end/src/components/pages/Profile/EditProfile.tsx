@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import { Close, Edit } from "../../icons/icons";
 import { motion } from "framer-motion";
 import axios, { AxiosError } from "axios";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useUserStore } from "../../../user/userStore";
 import { toast } from "react-toastify";
 
@@ -11,32 +11,43 @@ interface EditProfileProps {
   setShowEditProfile: Dispatch<SetStateAction<boolean>>;
 }
 
+type newProfile = {
+  displayName: string;
+  bio: string;
+  avatar: string;
+};
+
 function EditProfile(props: EditProfileProps) {
   const { userData, setUserData } = useUserStore();
   const [closeHovered, setCloseHovered] = useState(false);
-  const [avatar, setAvatar] = useState(userData.avatar);
-
-  const [displayName, setDisplayName] = useState(userData.displayName);
-  const [bio, setBio] = useState(userData.bio);
-
   const [newImage, setNewImage] = useState<File>();
 
-  const handleImageChange = (file: File) => {
-    setNewImage(file);
-    setAvatar(URL.createObjectURL(file));
-  };
+  const [newProfile, setNewProfile] = useState<newProfile>({
+    displayName: userData.displayName || "",
+    bio: userData.bio || "",
+    avatar: userData.avatar || "",
+  });
 
-  const handleEditClick = () => {
+  const handleImageChange = useCallback(
+    (file: File) => {
+      setNewImage(file);
+      setNewProfile({ ...newProfile, avatar: URL.createObjectURL(file) });
+    },
+    [newProfile]
+  );
+
+  const handleEditClick = useCallback(() => {
     const fileInput = document.getElementById("pfpInput") as HTMLInputElement;
     if (fileInput) {
       fileInput.click();
     }
-  };
+  }, []);
 
-  const handleOnSave = async () => {
+  const handleOnSave = useCallback(async () => {
     const formData = new FormData();
-    if (displayName) formData.append("displayName", displayName);
-    if (bio) formData.append("bio", bio);
+    if (newProfile.displayName)
+      formData.append("displayName", newProfile.displayName);
+    if (newProfile.bio) formData.append("bio", newProfile.bio);
     if (newImage) formData.append("image", newImage);
     try {
       const response = await axios.patch(
@@ -55,10 +66,10 @@ function EditProfile(props: EditProfileProps) {
       console.log(error);
       if (error instanceof AxiosError) {
         toast.error(error.response?.data.message);
-        setAvatar(userData.avatar);
+        setNewProfile({ ...newProfile, ...userData });
       }
     }
-  };
+  }, [newImage, newProfile, setUserData, userData]);
 
   return (
     <motion.div className="flex flex-col mt-1 w-full h-full">
@@ -79,7 +90,7 @@ function EditProfile(props: EditProfileProps) {
         <motion.div className="relative">
           <img
             className="w-40 h-40 rounded-full border-solid border-4 border-dark-cl"
-            src={avatar}
+            src={newProfile.avatar || userData.avatar}
             alt="pfp"
           />
           <motion.div
@@ -92,7 +103,13 @@ function EditProfile(props: EditProfileProps) {
               className="hidden"
               id="pfpInput"
               accept="image/*"
-              onChange={(e) => handleImageChange(e.target.files![0])}
+              onChange={(e) => {
+                setNewImage(e.target.files![0]);
+                setNewProfile({
+                  ...newProfile,
+                  avatar: URL.createObjectURL(e.target.files![0]),
+                });
+              }}
             />
 
             <Edit size="28" fillColor="#ffffff" />
@@ -106,7 +123,9 @@ function EditProfile(props: EditProfileProps) {
             className="border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64"
             type="text"
             placeholder={userData.displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            onChange={(e) =>
+              setNewProfile({ ...newProfile, displayName: e.target.value })
+            }
           />
         </div>
         <div className="flex  justify-center items-center gap-8 py-4">
@@ -115,7 +134,9 @@ function EditProfile(props: EditProfileProps) {
             type="text"
             className="border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden"
             placeholder={userData.bio}
-            onChange={(e) => setBio(e.target.value)}
+            onChange={(e) =>
+              setNewProfile({ ...newProfile, bio: e.target.value })
+            }
           />
         </div>
       </div>

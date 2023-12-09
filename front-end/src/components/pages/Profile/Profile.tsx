@@ -1,6 +1,5 @@
 import { Edit, Toggle } from "../../icons/icons";
 import { motion } from "framer-motion";
-import { useQuery } from "react-query";
 import EditProfile from "./EditProfile";
 import { useState } from "react";
 import { useUserStore } from "../../../user/userStore";
@@ -10,7 +9,7 @@ import axios, { AxiosError } from "axios";
 function Profile() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showTfa, setShowTfa] = useState(false);
-  const { userData, setUserData } = useUserStore();
+  const { userData } = useUserStore();
 
   console.log("userData", userData);
 
