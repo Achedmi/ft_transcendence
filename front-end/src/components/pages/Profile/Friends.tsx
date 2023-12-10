@@ -132,19 +132,6 @@ export default function () {
 					/>
 				);
 			})}
-			{friendsStore.friends.map((friend: any) => {
-				return (
-					<FriendRow
-						username={friend.username}
-						avatar={friend.avatar}
-						displayName={friend.displayName}
-						id={friend.id}
-						refetch={refetch}
-						unfriend={friendsStore.removeFriend}
-						key={friend.id}
-					/>
-				);
-			})}
 		</div>
 	) : (
 		<div className="w-full h-[85%]  flex items-center justify-center  ">

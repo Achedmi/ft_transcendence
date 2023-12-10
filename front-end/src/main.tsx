@@ -15,16 +15,13 @@ import { Stats } from "./components/Stats.tsx";
 import Friends from "./components/pages/Profile/Friends.tsx";
 import React from "react";
 import NotFound404 from "./components/pages/errorPages/NotFound404.tsx";
+import MatchHistory from "./components/pages/Profile/MatchHistory.tsx";
 
 const queryClient = new QueryClient();
 
 function App() {
 	return (
 		<Routes>
-			<Route path="/stats" element={<Stats />}>
-				<Route index element={<div>Stats</div>} />
-				<Route path="friends" element={<Friends />} />
-			</Route>
 			<Route path="/login" element={<Login />} />
 			<Route path="tfa" element={<VerifyTfa />} />
 			<Route path="/" element={<Layout />}>
@@ -32,12 +29,12 @@ function App() {
 				<Route path="play" element={<Play />}></Route>
 				<Route path="ranking" element={<Ranking />} />
 				<Route path="profile" element={<Profile />}>
-					<Route index element={<div>Stats</div>} />
+					<Route index element={<MatchHistory />} />
 					<Route path="friends" element={<Friends />} />
 				</Route>
 				<Route path="user/:username" element={<Users />} />
 			</Route>
-			<Route path="*" element={<NotFound404/>} />
+			<Route path="*" element={<NotFound404 />} />
 		</Routes>
 	);
 }

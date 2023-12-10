@@ -27,12 +27,3 @@ export function SubNavBar() {
 		</div>
 	);
 }
-
-export function Stats() {
-	return (
-		<div className=" h-screen font-Baloo font-bold text-white">
-			<SubNavBar />
-			<Outlet />
-		</div>
-	);
-}
