@@ -51,7 +51,6 @@ function EditProfile(props: EditProfileProps) {
 						headers: {
 							"Content-Type": "multipart/form-data",
 						},
-						withCredentials: true,
 					});
 					console.log(response);
 					setUserData(response.data);
