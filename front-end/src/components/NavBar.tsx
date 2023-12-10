@@ -116,16 +116,7 @@ function NavBar() {
             <Logo className="h-12 terminw-12 ml-1" />
           </motion.div>
         </Link>
-        <motion.div className="border-solid border-4 border-dark-cl p-1  rounded-full bg-blue-cl absolute left-24"
-		whileHover={{ scale: 1.1 }}
-		onClick={() => {
-      toast.error("Error",
-      {className: 'toast-error'}
-      );
-		}}
-		>
-          <button>Toast</button>
-        </motion.div>
+
         <div className="text-lg sm:text-2xl flex sm:gap-6">
           <Link
             to="/"
