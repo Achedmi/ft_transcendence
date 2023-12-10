@@ -42,7 +42,7 @@ function Users() {
       {data && (
         <div className="flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full relative">
           <div className="z-0">
-            <div className="bg-dark-cl h-48  relative">
+            <div className="bg-dark-cl h-40  relative">
               <motion.div>
                 {!isLoaded && (
                   <div className="h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-24 left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px] bg-dark-cl">
@@ -55,7 +55,7 @@ function Users() {
                 <img
                   src={data.avatar}
                   alt=""
-                  className="h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-24 left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px]"
+                  className="h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-[65px] left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px]"
                   onLoad={handleLoaded}
                 />
               </motion.div>
