@@ -41,10 +41,14 @@ export class AuthService {
   }
 
   async verifyTFA(code: string, TFAsecret: string) {
-    return authenticator.verify({
-      token: code,
-      secret: TFAsecret,
-    });
+    try {
+      return authenticator.verify({
+        token: code,
+        secret: TFAsecret,
+      });
+    } catch (error) {
+      return false;
+    }
   }
 
   async toggleTFA(user: User) {

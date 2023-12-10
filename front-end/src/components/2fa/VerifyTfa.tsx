@@ -1,41 +1,31 @@
-import { useState } from "react";
-import axios, { AxiosError } from "axios";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
+import axios from "../../utils/axios";
 
 function VerifyTfa() {
 	const [code, setCode] = useState("");
-	const handleVerify = async () => {
+
+	const handleVerify = useCallback(async () => {
 		try {
-			await axios.post(
-				"http://localhost:9696/auth/verifyTFAcode",
-				{ TFAcode: code },
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-					withCredentials: true,
-				}
-			);
+			await axios.post("/auth/verifyTFAcode", { TFAcode: code });
 			window.location.replace("http://localhost:6969/");
-		} catch (error: AxiosError | any) {
-			if (error instanceof AxiosError) {
-				toast.error("invalid code");
-				console.log(error.request);
-			}
+		} catch (error) {
+			toast.error("invalid code");
 		}
-	};
+	}, [code]);
+
 	return (
-		<div className="bg-white w-screen h-screen flex justify-center items-center font-bold text-dark-cl">
-			<div className="border-4 rounded-xl border-solid border-dark-cl h-96 w-[30rem] bg-[#D9D9D9] flex flex-col p-6">
-				<div className="flex flex-col ">
-					<h1 className="text-2xl font-bold">Verify TFA</h1>
-					<p className="text-sm">
+		<div className="bg-white w-screen h-screen flex justify-center items-center font-bold text-dark-cl font-Baloo">
+			<div className="border-4 rounded-xl border-solid border-dark-cl h-72 w-[30rem] bg-[#D9D9D9] flex flex-col p-6 ">
+				<div className="flex flex-col h-full justify-evenly">
+					<p className="text-5xl font-bold">Verify 2FA</p>
+					<p className="text-xl opacity-75">
 						Enter the code from your authenticator app
 					</p>
-				</div>
-				<div className="flex flex-col">
 					<input
+						className="border-2 border-solid border-dark-cl rounded-md p-2"
 						type="text"
+						maxLength={6}
 						placeholder="XXXXXX"
 						onChange={(e) => {
 							console.log("target is ", e.target.value);
@@ -43,7 +33,7 @@ function VerifyTfa() {
 						}}
 					></input>
 					<button
-						className="bg-red-300 border-2 border-solid border-dark-cl "
+						className="bg-blue-cl border-2 border-solid border-dark-cl  text-white rounded-md h-10 text-2xl"
 						type="submit"
 						onClick={handleVerify}
 					>
