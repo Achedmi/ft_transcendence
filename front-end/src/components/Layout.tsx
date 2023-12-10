@@ -19,17 +19,17 @@ function Layout() {
 	}, [location.pathname]);
 
 	return (
-		<>
-			{!isLoading && isLoggedIn && (
-				<div className="flex flex-col p-3 gap-4 h-screen font-Baloo font-bold z-0">
-					<NavBar />
-					<div className="outlet  h-full w-full min-w-[300px]">
-						<Outlet />
-					</div>
-				</div>
-			)}
-		</>
-	);
+    <>
+      {!isLoading && isLoggedIn && (
+        <div className="flex flex-col p-3 gap-4 h-screen font-Baloo font-bold z-0 ">
+          <NavBar />
+          <div className="outlet  h-full w-full min-w-[300px] overflow-y-scroll no-scrollbar">
+            <Outlet />
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
 export default Layout;

@@ -75,7 +75,7 @@ function FriendRow({
 		}
 	}, []);
 	return (
-		<div className="min-w-[300px] px-10   flex justify-between items-center   ">
+		<div className="min-w-[300px] px-5  flex justify-between items-center   ">
 			<div className="flex items-center  w-1/6 gap-3 ">
 				<img
 					src={avatar}
@@ -85,11 +85,11 @@ function FriendRow({
 				<div>
 					<a href={`/user/${username}`}>
 						<p className="text-xl ">{displayName}</p>
-						<p className=" font-light text-sm">@{username}</p>
+						<p className=" text-sm opacity-75">@{username}</p>
 					</a>
 				</div>
 			</div>
-			<div className="flex justify-end h-full items-center gap-5 w-1/2">
+			<div className="flex justify-end h-full items-center gap-2 w-1/2">
 				<div
 					onClick={handleUnfriend}
 					className=" bg-red-cl  rounded-2xl h-9 gap-2 text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2"
@@ -118,24 +118,145 @@ export default function () {
 		friendsStore.fetchFriendsOf(userName || "")
 	);
 	return !isLoading && friendsStore.friends?.length ? (
-		<div className="flex flex-col h-[85%] overflow-scroll gap-3 py-4  ">
-			{friendsStore.friends.map((friend: any) => {
-				return (
-					<FriendRow
-						username={friend.username}
-						avatar={friend.avatar}
-						displayName={friend.displayName}
-						id={friend.id}
-						refetch={refetch}
-						unfriend={friendsStore.removeFriend}
-						key={friend.id}
-					/>
-				);
-			})}
-		</div>
-	) : (
-		<div className="w-full h-[85%]  flex items-center justify-center  ">
-			No Friends Yet
-		</div>
-	);
+    <div
+      className="flex flex-col h-[85%]  gap-3 py-2 
+    overflow-y-scroll scrollbar-thin scrollbar-thumb-[rgba(67,54,80,0.75)] scrollbar-thumb-rounded-full hover:scrollbar-thumb-dark-cl
+    "
+    >
+      {friendsStore.friends.map((friend: any) => {
+        return (
+          <FriendRow
+            username={friend.username}
+            avatar={friend.avatar}
+            displayName={friend.displayName}
+            id={friend.id}
+            refetch={refetch}
+            unfriend={friendsStore.removeFriend}
+            key={friend.id}
+          />
+        );
+      })}
+      {friendsStore.friends.map((friend: any) => {
+        return (
+          <FriendRow
+            username={friend.username}
+            avatar={friend.avatar}
+            displayName={friend.displayName}
+            id={friend.id}
+            refetch={refetch}
+            unfriend={friendsStore.removeFriend}
+            key={friend.id}
+          />
+        );
+      })}
+      {friendsStore.friends.map((friend: any) => {
+        return (
+          <FriendRow
+            username={friend.username}
+            avatar={friend.avatar}
+            displayName={friend.displayName}
+            id={friend.id}
+            refetch={refetch}
+            unfriend={friendsStore.removeFriend}
+            key={friend.id}
+          />
+        );
+      })}
+      {friendsStore.friends.map((friend: any) => {
+        return (
+          <FriendRow
+            username={friend.username}
+            avatar={friend.avatar}
+            displayName={friend.displayName}
+            id={friend.id}
+            refetch={refetch}
+            unfriend={friendsStore.removeFriend}
+            key={friend.id}
+          />
+        );
+      })}
+      {friendsStore.friends.map((friend: any) => {
+        return (
+          <FriendRow
+            username={friend.username}
+            avatar={friend.avatar}
+            displayName={friend.displayName}
+            id={friend.id}
+            refetch={refetch}
+            unfriend={friendsStore.removeFriend}
+            key={friend.id}
+          />
+        );
+      })}
+      {friendsStore.friends.map((friend: any) => {
+        return (
+          <FriendRow
+            username={friend.username}
+            avatar={friend.avatar}
+            displayName={friend.displayName}
+            id={friend.id}
+            refetch={refetch}
+            unfriend={friendsStore.removeFriend}
+            key={friend.id}
+          />
+        );
+      })}
+      {friendsStore.friends.map((friend: any) => {
+        return (
+          <FriendRow
+            username={friend.username}
+            avatar={friend.avatar}
+            displayName={friend.displayName}
+            id={friend.id}
+            refetch={refetch}
+            unfriend={friendsStore.removeFriend}
+            key={friend.id}
+          />
+        );
+      })}
+      {friendsStore.friends.map((friend: any) => {
+        return (
+          <FriendRow
+            username={friend.username}
+            avatar={friend.avatar}
+            displayName={friend.displayName}
+            id={friend.id}
+            refetch={refetch}
+            unfriend={friendsStore.removeFriend}
+            key={friend.id}
+          />
+        );
+      })}
+      {friendsStore.friends.map((friend: any) => {
+        return (
+          <FriendRow
+            username={friend.username}
+            avatar={friend.avatar}
+            displayName={friend.displayName}
+            id={friend.id}
+            refetch={refetch}
+            unfriend={friendsStore.removeFriend}
+            key={friend.id}
+          />
+        );
+      })}
+      {friendsStore.friends.map((friend: any) => {
+        return (
+          <FriendRow
+            username={friend.username}
+            avatar={friend.avatar}
+            displayName={friend.displayName}
+            id={friend.id}
+            refetch={refetch}
+            unfriend={friendsStore.removeFriend}
+            key={friend.id}
+          />
+        );
+      })}
+    </div>
+  ) : (
+    <div className="w-full h-[85%]  flex items-center justify-center  ">
+      No Friends Yet
+    </div>
+  );
 }
