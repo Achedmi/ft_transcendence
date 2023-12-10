@@ -61,7 +61,7 @@ function EditProfile(props: EditProfileProps) {
       },
       {
         pending: {
-          className: "toast-pending",
+          className: "toast-info",
           render: "Updating user...",
         },
         success: {
