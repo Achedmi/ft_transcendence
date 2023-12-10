@@ -51,6 +51,7 @@ function EditProfile(props: EditProfileProps) {
 						headers: {
 							"Content-Type": "multipart/form-data",
 						},
+						withCredentials: true,
 					});
 					console.log(response);
 					setUserData(response.data);
@@ -62,7 +63,7 @@ function EditProfile(props: EditProfileProps) {
 			},
 			{
 				pending: {
-					className: "toast-pending",
+					className: "toast-info",
 					render: "Updating user...",
 				},
 				success: {

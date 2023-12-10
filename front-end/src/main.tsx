@@ -14,6 +14,7 @@ import Users from "./components/pages/Users.tsx";
 import { Stats } from "./components/Stats.tsx";
 import Friends from "./components/pages/Profile/Friends.tsx";
 import React from "react";
+import NotFound404 from "./components/pages/errorPages/NotFound404.tsx";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ function App() {
 				</Route>
 				<Route path="user/:username" element={<Users />} />
 			</Route>
+			<Route path="*" element={<NotFound404/>} />
 		</Routes>
 	);
 }
