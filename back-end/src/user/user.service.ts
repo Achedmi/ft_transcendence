@@ -95,4 +95,16 @@ export class UserService {
     });
     return user.friends;
   }
+
+  async unfriend(id: number, friendId: number) {
+    await this.prisma.user.update({
+      where: { id },
+      data: { friends: { disconnect: { id: +friendId } } },
+    });
+    await this.prisma.user.update({
+      where: { id: +friendId },
+      data: { friends: { disconnect: { id } } },
+    });
+    return { message: 'Friend removed successfully.' };
+  }
 }

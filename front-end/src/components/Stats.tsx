@@ -1,28 +1,28 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 
-function SubNavBar() {
+export function SubNavBar() {
 	const location = useLocation();
 	return (
-		<div className="text-lg sm:text-base sm:gap-6 min-w-[300px] flex  justify-around items-center bg-[#D9D9D9] text-dark-cl font-Baloo font-bold h-12   ">
+		<div className="text-lg sm:text-base   flex  justify-around items-center  font-Baloo font-bold h-11 border-solid border-b-[4px] border-dark-cl ">
 			<Link
 				to=""
-				className={
-					location.pathname.endsWith("/stats")
-						? "p-2"
-						: "p-2 opacity-50 hover:opacity-100"
-				}
+				className={`flex justify-center items-center w-1/2 h-full  ${
+					location.pathname.endsWith("/profile")
+						? "bg-dark-cl text-white"
+						: " opacity-50 hover:opacity-100"
+				}`}
 			>
-				Stats
+				<p>Match History</p>
 			</Link>
 			<Link
+				className={`flex justify-center items-center w-1/2 h-full ${
+					location.pathname.startsWith("/profile/friends")
+						? "bg-dark-cl text-white"
+						: " opacity-50 hover:opacity-100"
+				}`}
 				to="friends"
-				className={
-					location.pathname.startsWith("/stats/friends")
-						? "p-2"
-						: "p-2 opacity-50 hover:opacity-100"
-				}
 			>
-				Friends
+				<p>Friends</p>
 			</Link>
 		</div>
 	);

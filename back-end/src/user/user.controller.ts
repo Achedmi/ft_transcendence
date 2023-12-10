@@ -60,6 +60,11 @@ export class UserController {
     return await this.userService.friendsOf(username);
   }
 
+  @Delete('unfriend/:id')
+  async unfriend(@GetCurrent('id') id, @Param('id') friendId: number) {
+    return await this.userService.unfriend(id, friendId);
+  }
+
   @Get('me')
   me(@GetCurrent() user) {
     return user;

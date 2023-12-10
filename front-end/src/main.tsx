@@ -23,7 +23,6 @@ function App() {
 			<Route path="/stats" element={<Stats />}>
 				<Route index element={<div>Stats</div>} />
 				<Route path="friends" element={<Friends />} />
-				<Route path="ranking" element={<div>Ranking</div>} />
 			</Route>
 			<Route path="/login" element={<Login />} />
 			<Route path="tfa" element={<VerifyTfa />} />
@@ -31,7 +30,10 @@ function App() {
 				<Route index element={<Home />} />
 				<Route path="play" element={<Play />}></Route>
 				<Route path="ranking" element={<Ranking />} />
-				<Route path="profile" element={<Profile />} />
+				<Route path="profile" element={<Profile />}>
+					<Route index element={<div>Stats</div>} />
+					<Route path="friends" element={<Friends />} />
+				</Route>
 				<Route path="user/:username" element={<Users />} />
 			</Route>
 		</Routes>
