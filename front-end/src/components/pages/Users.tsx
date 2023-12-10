@@ -34,6 +34,11 @@ function Users() {
 
   return (
     <>
+      {isLoading && (
+        <div className="h-full w-full flex justify-center items-center">
+          <SyncLoader color="#433650" />
+        </div>
+      )}
       {data && (
         <div className="flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full relative">
           <div className="z-0">
@@ -45,13 +50,14 @@ function Users() {
                       className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                       color="#ffffff"
                     />
-                  </div>)}
-                  <img
-                    src={data.avatar}
-                    alt=""
-                    className="h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-24 left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px]"
-                    onLoad={handleLoaded}
-                  />
+                  </div>
+                )}
+                <img
+                  src={data.avatar}
+                  alt=""
+                  className="h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-24 left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px]"
+                  onLoad={handleLoaded}
+                />
               </motion.div>
             </div>
             <div className="flex flex-col justify-center items-center ">
