@@ -36,7 +36,7 @@ function Profile() {
 	}
 
 	return (
-		<div className="flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl min-h-screen  h-max w-full relative">
+		<div className="flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl   h-full w-full relative overflow-scroll pb-10">
 			{showEditProfile && (
 				<motion.div className="absolute  w-[500px]  max-w-[75%] bg-[#D9D9D9] z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-dark-cl border-[3px] border-solid rounded-xl">
 					<EditProfile
@@ -106,7 +106,7 @@ function Profile() {
 							{userData.bio}
 						</span>
 					</div>
-					<div className=" flex flex-col content-center w-[70%]  max-w-6xl h-full border-solid border-dark-cl border-[4px] mt-14 rounded-3xl overflow-hidden">
+					<div className=" flex flex-col content-center w-[70%]  max-w-6xl h-96 border-solid border-dark-cl border-[4px] mt-14 rounded-3xl overflow-hidden">
 						<SubNavBar />
 						<Outlet />
 					</div>

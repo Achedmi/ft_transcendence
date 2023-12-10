@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { create } from "zustand";
 import { toast } from "react-toastify";
 import { useUserStore } from "../../../user/userStore";
-import { MessageIcon } from "../../icons/icons";
+import { MessageIcon, UnfriendIcon } from "../../icons/icons";
 
 interface Friends {
 	username: string;
@@ -75,7 +75,7 @@ function FriendRow({
 		}
 	}, []);
 	return (
-		<div className="min-w-[300px] h-16    px-10   flex justify-between items-center ">
+		<div className="min-w-[300px] px-10   flex justify-between items-center   ">
 			<div className="flex items-center  w-1/6 gap-3 ">
 				<img
 					src={avatar}
@@ -92,19 +92,19 @@ function FriendRow({
 			<div className="flex justify-end h-full items-center gap-5 w-1/2">
 				<div
 					onClick={handleUnfriend}
-					className=" bg-red-cl  rounded-2xl h-1/2 gap-2 text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2"
+					className=" bg-red-cl  rounded-2xl h-9 gap-2 text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2"
 				>
-					<MessageIcon />
-					<p className="pt-[2px]">Unfriend</p>
+					<UnfriendIcon />
+					<p className="pt-[2px] hidden sm:block">Unfriend</p>
 				</div>
 				<div
 					onClick={() => {
 						console.log("hi");
 					}}
-					className=" bg-blue-cl gap-2 rounded-2xl h-1/2  text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2"
+					className=" bg-blue-cl gap-2 rounded-2xl h-9  text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2"
 				>
 					<MessageIcon />
-					<p className="pt-[2px]">Message</p>
+					<p className="pt-[2px] hidden sm:block">Message</p>
 				</div>
 			</div>
 		</div>
@@ -118,7 +118,20 @@ export default function () {
 		friendsStore.fetchFriendsOf(userName || "")
 	);
 	return !isLoading && friendsStore.friends?.length ? (
-		<div className="flex flex-col  ">
+		<div className="flex flex-col h-[85%] overflow-scroll gap-3 py-4  ">
+			{friendsStore.friends.map((friend: any) => {
+				return (
+					<FriendRow
+						username={friend.username}
+						avatar={friend.avatar}
+						displayName={friend.displayName}
+						id={friend.id}
+						refetch={refetch}
+						unfriend={friendsStore.removeFriend}
+						key={friend.id}
+					/>
+				);
+			})}
 			{friendsStore.friends.map((friend: any) => {
 				return (
 					<FriendRow
@@ -134,7 +147,7 @@ export default function () {
 			})}
 		</div>
 	) : (
-		<div className="w-full h-40  flex items-center justify-center  ">
+		<div className="w-full h-[85%]  flex items-center justify-center  ">
 			No Friends Yet
 		</div>
 	);
