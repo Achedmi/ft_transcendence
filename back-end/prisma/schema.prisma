@@ -42,7 +42,7 @@ model Chat {
   id        Int      @default(autoincrement()) @id
   type ChatType
   visibility Visibility
-  name String?
+  name String? @unique
   ownerId Int?
   createdAt DateTime @default(now())
   owner User? @relation("owner", fields: [ownerId], references: [id])

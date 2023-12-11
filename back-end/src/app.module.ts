@@ -12,9 +12,10 @@ import { TFAStrategy } from './auth/strategies/TFA.strategy';
 import { ChatModule } from './chat/chat.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { MessageModule } from './message/message.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, AuthModule, HelpersModule, ChatModule, PrismaModule, MessageModule],
+  imports: [ConfigModule.forRoot(), UserModule, AuthModule, HelpersModule, ChatModule, PrismaModule, MessageModule, SearchModule],
   controllers: [AppController],
   providers: [AppService, UserAccessTokenStrategy, UserRefreshTokenStrategy, IntraStrategy, TFAStrategy],
 })
