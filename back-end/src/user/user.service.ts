@@ -71,16 +71,16 @@ export class UserService {
   }
 
   async addFriend(id: number, friendId: number) {
-    if (id === friendId) {
+    if (id == friendId) {
       throw new BadRequestException('You cannot add yourself as a friend.');
     }
 
     await this.prisma.user.update({
       where: { id },
-      data: { friends: { connect: { id: +friendId } } },
+      data: { friends: { connect: { id: friendId } } },
     });
     await this.prisma.user.update({
-      where: { id: +friendId },
+      where: { id: friendId },
       data: { friends: { connect: { id } } },
     });
     return { message: 'Friend added successfully.' };

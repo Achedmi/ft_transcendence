@@ -19,6 +19,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { GetCurrent } from 'src/auth/decorator/current.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { TFAGuard } from 'src/auth/guards/TFAGuard.guard';
+import { AddFriendDto } from './dto/addFriend.dto';
 
 @Controller('user')
 @UseGuards(TFAGuard)
@@ -47,9 +48,9 @@ export class UserController {
     return await this.userService.update(image, id, updateUserDto);
   }
 
-  @Post('addFriend/:id')
-  async addFriend(@GetCurrent('id') id, @Param('id') friendId: number) {
-    return await this.userService.addFriend(id, friendId);
+  @Post('addFriend/:friendId')
+  async addFriend(@GetCurrent('id') id: number, @Param() addFriendDto: AddFriendDto) {
+    return await this.userService.addFriend(id, addFriendDto.friendId);
   }
 
   @Get('friendsOf/:username')
