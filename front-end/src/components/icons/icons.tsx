@@ -1,13 +1,14 @@
 interface IconProps {
   fillColor?: string;
-  size?: string;
+  size?: number | string;
+  className?: string;
 }
 export const Profile = (icon: IconProps) => {
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' width={icon.size} height={icon.size} fill='#433650' stroke='none' viewBox='0 0 24 24'>
+    <svg xmlns='http://www.w3.org/2000/svg' width={icon.size} height={icon.size} stroke='none' viewBox='0 0 24 24' className={icon.className}>
       <g>
         <g>
-          <g fill={icon.fillColor} fillRule='evenodd' clipRule='evenodd'>
+          <g fillRule='evenodd' clipRule='evenodd'>
             <path d='M6.75 6.5a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0z'></path>
             <path d='M4.25 18.571a5.321 5.321 0 015.321-5.321h4.858a5.321 5.321 0 015.321 5.321 4.179 4.179 0 01-4.179 4.179H8.43a4.179 4.179 0 01-4.179-4.179z'></path>
           </g>
@@ -163,3 +164,39 @@ export function UnfriendIcon() {
     </svg>
   );
 }
+
+export const Search = (icon: IconProps) => {
+  return (
+    <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' width={icon.size} height={icon.size} className={icon.className}>
+      <path stroke='#433650' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M15.796 15.811L21 21m-3-10.5a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z'></path>
+    </svg>
+  );
+};
+
+export const Home = (icon: IconProps) => {
+  return (
+    <svg viewBox='0 0 24 24'  xmlns='http://www.w3.org/2000/svg' className={icon.className}>
+      <g id='SVGRepo_bgCarrier' stroke-width='0'></g>
+      <g id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'></g>
+      <g id='SVGRepo_iconCarrier'>
+        {' '}
+        <path
+          clip-rule='evenodd'
+          d='M2.5192 7.82274C2 8.77128 2 9.91549 2 12.2039V13.725C2 17.6258 2 19.5763 3.17157 20.7881C4.34315 22 6.22876 22 10 22H14C17.7712 22 19.6569 22 20.8284 20.7881C22 19.5763 22 17.6258 22 13.725V12.2039C22 9.91549 22 8.77128 21.4808 7.82274C20.9616 6.87421 20.0131 6.28551 18.116 5.10812L16.116 3.86687C14.1106 2.62229 13.1079 2 12 2C10.8921 2 9.88939 2.62229 7.88403 3.86687L5.88403 5.10813C3.98695 6.28551 3.0384 6.87421 2.5192 7.82274ZM9 17.25C8.58579 17.25 8.25 17.5858 8.25 18C8.25 18.4142 8.58579 18.75 9 18.75H15C15.4142 18.75 15.75 18.4142 15.75 18C15.75 17.5858 15.4142 17.25 15 17.25H9Z'
+        ></path>{' '}
+      </g>
+    </svg>
+  );
+};
+
+export const Game = (icon: IconProps) => {
+  return (
+    <svg  viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' className={icon.className}>
+      <g id='SVGRepo_bgCarrier' stroke-width='0'></g>
+      <g id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'></g>
+      <g id='SVGRepo_iconCarrier'>
+        <path d='M15.5,8H13V4a1,1,0,0,0-2,0V8H8.773A6.681,6.681,0,0,0,2,14.3,6.5,6.5,0,0,0,8.5,21H9V20a3,3,0,0,1,6,0v1h.227A6.681,6.681,0,0,0,22,14.7,6.5,6.5,0,0,0,15.5,8ZM10,14.5H9v1a1,1,0,0,1-2,0v-1H6a1,1,0,0,1,0-2H7v-1a1,1,0,0,1,2,0v1h1a1,1,0,0,1,0,2ZM16,16a1,1,0,1,1,1-1A1,1,0,0,1,16,16Zm2-3a1,1,0,1,1,1-1A1,1,0,0,1,18,13Z'></path>
+      </g>
+    </svg>
+  );
+};
