@@ -30,10 +30,23 @@ export class UserService {
     return await this.prisma.user.findUnique({ where: data });
   }
 
-  async findOneByUsername(username: string) {
-    return await this.prisma.user.findUniqueOrThrow({
+  async findOneByUsername(id: number, username: string) {
+    const { isTFAenabled, TFAsecret, ...user } = await this.prisma.user.findUnique({
       where: { username },
+      include: {
+        friends: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            displayName: true,
+          },
+        },
+      },
     });
+    const isFriend = user.friends.some((friend) => friend.id === id);
+
+    return { ...user, isFriend };
   }
 
   async findOne(id: number) {
@@ -86,12 +99,27 @@ export class UserService {
     return { message: 'Friend added successfully.' };
   }
 
-  async friendsOf(username: string) {
-    const user = await this.prisma.user.findUniqueOrThrow({
+  async friendsOf(id, username: string) {
+    const user = await this.prisma.user.findUnique({
       where: { username },
-      include: { friends: true },
+      select: {
+        friends: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            displayName: true,
+
+            friends: { where: { id }, select: { id: true } },
+          },
+        },
+      },
     });
-    return user.friends;
+    const friendsWithCommon = user.friends.map((friend) => ({
+      ...friend,
+      isFriend: friend.friends.length > 0,
+    }));
+    return friendsWithCommon;
   }
 
   async unfriend(id: number, friendId: number) {
@@ -104,5 +132,10 @@ export class UserService {
       data: { friends: { disconnect: { id } } },
     });
     return { message: 'Friend removed successfully.' };
+  }
+
+  async me(id: number) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    return user;
   }
 }

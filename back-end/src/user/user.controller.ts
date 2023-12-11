@@ -54,8 +54,8 @@ export class UserController {
   }
 
   @Get('friendsOf/:username')
-  async friendsOf(@Param('username') username: string) {
-    return await this.userService.friendsOf(username);
+  async friendsOf(@GetCurrent('id') id: number, @Param('username') username: string) {
+    return await this.userService.friendsOf(id, username);
   }
 
   @Delete('unfriend/:id')
@@ -69,7 +69,7 @@ export class UserController {
   }
 
   @Get(':username')
-  findUser(@Param('username') username: string) {
-    return this.userService.findOneByUsername(username);
+  findUser(@GetCurrent('id') id: number, @Param('username') username: string) {
+    return this.userService.findOneByUsername(id, username);
   }
 }
