@@ -13,7 +13,7 @@ function Users() {
   const { username } = useParams<{ username: string }>();
   const { userData } = useUserStore();
   const navigate = useNavigate();
-  const { data, isLoading } = useQuery('users', async () => {
+  const { data, isLoading, refetch } = useQuery('users', async () => {
     try {
       const response = await axios.get(`/user/${username}`);
       return response.data;
@@ -26,6 +26,10 @@ function Users() {
     setIsLoaded(true);
     console.log('loaded');
   }, [isLoaded]);
+
+  useEffect(() => {
+    refetch();
+  }, [username]);
 
   useEffect(() => {
     if (!isLoading && data && data.username === userData.username) navigate('/profile');
