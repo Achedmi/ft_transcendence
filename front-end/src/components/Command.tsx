@@ -32,6 +32,7 @@ const CommandInput = React.forwardRef<React.ElementRef<typeof CommandPrimitive.I
     <div className='flex items-center border-b-2 px-3 border-solid border-dark-cl' cmdk-input-wrapper=''>
       <Search className='mr-2 h-4 w-4 shrink-0 ' />
       <CommandPrimitive.Input
+      onChangeCapture={(e) => console.log(e.target.value)}
         ref={ref}
         className={cn(
           'flex h-11 w-full rounded-md bg-transparent py-3 text-md outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',

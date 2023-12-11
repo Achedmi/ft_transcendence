@@ -51,7 +51,7 @@ export function CommandDialogDemo() {
   }, [open]);
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder='Search...' className='' />
+      <CommandInput placeholder='Search...' className=''  />
       <CommandList
         className=' font-bold text-dark-cl bg-[#D9D9D9] overflow-y-scroll scrollbar-thin scrollbar-thumb-dark-cl/70 scrollbar-thumb-rounded-full 
       '
