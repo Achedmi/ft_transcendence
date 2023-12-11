@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 import { useEffect, useState } from 'react';
 import { Profile, Home, Game } from './icons/icons';
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from './Command';
-
+import SearchFilter from './SearchFilter';
 export function CommandDialogDemo() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -57,7 +57,9 @@ export function CommandDialogDemo() {
       '
       >
         <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading='Users' className=''></CommandGroup>
+        <CommandGroup heading='Users' className=''>
+          <SearchFilter />
+        </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading='Pages'>
           <CommandItem>
