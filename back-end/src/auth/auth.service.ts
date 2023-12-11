@@ -6,10 +6,7 @@ import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly userService: UserService,
-    private readonly helpersService: HelpersService,
-  ) {}
+  constructor(private readonly userService: UserService, private readonly helpersService: HelpersService) {}
 
   async signUp(username: string, avatar: string) {
     const user = await this.userService.create({
@@ -18,8 +15,7 @@ export class AuthService {
       displayName: username,
     });
     const payload = { id: user.id, username };
-    const { accessToken, refreshToken } =
-      await this.helpersService.generateRefreshAndAccessToken(payload);
+    const { accessToken, refreshToken } = await this.helpersService.generateRefreshAndAccessToken(payload);
     return {
       user,
       accessToken,

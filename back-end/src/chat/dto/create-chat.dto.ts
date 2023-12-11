@@ -1,13 +1,5 @@
 import { ChatType, Visibility } from '@prisma/client';
-import {
-  ArrayMinSize,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { ArrayMinSize, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateChatDto {
   @IsString()

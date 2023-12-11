@@ -1,15 +1,5 @@
 import { IntraGuard } from './guards/intra.guard';
-import {
-  Controller,
-  Post,
-  Body,
-  Res,
-  Get,
-  Req,
-  UseGuards,
-  HttpCode,
-  BadRequestException,
-} from '@nestjs/common';
+import { Controller, Post, Body, Res, Get, Req, UseGuards, HttpCode, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { GetCurrent } from './decorator/current.decorator';
@@ -23,26 +13,18 @@ import { toFileStream } from 'qrcode';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UserService,
-    private readonly helpersService: HelpersService,
-  ) {}
+  constructor(private readonly authService: AuthService, private readonly userService: UserService, private readonly helpersService: HelpersService) {}
 
   //===================================refreshing access token=====================================
 
-  @UseGuards(UserRTGuard, TFAGuard)
+  @UseGuards(UserRTGuard)
   @Post('refresh')
-  async refresh(
-    @Res({ passthrough: true }) response: Response,
-    @GetCurrent() user: User & { isTFAVerified },
-  ) {
-    const { accessToken, refreshToken } =
-      await this.helpersService.generateRefreshAndAccessToken({
-        id: user.id,
-        username: user.username,
-        isTFAVerified: user.isTFAVerified,
-      });
+  async refresh(@Res({ passthrough: true }) response: Response, @GetCurrent() user: User & { isTFAVerified }) {
+    const { accessToken, refreshToken } = await this.helpersService.generateRefreshAndAccessToken({
+      id: user.id,
+      username: user.username,
+      isTFAVerified: user.isTFAVerified,
+    });
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
     return { accessToken, refreshToken };
   }
@@ -66,28 +48,21 @@ export class AuthController {
 
   @UseGuards(IntraGuard)
   @Get('intra/callback')
-  async intraLoginCallback(
-    @Req() req,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async intraLoginCallback(@Req() req, @Res({ passthrough: true }) response: Response) {
     const user = await this.userService.findUnique({
       username: req.user.profile.username,
     });
     if (user) {
-      const { accessToken, refreshToken } =
-        await this.helpersService.generateRefreshAndAccessToken({
-          id: user.id,
-          username: user.username,
-          isTFAVerified: false,
-        });
+      const { accessToken, refreshToken } = await this.helpersService.generateRefreshAndAccessToken({
+        id: user.id,
+        username: user.username,
+        isTFAVerified: false,
+      });
       this.helpersService.setTokenCookies(response, accessToken, refreshToken);
       response.redirect('http://localhost:6969/');
       return;
     }
-    const { accessToken, refreshToken } = await this.authService.signUp(
-      req.user.profile.username,
-      req.user.profile._json.image.link,
-    );
+    const { accessToken, refreshToken } = await this.authService.signUp(req.user.profile.username, req.user.profile._json.image.link);
 
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
     response.redirect('http://localhost:6969/');
@@ -104,62 +79,42 @@ export class AuthController {
 
   @UseGuards(UserATGuard)
   @Post('enableTFA')
-  async enableTFA(
-    @GetCurrent() user: User,
-    @Res({ passthrough: true }) response: Response,
-    @Body('TFAcode') TFAcode,
-  ) {
-    const isValidCode = await this.authService.verifyTFA(
-      TFAcode,
-      user.TFAsecret,
-    );
+  async enableTFA(@GetCurrent() user: User, @Res({ passthrough: true }) response: Response, @Body('TFAcode') TFAcode) {
+    const isValidCode = await this.authService.verifyTFA(TFAcode, user.TFAsecret);
     if (!isValidCode) throw new BadRequestException('invalid code');
     await this.authService.toggleTFA(user);
-    const { accessToken, refreshToken } =
-      await this.helpersService.generateRefreshAndAccessToken({
-        id: user.id,
-        username: user.username,
-        isTFAVerified: true,
-      });
+    const { accessToken, refreshToken } = await this.helpersService.generateRefreshAndAccessToken({
+      id: user.id,
+      username: user.username,
+      isTFAVerified: true,
+    });
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
     return { message: 'TFA enabled' };
   }
 
   @UseGuards(TFAGuard)
   @Post('disableTFA')
-  async disableTFA(
-    @GetCurrent() user: User,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async disableTFA(@GetCurrent() user: User, @Res({ passthrough: true }) response: Response) {
     await this.authService.toggleTFA(user);
-    const { accessToken, refreshToken } =
-      await this.helpersService.generateRefreshAndAccessToken({
-        id: user.id,
-        username: user.username,
-        isTFAVerified: false,
-      });
+    const { accessToken, refreshToken } = await this.helpersService.generateRefreshAndAccessToken({
+      id: user.id,
+      username: user.username,
+      isTFAVerified: false,
+    });
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
     return { message: 'TFA disabled' };
   }
 
   @UseGuards(UserATGuard)
   @Post('verifyTFAcode')
-  async vefityTFA(
-    @GetCurrent() user,
-    @Res({ passthrough: true }) response: Response,
-    @Body('TFAcode') TFAcode,
-  ) {
-    const isValidCode = await this.authService.verifyTFA(
-      TFAcode,
-      user.TFAsecret,
-    );
+  async vefityTFA(@GetCurrent() user, @Res({ passthrough: true }) response: Response, @Body('TFAcode') TFAcode) {
+    const isValidCode = await this.authService.verifyTFA(TFAcode, user.TFAsecret);
     if (!isValidCode) throw new BadRequestException('invalid code');
-    const { accessToken, refreshToken } =
-      await this.helpersService.generateRefreshAndAccessToken({
-        id: user.id,
-        username: user.username,
-        isTFAVerified: true,
-      });
+    const { accessToken, refreshToken } = await this.helpersService.generateRefreshAndAccessToken({
+      id: user.id,
+      username: user.username,
+      isTFAVerified: true,
+    });
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
     return { message: 'TFA verified' };
   }
@@ -169,12 +124,11 @@ export class AuthController {
   @Get('defaultLogin')
   async defaultLogin(@Res({ passthrough: true }) response: Response) {
     const user = (await this.userService.findAll())[0];
-    const { accessToken, refreshToken } =
-      await this.helpersService.generateRefreshAndAccessToken({
-        id: user.id,
-        username: user.username,
-        isTFAVerified: false,
-      });
+    const { accessToken, refreshToken } = await this.helpersService.generateRefreshAndAccessToken({
+      id: user.id,
+      username: user.username,
+      isTFAVerified: false,
+    });
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
     return { accessToken, refreshToken };
   }

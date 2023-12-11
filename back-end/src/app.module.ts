@@ -14,22 +14,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { MessageModule } from './message/message.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    UserModule,
-    AuthModule,
-    HelpersModule,
-    ChatModule,
-    PrismaModule,
-    MessageModule,
-  ],
+  imports: [ConfigModule.forRoot(), UserModule, AuthModule, HelpersModule, ChatModule, PrismaModule, MessageModule],
   controllers: [AppController],
-  providers: [
-    AppService,
-    UserAccessTokenStrategy,
-    UserRefreshTokenStrategy,
-    IntraStrategy,
-    TFAStrategy,
-  ],
+  providers: [AppService, UserAccessTokenStrategy, UserRefreshTokenStrategy, IntraStrategy, TFAStrategy],
 })
 export class AppModule {}

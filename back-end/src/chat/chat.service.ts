@@ -24,11 +24,7 @@ export class ChatService {
   }
 
   async create(owner: number, createChatDto: CreateChatDto) {
-    if (
-      createChatDto.type === ChatType.DM &&
-      createChatDto.visibility != Visibility.PRIVATE
-    )
-      throw new BadRequestException('DMs must be private');
+    if (createChatDto.type === ChatType.DM && createChatDto.visibility != Visibility.PRIVATE) throw new BadRequestException('DMs must be private');
     createChatDto.members.push(owner);
     return await this.prisma.chat.create({
       data: {

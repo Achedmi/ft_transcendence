@@ -21,9 +21,7 @@ export class HelpersService {
     });
   }
 
-  async generateRefreshAndAccessToken(
-    payload,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  async generateRefreshAndAccessToken(payload): Promise<{ accessToken: string; refreshToken: string }> {
     const refreshToken = await this.generateRefreshToken(payload);
     const accessToken = await this.generateAccessToken(payload);
     return {
@@ -31,11 +29,7 @@ export class HelpersService {
       accessToken,
     };
   }
-  setTokenCookies(
-    response: Response,
-    accessToken: string,
-    refreshToken: string,
-  ) {
+  setTokenCookies(response: Response, accessToken: string, refreshToken: string) {
     response.cookie('userAT', accessToken, {
       httpOnly: true,
     });

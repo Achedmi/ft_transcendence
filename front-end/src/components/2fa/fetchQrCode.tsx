@@ -1,15 +1,12 @@
-import axios from "axios";
+import axios from 'axios';
 
 export const getQrCode = async () => {
   try {
-    const response = await axios.get(
-      "http://localhost:9696/auth/generateTFAQrCode",
-      {
-        withCredentials: true,
-      }
-    );
-	console.log(response.data);
-	return response.data;
+    const response = await axios.get('http://localhost:9696/auth/generateTFAQrCode', {
+      withCredentials: true,
+    });
+    console.log(response.data);
+    return response.data;
   } catch (error) {
     console.log(error);
   }

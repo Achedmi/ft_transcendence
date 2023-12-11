@@ -50,11 +50,9 @@ export class UserService {
     },
   ) {
     if (image) {
-      const { url } = await this.cloudinaryService
-        .uploadImage(image)
-        .catch(() => {
-          throw new BadRequestException('Something went wrong.');
-        });
+      const { url } = await this.cloudinaryService.uploadImage(image).catch(() => {
+        throw new BadRequestException('Something went wrong.');
+      });
       updateUserDto.avatar = url;
     }
     const { TFAsecret, ...user } = await this.prisma.user.update({

@@ -11,10 +11,7 @@ export class MessageController {
 
   @UseGuards(TFAGuard)
   @Post('sendMessage')
-  create(
-    @Body() createMessageDto: SendMessageDto,
-    @GetCurrent('id') userId: number,
-  ) {
+  create(@Body() createMessageDto: SendMessageDto, @GetCurrent('id') userId: number) {
     return this.messageService.sendMessage(userId, createMessageDto);
   }
 

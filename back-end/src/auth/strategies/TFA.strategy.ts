@@ -22,8 +22,7 @@ export class TFAStrategy extends PassportStrategy(Strategy, 'TFA') {
   async validate(request, payload) {
     let user = await this.userService.findOne(payload.id);
 
-    if (user?.isTFAenabled && !payload.isTFAVerified)
-      throw new ForbiddenException();
+    if (user?.isTFAenabled && !payload.isTFAVerified) throw new ForbiddenException();
     return {
       ...user,
       isTFAVerified: payload.isTFAVerified,

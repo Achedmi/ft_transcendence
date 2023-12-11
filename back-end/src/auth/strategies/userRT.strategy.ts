@@ -7,14 +7,8 @@ import { UserService } from 'src/user/user.service';
 import { User } from '@prisma/client';
 
 @Injectable()
-export class UserRefreshTokenStrategy extends PassportStrategy(
-  Strategy,
-  'userRefreshToken',
-) {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UserService,
-  ) {
+export class UserRefreshTokenStrategy extends PassportStrategy(Strategy, 'userRefreshToken') {
+  constructor(private readonly authService: AuthService, private readonly userService: UserService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {

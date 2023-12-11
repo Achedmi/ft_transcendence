@@ -1,127 +1,107 @@
-import { useQuery } from "react-query";
-import axios from "../../../utils/axios";
-import { useCallback } from "react";
-import { create } from "zustand";
-import { toast } from "react-toastify";
-import { useUserStore } from "../../../user/userStore";
-import { MessageIcon, UnfriendIcon } from "../../icons/icons";
+import { useQuery } from 'react-query';
+import axios from '../../../utils/axios';
+import { useCallback } from 'react';
+import { create } from 'zustand';
+import { toast } from 'react-toastify';
+import { useUserStore } from '../../../user/userStore';
+import { MessageIcon, UnfriendIcon } from '../../icons/icons';
 
 interface Friends {
-	username: string;
-	displayName: string;
-	avatar: string;
+  username: string;
+  displayName: string;
+  avatar: string;
 }
 
 interface FriendsState {
-	friends: Friends[];
-	setFriends: (friends: Friends[]) => void;
-	fetchFriendsOf: (userName: string) => Promise<Array<Friends>>;
-	removeFriend: (id: number) => Promise<void>;
+  friends: Friends[];
+  setFriends: (friends: Friends[]) => void;
+  fetchFriendsOf: (userName: string) => Promise<Array<Friends>>;
+  removeFriend: (id: number) => Promise<void>;
 }
 
 const userFriendsStore = create<FriendsState>((set) => ({
-	friends: [],
-	setFriends: (friends: Friends[]) => {
-		set({ friends });
-	},
-	fetchFriendsOf: async (userName: string) => {
-		try {
-			const response = await axios.get(`/user/friendsOf/${userName}`);
-			set({ friends: response.data });
-			return response.data;
-		} catch (error) {
-			console.log(error);
-		}
-	},
-	removeFriend: async (id: number) => {
-		try {
-			await axios.delete(`/user/unfriend/${id}`);
-		} catch (error) {
-			console.log(error);
-		}
-	},
+  friends: [],
+  setFriends: (friends: Friends[]) => {
+    set({ friends });
+  },
+  fetchFriendsOf: async (userName: string) => {
+    try {
+      const response = await axios.get(`/user/friendsOf/${userName}`);
+      set({ friends: response.data });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  removeFriend: async (id: number) => {
+    try {
+      await axios.delete(`/user/unfriend/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  },
 }));
 
-function FriendRow({
-	username,
-	displayName,
-	avatar,
-	id,
-	refetch,
-	unfriend,
-}: {
-	username: string;
-	displayName: string;
-	avatar: string;
-	id: number;
-	refetch: any;
-	unfriend: any;
-}) {
-	const handleUnfriend = useCallback(async () => {
-		try {
-			toast.promise(
-				async () => {
-					await unfriend(id);
-					await refetch();
-				},
-				{
-					pending: "Removing friend...",
-					success: "Friend removed successfully",
-					error: "Error removing friend",
-				}
-			);
-		} catch (error) {
-			console.log(error);
-		}
-	}, []);
-	return (
-		<div className="min-w-[300px] px-5  flex justify-between items-center   ">
-			<div className="flex items-center  w-1/6 gap-3 ">
-				<img
-					src={avatar}
-					alt=""
-					className="h-12 w-12 rounded-full border-solid border-dark-cl border-[2px]"
-				/>
-				<div>
-					<a href={`/user/${username}`}>
-						<p className="text-xl ">{displayName}</p>
-						<p className=" text-sm opacity-75">@{username}</p>
-					</a>
-				</div>
-			</div>
-			<div className="flex justify-end h-full items-center gap-2 w-1/2">
-				<div
-					onClick={handleUnfriend}
-					className=" bg-red-cl  rounded-2xl h-9 gap-2 text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2"
-				>
-					<UnfriendIcon />
-					<p className="pt-[2px] hidden sm:block">Unfriend</p>
-				</div>
-				<div
-					onClick={() => {
-						console.log("hi");
-					}}
-					className=" bg-blue-cl gap-2 rounded-2xl h-9  text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2"
-				>
-					<MessageIcon />
-					<p className="pt-[2px] hidden sm:block">Message</p>
-				</div>
-			</div>
-		</div>
-	);
+function FriendRow({ username, displayName, avatar, id, refetch, unfriend }: { username: string; displayName: string; avatar: string; id: number; refetch: any; unfriend: any }) {
+  const handleUnfriend = useCallback(async () => {
+    try {
+      toast.promise(
+        async () => {
+          await unfriend(id);
+          await refetch();
+        },
+        {
+          pending: 'Removing friend...',
+          success: 'Friend removed successfully',
+          error: 'Error removing friend',
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  return (
+    <div className='min-w-[300px] px-5  flex justify-between items-center   '>
+      <div className='flex items-center  w-1/6 gap-3 '>
+        <img src={avatar} alt='' className='h-12 w-12 rounded-full border-solid border-dark-cl border-[2px]' />
+        <div>
+          <a href={`/user/${username}`}>
+            <p className='text-xl '>{displayName}</p>
+            <p className=' text-sm opacity-75'>@{username}</p>
+          </a>
+        </div>
+      </div>
+      <div className='flex justify-end h-full items-center gap-2 w-1/2'>
+        <div
+          onClick={handleUnfriend}
+          className=' bg-red-cl  rounded-2xl h-9 gap-2 text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
+        >
+          <UnfriendIcon />
+          <p className='pt-[2px] hidden sm:block'>Unfriend</p>
+        </div>
+        <div
+          onClick={() => {
+            console.log('hi');
+          }}
+          className=' bg-blue-cl gap-2 rounded-2xl h-9  text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
+        >
+          <MessageIcon />
+          <p className='pt-[2px] hidden sm:block'>Message</p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function () {
-	const friendsStore = userFriendsStore();
-	const userName = useUserStore((state) => state.userData.username);
-	const { isLoading, refetch } = useQuery("friends", () =>
-		friendsStore.fetchFriendsOf(userName || "")
-	);
-	return !isLoading && friendsStore.friends?.length ? (
+  const friendsStore = userFriendsStore();
+  const userName = useUserStore((state) => state.userData.username);
+  const { isLoading, refetch } = useQuery('friends', () => friendsStore.fetchFriendsOf(userName || ''));
+  return !isLoading && friendsStore.friends?.length ? (
     <div
-      className="flex flex-col h-[85%]  gap-3 py-2 
+      className='flex flex-col h-[85%]  gap-3 py-2 
     overflow-y-scroll scrollbar-thin scrollbar-thumb-[rgba(67,54,80,0.75)] scrollbar-thumb-rounded-full hover:scrollbar-thumb-dark-cl
-    "
+    '
     >
       {friendsStore.friends.map((friend: any) => {
         return (
@@ -255,8 +235,6 @@ export default function () {
       })}
     </div>
   ) : (
-    <div className="w-full h-[85%]  flex items-center justify-center  ">
-      No Friends Yet
-    </div>
+    <div className='w-full h-[85%]  flex items-center justify-center  '>No Friends Yet</div>
   );
 }

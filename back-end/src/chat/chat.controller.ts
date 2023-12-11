@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -20,10 +11,7 @@ export class ChatController {
 
   @UseGuards(TFAGuard)
   @Post('create')
-  create(
-    @Body() createChatDto: CreateChatDto,
-    @GetCurrent('id') userId: number,
-  ) {
+  create(@Body() createChatDto: CreateChatDto, @GetCurrent('id') userId: number) {
     return this.chatService.create(userId, createChatDto);
   }
 

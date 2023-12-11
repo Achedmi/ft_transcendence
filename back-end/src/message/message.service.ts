@@ -8,11 +8,7 @@ import { ChatService } from 'src/chat/chat.service';
 
 @Injectable()
 export class MessageService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly chatService: ChatService,
-    private readonly socketService: SocketGateway,
-  ) {}
+  constructor(private readonly prisma: PrismaService, private readonly chatService: ChatService, private readonly socketService: SocketGateway) {}
   async sendMessage(from: number, sendMessageDto: SendMessageDto) {
     const chat = await this.prisma.chat.findFirstOrThrow({
       where: { id: sendMessageDto.chatId },
