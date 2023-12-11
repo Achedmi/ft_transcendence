@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Profile, Home, Game } from './icons/icons';
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from './Command';
 import SearchFilter from './SearchFilter';
+import { useSearchStore } from './SearchFilter';
 export function CommandDialogDemo() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -51,7 +52,7 @@ export function CommandDialogDemo() {
   }, [open]);
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder='Search...' className=''  />
+      <CommandInput placeholder='Search...' className='' />
       <CommandList
         className=' font-bold text-dark-cl bg-[#D9D9D9] overflow-y-scroll scrollbar-thin scrollbar-thumb-dark-cl/70 scrollbar-thumb-rounded-full 
       '
@@ -84,6 +85,7 @@ export function CommandDialogDemo() {
 }
 
 function Layout() {
+  const searchStore = useSearchStore();
   const location = useLocation();
   const userStore = useUserStore();
 

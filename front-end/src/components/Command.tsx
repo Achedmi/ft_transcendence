@@ -7,6 +7,8 @@ import { Search } from './icons/icons';
 
 import { cn } from '../utils/ui';
 import { Dialog, DialogContent } from './Dialog';
+import { useSearchStore } from './SearchFilter';
+import { useEffect } from 'react';
 
 const Command = React.forwardRef<React.ElementRef<typeof CommandPrimitive>, React.ComponentPropsWithoutRef<typeof CommandPrimitive>>(({ className, ...props }, ref) => (
   <CommandPrimitive ref={ref} className={cn('flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground', className)} {...props} />
@@ -28,20 +30,29 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
 };
 
 const CommandInput = React.forwardRef<React.ElementRef<typeof CommandPrimitive.Input>, React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>>(
-  ({ className, ...props }, ref) => (
-    <div className='flex items-center border-b-2 px-3 border-solid border-dark-cl' cmdk-input-wrapper=''>
-      <Search className='mr-2 h-4 w-4 shrink-0 ' />
-      <CommandPrimitive.Input
-      onChangeCapture={(e) => console.log(e.target.value)}
-        ref={ref}
-        className={cn(
-          'flex h-11 w-full rounded-md bg-transparent py-3 text-md outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
-          className,
-        )}
-        {...props}
-      />
-    </div>
-  ),
+  ({ className, ...props }, ref) => {
+    const searchStore = useSearchStore();
+
+    return (
+      <>
+        (
+        <div className='flex items-center border-b-2 px-3 border-solid border-dark-cl' cmdk-input-wrapper=''>
+          <Search className='mr-2 h-4 w-4 shrink-0 ' />
+
+          <CommandPrimitive.Input
+            onChangeCapture={(e) => searchStore.fetchFilteredUsers(e.target.value)}
+            ref={ref}
+            className={cn(
+              'flex h-11 w-full rounded-md bg-transparent py-3 text-md outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
+              className,
+            )}
+            {...props}
+          />
+        </div>
+        )
+      </>
+    );
+  },
 );
 
 CommandInput.displayName = CommandPrimitive.Input.displayName;

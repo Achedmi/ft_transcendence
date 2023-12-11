@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { useUserStore } from '../user/userStore';
 
 import { CommandItem } from './Command';
+import { useEffect } from 'react';
 
 interface User {
   username: string;
@@ -19,16 +20,18 @@ interface SearchState {
   setStringToMatch: (stringToMatch: string) => void;
 }
 
-const useSearchStore = create<SearchState>((set) => ({
+export const useSearchStore = create<SearchState>((set) => ({
   filteredUsers: [],
   setFilteredUsers: (filteredUsers: User[]) => {
     set({ filteredUsers });
   },
-  fetchFilteredUsers: async (userName: string) => {
+  fetchFilteredUsers: async (stringtomatch: string) => {
     try {
-      const response = await axios.get(`/user/friendsOf/${userName}`);
-      set({ filteredUsers: response.data });
-      return response.data.users;
+      if (stringtomatch.length > 2) {
+        const response = await axios.get(`/search?search=${stringtomatch}&type=users`);
+        set({ filteredUsers: response.data.users });
+        return response.data.users;
+      }
     } catch (error) {
       console.log(error);
     }
@@ -40,7 +43,8 @@ const useSearchStore = create<SearchState>((set) => ({
 }));
 
 function SearchedUsersRow({ username, displayName, avatar }: { username: string; displayName: string; avatar: string }) {
-  return (
+
+	return (
     <CommandItem>
       <img src={avatar} alt='avatar' className='mr-2 w-6 h-6 rounded-full' />
       <div className='flex flex-col'>
@@ -53,14 +57,18 @@ function SearchedUsersRow({ username, displayName, avatar }: { username: string;
 
 function SearchFilter() {
   const searchStore = useSearchStore();
-  const userName = useUserStore((state) => state.userData.username);
-  const { isLoading } = useQuery('friends', () => searchStore.fetchFilteredUsers(userName || ''));
+  useEffect(() => {
+    console.log('searchFiler:', searchStore.filteredUsers);
+  });
   return (
     <>
-      {!isLoading &&
-        searchStore.filteredUsers.map((user: any) => <SearchedUsersRow key={user.username} username={user.username} displayName={user.displayName} avatar={user.avatar} />)}
+      {searchStore.filteredUsers.map((user: any) => (
+        <p>{user.username}</p>
+        // <SearchedUsersRow key={user.username} username={user.username} displayName={user.displayName} avatar={user.avatar} />
+      ))}
     </>
   );
 }
 
 export default SearchFilter;
+//hht....../search?search=an&type=users
