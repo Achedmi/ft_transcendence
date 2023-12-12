@@ -5,21 +5,24 @@ import { create } from 'zustand';
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../../user/userStore';
 import { MessageIcon, UnfriendIcon } from '../../icons/icons';
+import { useLocation, useParams } from 'react-router-dom';
 
 interface Friends {
   username: string;
   displayName: string;
   avatar: string;
+  isFriend: boolean;
 }
 
 interface FriendsState {
   friends: Friends[];
   setFriends: (friends: Friends[]) => void;
   fetchFriendsOf: (userName: string) => Promise<Array<Friends>>;
-  removeFriend: (id: number) => Promise<void>;
+  unfriend: (id: number) => Promise<void>;
+  beFriends: (id: number) => Promise<void>;
 }
 
-const userFriendsStore = create<FriendsState>((set) => ({
+export const userFriendsStore = create<FriendsState>((set) => ({
   friends: [],
   setFriends: (friends: Friends[]) => {
     set({ friends });
@@ -33,16 +36,43 @@ const userFriendsStore = create<FriendsState>((set) => ({
       console.log(error);
     }
   },
-  removeFriend: async (id: number) => {
+  unfriend: async (id: number) => {
     try {
       await axios.delete(`/user/unfriend/${id}`);
     } catch (error) {
       console.log(error);
     }
   },
+  beFriends: async (id: number) => {
+    try {
+      await axios.post(`/user/addfriend/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  },
 }));
 
-function FriendRow({ username, displayName, avatar, id, refetch, unfriend }: { username: string; displayName: string; avatar: string; id: number; refetch: any; unfriend: any }) {
+function FriendRow({
+  username,
+  displayName,
+  avatar,
+  id,
+  refetch,
+  unfriend,
+  beFriends,
+  me,
+  isFriend,
+}: {
+  username: string;
+  displayName: string;
+  avatar: string;
+  id: number;
+  refetch: any;
+  unfriend: any;
+  beFriends: any;
+  me: string | undefined;
+  isFriend: boolean;
+}) {
   const handleUnfriend = useCallback(async () => {
     try {
       toast.promise(
@@ -60,9 +90,28 @@ function FriendRow({ username, displayName, avatar, id, refetch, unfriend }: { u
       console.log(error);
     }
   }, []);
+
+  const handleBeFriends = useCallback(async () => {
+    try {
+      toast.promise(
+        async () => {
+          await beFriends(id);
+          await refetch();
+        },
+        {
+          pending: 'Sending friend request...',
+          success: 'Friend added!',
+          error: 'Error adding friend',
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   return (
     <div className='min-w-[300px] px-5  flex justify-between items-center   '>
-      <div className='flex items-center  w-1/6 gap-3 '>
+      <div className='flex items-center  w-full gap-3 '>
         <img src={avatar} alt='' className='h-12 w-12 rounded-full border-solid border-dark-cl border-[2px]' />
         <div>
           <a href={`/user/${username}`}>
@@ -71,32 +120,49 @@ function FriendRow({ username, displayName, avatar, id, refetch, unfriend }: { u
           </a>
         </div>
       </div>
-      <div className='flex justify-end h-full items-center gap-2 w-1/2'>
-        <div
-          onClick={handleUnfriend}
-          className=' bg-red-cl  rounded-2xl h-9 gap-2 text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
-        >
-          <UnfriendIcon />
-          <p className='pt-[2px] hidden sm:block'>Unfriend</p>
+      {me !== username && (
+        <div className='flex justify-end h-full items-center gap-2 w-full'>
+          {isFriend ? (
+            <div
+              onClick={handleUnfriend}
+              className=' bg-red-cl  rounded-2xl h-9 gap-2 text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
+            >
+              <UnfriendIcon />
+              <p className='pt-[2px] hidden sm:block'>Unfriend </p>
+            </div>
+          ) : (
+            <div
+              onClick={handleBeFriends}
+              className=' bg-blue-cl  rounded-2xl h-9 gap-2 text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
+            >
+              {/* <UnfriendIcon /> */}
+              <p className='pt-[2px] hidden sm:block'>Be friends</p>
+            </div>
+          )}
+          <div
+            onClick={() => {
+              console.log('hi');
+            }}
+            className=' bg-blue-cl gap-2 rounded-2xl h-9  text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
+          >
+            <MessageIcon />
+            <p className='pt-[2px] hidden sm:block'>Message</p>
+          </div>
         </div>
-        <div
-          onClick={() => {
-            console.log('hi');
-          }}
-          className=' bg-blue-cl gap-2 rounded-2xl h-9  text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
-        >
-          <MessageIcon />
-          <p className='pt-[2px] hidden sm:block'>Message</p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
 export default function () {
+  const location = useLocation();
+  const { username } = useParams<{ username: string }>();
   const friendsStore = userFriendsStore();
-  const userName = useUserStore((state) => state.userData.username);
-  const { isLoading, refetch } = useQuery('friends', () => friendsStore.fetchFriendsOf(userName || ''));
+  const me = useUserStore((state) => state.userData.username);
+  const { isLoading, refetch } = useQuery('friends', () => {
+    if (location.pathname.startsWith('/user/')) return friendsStore.fetchFriendsOf(username || '');
+    else return friendsStore.fetchFriendsOf(me || '');
+  });
   return !isLoading && friendsStore.friends?.length ? (
     <div
       className='flex flex-col h-[85%]  gap-3 py-2 
@@ -110,126 +176,12 @@ export default function () {
             avatar={friend.avatar}
             displayName={friend.displayName}
             id={friend.id}
+            me={me}
             refetch={refetch}
-            unfriend={friendsStore.removeFriend}
+            unfriend={friendsStore.unfriend}
+            beFriends={friendsStore.beFriends}
             key={friend.id}
-          />
-        );
-      })}
-      {friendsStore.friends.map((friend: any) => {
-        return (
-          <FriendRow
-            username={friend.username}
-            avatar={friend.avatar}
-            displayName={friend.displayName}
-            id={friend.id}
-            refetch={refetch}
-            unfriend={friendsStore.removeFriend}
-            key={friend.id}
-          />
-        );
-      })}
-      {friendsStore.friends.map((friend: any) => {
-        return (
-          <FriendRow
-            username={friend.username}
-            avatar={friend.avatar}
-            displayName={friend.displayName}
-            id={friend.id}
-            refetch={refetch}
-            unfriend={friendsStore.removeFriend}
-            key={friend.id}
-          />
-        );
-      })}
-      {friendsStore.friends.map((friend: any) => {
-        return (
-          <FriendRow
-            username={friend.username}
-            avatar={friend.avatar}
-            displayName={friend.displayName}
-            id={friend.id}
-            refetch={refetch}
-            unfriend={friendsStore.removeFriend}
-            key={friend.id}
-          />
-        );
-      })}
-      {friendsStore.friends.map((friend: any) => {
-        return (
-          <FriendRow
-            username={friend.username}
-            avatar={friend.avatar}
-            displayName={friend.displayName}
-            id={friend.id}
-            refetch={refetch}
-            unfriend={friendsStore.removeFriend}
-            key={friend.id}
-          />
-        );
-      })}
-      {friendsStore.friends.map((friend: any) => {
-        return (
-          <FriendRow
-            username={friend.username}
-            avatar={friend.avatar}
-            displayName={friend.displayName}
-            id={friend.id}
-            refetch={refetch}
-            unfriend={friendsStore.removeFriend}
-            key={friend.id}
-          />
-        );
-      })}
-      {friendsStore.friends.map((friend: any) => {
-        return (
-          <FriendRow
-            username={friend.username}
-            avatar={friend.avatar}
-            displayName={friend.displayName}
-            id={friend.id}
-            refetch={refetch}
-            unfriend={friendsStore.removeFriend}
-            key={friend.id}
-          />
-        );
-      })}
-      {friendsStore.friends.map((friend: any) => {
-        return (
-          <FriendRow
-            username={friend.username}
-            avatar={friend.avatar}
-            displayName={friend.displayName}
-            id={friend.id}
-            refetch={refetch}
-            unfriend={friendsStore.removeFriend}
-            key={friend.id}
-          />
-        );
-      })}
-      {friendsStore.friends.map((friend: any) => {
-        return (
-          <FriendRow
-            username={friend.username}
-            avatar={friend.avatar}
-            displayName={friend.displayName}
-            id={friend.id}
-            refetch={refetch}
-            unfriend={friendsStore.removeFriend}
-            key={friend.id}
-          />
-        );
-      })}
-      {friendsStore.friends.map((friend: any) => {
-        return (
-          <FriendRow
-            username={friend.username}
-            avatar={friend.avatar}
-            displayName={friend.displayName}
-            id={friend.id}
-            refetch={refetch}
-            unfriend={friendsStore.removeFriend}
-            key={friend.id}
+            isFriend={friend.isFriend}
           />
         );
       })}

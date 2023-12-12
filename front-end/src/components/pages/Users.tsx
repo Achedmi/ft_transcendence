@@ -1,21 +1,26 @@
 import { motion } from 'framer-motion';
 import { useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import { useUserStore } from '../../user/userStore';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../utils/axios';
 import { useCallback, useEffect } from 'react';
 import { useState } from 'react';
 import { SyncLoader } from 'react-spinners';
+import { toast } from 'react-toastify';
+import { SubNavBar } from '../SubNavBar';
+import { userFriendsStore } from './Profile/Friends';
 
 function Users() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const friendsStore = userFriendsStore();
   const { username } = useParams<{ username: string }>();
   const { userData } = useUserStore();
   const navigate = useNavigate();
-  const { data, isLoading } = useQuery('users', async () => {
+  const { data, refetch, isLoading } = useQuery('users', async () => {
     try {
       const response = await axios.get(`/user/${username}`);
+      friendsStore.setFriends(response.data.friends);
       return response.data;
     } catch (error) {
       navigate('/404');
@@ -31,6 +36,25 @@ function Users() {
     if (!isLoading && data && data.username === userData.username) navigate('/profile');
   }, [isLoading, data]);
 
+  const friendToggle = useCallback(async () => {
+    try {
+      toast.promise(
+        async () => {
+          if (data?.isFriend) await friendsStore.unfriend(data.id);
+          else await friendsStore.beFriends(data.id);
+          await refetch();
+        },
+        {
+          pending: !data?.isFriend ? 'Sending friend request...' : 'Removing friend...',
+          success: !data?.isFriend ? 'Friend added!' : 'Friend removed!',
+          error: !data?.isFriend ? 'Error adding friend' : 'Error removing friend',
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }, [data?.isFriend]);
+
   return (
     <>
       {isLoading && (
@@ -39,7 +63,7 @@ function Users() {
         </div>
       )}
       {data && (
-        <div className='flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full relative'>
+        <div className='flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full relative overflow-y-scroll'>
           <div className='z-0'>
             <div className='bg-dark-cl h-40  relative'>
               <motion.div>
@@ -55,6 +79,27 @@ function Users() {
                   onLoad={handleLoaded}
                 />
               </motion.div>
+              {data.isFriend ? (
+                <motion.div
+                  className='bg-red-cl hover:cursor-pointer text-white flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 right-0 mr-4 p-2 h-11'
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title='Unfriend'
+                  onClick={friendToggle}
+                >
+                  <span className='hidden sm:block non-selectable'>Unfriend</span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  className='bg-blue-cl text-white hover:cursor-pointer  flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 right-0 mr-4 p-2 h-11'
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title='Be Friends'
+                  onClick={friendToggle}
+                >
+                  <span className='hidden sm:block non-selectable'>Add Friend</span>
+                </motion.div>
+              )}
             </div>
             <div className='flex flex-col justify-center items-center '>
               <span className='text-3xl sm:text-4xl font-bold text-center mt-24 '>{data.displayName}</span>
@@ -68,6 +113,10 @@ function Users() {
               <div className='BIO  h-16 w-[50%] bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-14 relative flex justify-center items-center'>
                 <span className='absolute -top-8 left-0 text-xl'>About me</span>
                 <span className='text-white text-sm sm:text-lg'>{data.bio}</span>
+              </div>
+              <div className=' flex flex-col content-center w-[70%] max-w-2xl h-80 border-solid border-dark-cl border-[4px] mt-8 rounded-xl overflow-hidden'>
+                <SubNavBar />
+                <Outlet />
               </div>
             </div>
           </div>

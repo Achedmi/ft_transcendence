@@ -11,7 +11,7 @@ import { QueryClientProvider, QueryClient } from 'react-query';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Users from './components/pages/Users.tsx';
-import { Stats } from './components/Stats.tsx';
+import { Stats } from './components/SubNavBar.tsx';
 import Friends from './components/pages/Profile/Friends.tsx';
 import React from 'react';
 import NotFound404 from './components/pages/errorPages/NotFound404.tsx';
@@ -29,10 +29,13 @@ function App() {
         <Route path='play' element={<Play />}></Route>
         <Route path='ranking' element={<Ranking />} />
         <Route path='profile' element={<Profile />}>
-          <Route index element={<MatchHistory />} />
+          <Route index path='matchHistory' element={<MatchHistory />} />
           <Route path='friends' element={<Friends />} />
         </Route>
-        <Route path='user/:username' element={<Users />} />
+        <Route path='user/:username' element={<Users />}>
+          <Route index path='matchHistory' element={<MatchHistory />} />
+          <Route path='friends' element={<Friends />} />
+        </Route>
       </Route>
       <Route path='*' element={<NotFound404 />} />
     </Routes>

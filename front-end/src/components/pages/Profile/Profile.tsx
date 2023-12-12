@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useUserStore } from '../../../user/userStore';
 import HandleTfa from '../../2fa/HandleTfa';
 import axios, { AxiosError } from 'axios';
-import { SubNavBar } from '../../Stats';
+import { SubNavBar } from '../../SubNavBar';
 import { Outlet } from 'react-router-dom';
 
 function Profile() {
