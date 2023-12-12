@@ -27,11 +27,11 @@ function App() {
         <Route path='play' element={<Play />}></Route>
         <Route path='ranking' element={<Ranking />} />
         <Route path='profile' element={<Profile />}>
-          <Route index path='matchHistory' element={<MatchHistory />} />
+          <Route index element={<MatchHistory />} />
           <Route path='friends' element={<Friends />} />
         </Route>
         <Route path='user/:username' element={<Users />}>
-          <Route index path='matchHistory' element={<MatchHistory />} />
+          <Route index element={<MatchHistory />} />
           <Route path='friends' element={<Friends />} />
         </Route>
       </Route>
@@ -41,12 +41,13 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
+  
   // <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <ToastContainer />
-        <App />
-      </Router>
-    </QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <Router>
+      <ToastContainer />
+      <App />
+    </Router>
+  </QueryClientProvider>,
   // </React.StrictMode>,
 );

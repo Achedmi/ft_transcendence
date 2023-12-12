@@ -8,9 +8,7 @@ export function SubNavBar() {
         to=''
         className={`flex justify-center items-center w-1/2 h-full gap-1 ${!location.pathname.endsWith('/friends') ? 'bg-dark-cl text-white' : ' opacity-50 hover:opacity-100'}`}
       >
-        <span
-        className='hidden xs:block'
-        >Match </span> 
+        <span className='hidden xs:block'>Match </span>
         <span> History</span>
       </Link>
       <Link

@@ -1,3 +1,3 @@
 export default function () {
-  return <div>Match history</div>;
+  return <div className='flex justify-center items-center h-full text-black'>No Matches Yet</div>;
 }

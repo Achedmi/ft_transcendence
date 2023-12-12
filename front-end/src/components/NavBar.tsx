@@ -6,7 +6,6 @@ import { Profile, Logout } from './icons/icons';
 import { SetStateAction, Dispatch } from 'react';
 import { useUserStore } from '../user/userStore';
 import axios, { AxiosError } from 'axios';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../src/styles/customToastStyles.css';
 
@@ -43,20 +42,20 @@ const DropDownItem = (prop: DropDownItemProps) => {
 const DropDown = ({ setShowDropDown }: any) => {
   const handleLogout = async () => {
     try {
-      const response = await axios.post(
+      await axios.post(
         'http://localhost:9696/auth/logout',
         {},
         {
           withCredentials: true,
         },
       );
-      alert(response.data.message);
       window.location.href = '/';
     } catch (error: AxiosError | any) {
       console.log(error);
       if (error instanceof AxiosError) alert(error.response?.data.message);
     }
   };
+  
   const dropShadowStyle = {
     filter: 'drop-shadow(2px 3px 0 #433650)',
   };
