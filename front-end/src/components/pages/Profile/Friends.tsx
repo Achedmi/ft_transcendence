@@ -6,8 +6,7 @@ import { toast } from 'react-toastify';
 import { useUserStore } from '../../../user/userStore';
 import { MessageIcon, UnfriendIcon } from '../../icons/icons';
 import { useLocation, useParams } from 'react-router-dom';
-import { SyncLoader } from 'react-spinners';
-
+import toastConfig from '../../../utils/toastConf';
 
 interface Friends {
   username: string;
@@ -82,11 +81,7 @@ function FriendRow({
           await unfriend(id);
           await refetch();
         },
-        {
-          pending: 'Removing friend...',
-          success: 'Friend removed successfully',
-          error: 'Error removing friend',
-        },
+        toastConfig({ success: 'Friend removed successfully', pending: 'Removing friend...', error: 'Error removing friend' }),
       );
     } catch (error) {
       console.log(error);
@@ -100,11 +95,11 @@ function FriendRow({
           await beFriends(id);
           await refetch();
         },
-        {
+        toastConfig({
           pending: 'Sending friend request...',
           success: 'Friend added!',
           error: 'Error adding friend',
-        },
+        }),
       );
     } catch (error) {
       console.log(error);

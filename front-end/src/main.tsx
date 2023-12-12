@@ -11,9 +11,7 @@ import { QueryClientProvider, QueryClient } from 'react-query';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Users from './components/pages/Users.tsx';
-import { Stats } from './components/SubNavBar.tsx';
 import Friends from './components/pages/Profile/Friends.tsx';
-import React from 'react';
 import NotFound404 from './components/pages/errorPages/NotFound404.tsx';
 import MatchHistory from './components/pages/Profile/MatchHistory.tsx';
 

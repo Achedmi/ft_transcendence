@@ -10,6 +10,8 @@ import { SyncLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
 import { SubNavBar } from '../SubNavBar';
 import { userFriendsStore } from './Profile/Friends';
+import { Check, Error } from '../icons/icons';
+import toastConfig from '../../utils/toastConf';
 
 function Users() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -20,7 +22,7 @@ function Users() {
   const { data, refetch, isLoading } = useQuery('users', async () => {
     try {
       const response = await axios.get(`/user/${username}`);
-      friendsStore.setFriends(response.data.friends);
+      friendsStore.setFriends(response.data.firends);
       return response.data;
     } catch (error) {
       navigate('/404');
@@ -48,11 +50,11 @@ function Users() {
           else await friendsStore.beFriends(data.id);
           await refetch();
         },
-        {
-          pending: !data?.isFriend ? 'Sending friend request...' : 'Removing friend...',
+        toastConfig({
           success: !data?.isFriend ? 'Friend added!' : 'Friend removed!',
           error: !data?.isFriend ? 'Error adding friend' : 'Error removing friend',
-        },
+          pending: !data?.isFriend ? 'Sending friend request...' : 'Removing friend...',
+        }),
       );
     } catch (error) {
       console.log(error);
@@ -114,11 +116,11 @@ function Users() {
                 <span>{Math.floor(Math.random() * 100)} Losses</span>
               </div>
 
-              <div className='BIO  h-16 w-[80%] max-w-2xl bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-14 relative flex justify-center items-center'>
+              <div className='BIO  h-16 w-[80%] max-w-3xl bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-8 relative flex justify-center items-center'>
                 <span className='absolute -top-8 left-0 text-xl'>About me</span>
                 <span className='text-white text-sm sm:text-lg'>{data.bio}</span>
               </div>
-              <div className=' flex flex-col content-center w-[80%] max-w-2xl h-80 border-solid border-dark-cl border-[4px] mt-8 rounded-xl overflow-hidden'>
+              <div className=' flex flex-col content-center w-[80%] max-w-3xl h-80 border-solid border-dark-cl border-[4px] mt-8 rounded-xl overflow-hidden'>
                 <SubNavBar />
                 <Outlet />
               </div>

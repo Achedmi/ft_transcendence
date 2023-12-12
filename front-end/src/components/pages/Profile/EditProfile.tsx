@@ -6,6 +6,7 @@ import { useUserStore } from '../../../user/userStore';
 import { toast } from 'react-toastify';
 import axios from '../../../utils/axios';
 import '../../../styles/customToastStyles.css';
+import toastConfig from '../../../utils/toastConf';
 
 interface EditProfileProps {
   showEditProfile: boolean;
@@ -57,25 +58,11 @@ function EditProfile(props: EditProfileProps) {
           throw error;
         }
       },
-      {
-        pending: {
-          className: 'toast-info',
-          render: 'Updating user...',
-        },
-        success: {
-          className: 'toast-success',
-          render: 'User updated!',
-          icon: <Check />,
-          progressClassName: 'Toastify__progress-bar-success',
-        },
-
-        error: {
-          className: 'toast-error',
-          render: 'Error updating user!',
-          icon: <Error />,
-          progressClassName: 'Toastify__progress-bar-error',
-        },
-      },
+      toastConfig({
+        success: 'User updated!',
+        error: 'Error updating user!',
+        pending: 'Updating user...',
+      }),
     );
   }, [newImage, newProfile, setUserData, userData]);
 
