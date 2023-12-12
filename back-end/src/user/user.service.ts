@@ -88,8 +88,8 @@ export class UserService {
         bio: true,
       },
     });
-    user['firends'] = await this.getUserFriendsByUsername(id, username);
-    const isFriend = user['firends'].some((friend) => friend.id === id || friend.id === id);
+    user['friends'] = await this.getUserFriendsByUsername(id, username);
+    const isFriend = user['friends'].some((friend) => friend.id === id || friend.id === id);
 
     return { ...user, isFriend };
   }

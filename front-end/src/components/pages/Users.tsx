@@ -10,7 +10,6 @@ import { SyncLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
 import { SubNavBar } from '../SubNavBar';
 import { userFriendsStore } from './Profile/Friends';
-import { Check, Error } from '../icons/icons';
 import toastConfig from '../../utils/toastConf';
 
 function Users() {
@@ -22,7 +21,7 @@ function Users() {
   const { data, refetch, isLoading } = useQuery('users', async () => {
     try {
       const response = await axios.get(`/user/${username}`);
-      friendsStore.setFriends(response.data.firends);
+      friendsStore.setFriends(response.data.friends);
       return response.data;
     } catch (error) {
       navigate('/404');
