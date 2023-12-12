@@ -46,8 +46,8 @@ export class UserService {
     const user = await this.prisma.user.findUnique({
       where: { username },
       include: {
-        friendship1: { include: { user2: { select: { username: true, displayName: true, avatar: true, id: true } } } },
-        friendship2: { include: { user1: { select: { username: true, displayName: true, avatar: true, id: true } } } },
+        friendship1: { include: { user2: { select: { username: true, displayName: true, avatar: true, id: true, bio: true } } } },
+        friendship2: { include: { user1: { select: { username: true, displayName: true, avatar: true, id: true, bio: true } } } },
       },
     });
 
@@ -66,8 +66,8 @@ export class UserService {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
-        friendship1: { include: { user2: { select: { username: true, displayName: true, avatar: true, id: true } } } },
-        friendship2: { include: { user1: { select: { username: true, displayName: true, avatar: true, id: true } } } },
+        friendship1: { include: { user2: { select: { username: true, displayName: true, avatar: true, id: true, bio: true } } } },
+        friendship2: { include: { user1: { select: { username: true, displayName: true, avatar: true, id: true, bio: true } } } },
       },
     });
     const friends1 = user.friendship1.map((friendship) => friendship.user2);
@@ -85,6 +85,7 @@ export class UserService {
         avatar: true,
         displayName: true,
         id: true,
+        bio: true,
       },
     });
     user['firends'] = await this.getUserFriendsByUsername(id, username);
