@@ -37,8 +37,8 @@ function Users() {
   }, [username]);
 
   useEffect(() => {
-    if (!isLoading && data && data.username === userData.username) navigate('/profile');
-  }, [isLoading, data]);
+    if (!isLoading && data && username === userData.username) navigate('/profile');
+  }, [isLoading, data, username]);
 
   const friendToggle = useCallback(async () => {
     try {
@@ -67,12 +67,12 @@ function Users() {
         </div>
       )}
       {data && (
-        <div className='flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full relative overflow-y-scroll'>
+        <div className='flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full relative overflow-y-scroll no-scrollbar'>
           <div className='z-0'>
             <div className='bg-dark-cl h-40  relative'>
               <motion.div>
                 {!isLoaded && (
-                  <div className='h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-24 left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px] bg-dark-cl'>
+                  <div className='h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-[65px] left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px] bg-dark-cl'>
                     <SyncLoader className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2' color='#ffffff' />
                   </div>
                 )}
@@ -114,11 +114,11 @@ function Users() {
                 <span>{Math.floor(Math.random() * 100)} Losses</span>
               </div>
 
-              <div className='BIO  h-16 w-[50%] bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-14 relative flex justify-center items-center'>
+              <div className='BIO  h-16 w-[80%] max-w-2xl bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-14 relative flex justify-center items-center'>
                 <span className='absolute -top-8 left-0 text-xl'>About me</span>
                 <span className='text-white text-sm sm:text-lg'>{data.bio}</span>
               </div>
-              <div className=' flex flex-col content-center w-[70%] max-w-2xl h-80 border-solid border-dark-cl border-[4px] mt-8 rounded-xl overflow-hidden'>
+              <div className=' flex flex-col content-center w-[80%] max-w-2xl h-80 border-solid border-dark-cl border-[4px] mt-8 rounded-xl overflow-hidden'>
                 <SubNavBar />
                 <Outlet />
               </div>

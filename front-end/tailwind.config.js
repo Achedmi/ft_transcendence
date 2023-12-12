@@ -14,6 +14,9 @@ export default {
         "red-cl": "#C84D46",
         "metal-cl": "#CACACAhttp://localhost:6969/",
       },
+      screens: {
+        "xs": "420px",
+      },
     },
   },
   plugins: [

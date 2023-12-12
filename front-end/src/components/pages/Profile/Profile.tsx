@@ -1,18 +1,25 @@
 import { Edit, Toggle } from '../../icons/icons';
 import { motion } from 'framer-motion';
 import EditProfile from './EditProfile';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useUserStore } from '../../../user/userStore';
 import HandleTfa from '../../2fa/HandleTfa';
 import axios, { AxiosError } from 'axios';
 import { SubNavBar } from '../../SubNavBar';
 import { Outlet } from 'react-router-dom';
+import { SyncLoader } from 'react-spinners';
+
 
 function Profile() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showTfa, setShowTfa] = useState(false);
   const { userData } = useUserStore();
+  const [isLoaded, setIsLoaded] = useState(false);
 
+ const handleLoaded = useCallback(() => {
+   setIsLoaded(true);
+   console.log('loaded');
+ }, [isLoaded]);
   console.log('userData', userData);
 
   async function hanfleToggleTfa() {
@@ -51,10 +58,17 @@ function Profile() {
       <div className={showEditProfile || showTfa ? 'blur-md z-0 non-selectable pointer-events-none' : 'z-0'}>
         <div className='bg-dark-cl h-40  relative'>
           <motion.div>
+            {!isLoaded && (
+              <div className='xs:h-44 xs:w-44 xs:top-[65px] h-36 w-36 max-h-44 max-w-44 rounded-full absolute top-[85px] left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px] bg-dark-cl'>
+                <SyncLoader className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2' color='#ffffff' />
+              </div>
+            )}
+
             <img
               src={userData.avatar}
               alt=''
-              className='h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-[65px] left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px]'
+              className='xs:h-44 xs:w-44 xs:top-[65px] h-36 w-36 max-h-44 max-w-44 rounded-full absolute top-[85px]  left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px] duration-200'
+              onLoad={handleLoaded}
             />
           </motion.div>
           <motion.div
@@ -67,7 +81,7 @@ function Profile() {
             <Edit size='26' fillColor='#433650' />
             <span className='hidden sm:block non-selectable'>Edit profile</span>
           </motion.div>
-          <div className='bg-[#D9D9D9] flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 left-0 ml-4 p-2 h-11'>
+          <div className='bg-[#D9D9D9] flex justify-center gap-2 items-center flex-col  rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 left-0 ml-4 p-2 h-16 xs:flex-row xs:h-11 duration-300'>
             <span className='non-selectable '>2FA</span>
             <div onClick={hanfleToggleTfa}>
               <Toggle on={userData.isTFAenabled} />
@@ -83,11 +97,11 @@ function Profile() {
             <span>{Math.floor(Math.random() * 100)} Losses</span>
           </div>
 
-          <div className='BIO  h-16 w-[70%] max-w-2xl bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-8 relative flex justify-center items-center'>
+          <div className='BIO  h-16 w-[80%] max-w-3xl bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-8 relative flex justify-center items-center'>
             <span className='absolute -top-8 left-0 text-xl'>About me</span>
             <span className='text-white text-sm sm:text-lg'>{userData.bio}</span>
           </div>
-          <div className=' flex flex-col content-center w-[70%] max-w-2xl h-80 border-solid border-dark-cl border-[4px] mt-8 rounded-xl overflow-hidden'>
+          <div className=' flex flex-col content-center w-[80%] max-w-3xl h-80 border-solid border-dark-cl border-[4px] mt-8 rounded-xl overflow-hidden'>
             <SubNavBar />
             <Outlet />
           </div>

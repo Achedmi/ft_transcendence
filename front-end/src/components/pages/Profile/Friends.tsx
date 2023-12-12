@@ -6,6 +6,8 @@ import { toast } from 'react-toastify';
 import { useUserStore } from '../../../user/userStore';
 import { MessageIcon, UnfriendIcon } from '../../icons/icons';
 import { useLocation, useParams } from 'react-router-dom';
+import { SyncLoader } from 'react-spinners';
+
 
 interface Friends {
   username: string;
@@ -163,6 +165,11 @@ export default function () {
     if (location.pathname.startsWith('/user/')) return friendsStore.fetchFriendsOf(username || '');
     else return friendsStore.fetchFriendsOf(me || '');
   });
+
+  if (isLoading) {
+    return <div className='w-full h-[85%]  flex items-center justify-center  '>Loading...</div>;
+  }
+
   return !isLoading && friendsStore.friends?.length ? (
     <div
       className='flex flex-col h-[85%]  gap-3 py-2 
