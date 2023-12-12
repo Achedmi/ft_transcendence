@@ -30,21 +30,65 @@ export class UserService {
     return await this.prisma.user.findUnique({ where: data });
   }
 
-  async findOneByUsername(id: number, username: string) {
-    const { isTFAenabled, TFAsecret, ...user } = await this.prisma.user.findUnique({
-      where: { username },
-      include: {
-        friends: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            displayName: true,
-          },
-        },
+  async isFriendWithMe(id: number, friendId: number) {
+    const friendship = await this.prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { user1Id: id, user2Id: friendId },
+          { user1Id: friendId, user2Id: id },
+        ],
       },
     });
-    const isFriend = user.friends.some((friend) => friend.id === id);
+    return friendship ? true : false;
+  }
+
+  async getUserFriendsByUsername(me: number, username: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      include: {
+        friendship1: { include: { user2: { select: { username: true, displayName: true, avatar: true, id: true } } } },
+        friendship2: { include: { user1: { select: { username: true, displayName: true, avatar: true, id: true } } } },
+      },
+    });
+
+    const friends2 = user.friendship2.map((friendship) => friendship.user1);
+    const friends1 = user.friendship1.map((friendship) => friendship.user2);
+    const friends = await Promise.all(
+      [...friends1, ...friends2].map(async (friend) => ({
+        ...friend,
+        isFriend: await this.isFriendWithMe(me, friend.id),
+      })),
+    );
+    return friends;
+  }
+
+  async getUserFriendsById(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        friendship1: { include: { user2: { select: { username: true, displayName: true, avatar: true, id: true } } } },
+        friendship2: { include: { user1: { select: { username: true, displayName: true, avatar: true, id: true } } } },
+      },
+    });
+    const friends1 = user.friendship1.map((friendship) => friendship.user2);
+    const friends2 = user.friendship2.map((friendship) => friendship.user1);
+
+    const friends = [...friends1, ...friends2];
+    return friends;
+  }
+
+  async findOneByUsername(id: number, username: string) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { username },
+      select: {
+        username: true,
+        avatar: true,
+        displayName: true,
+        id: true,
+      },
+    });
+    user['firends'] = await this.getUserFriendsByUsername(id, username);
+    const isFriend = user['firends'].some((friend) => friend.id === id || friend.id === id);
 
     return { ...user, isFriend };
   }
@@ -88,48 +132,27 @@ export class UserService {
       throw new BadRequestException('You cannot add yourself as a friend.');
     }
 
-    await this.prisma.user.update({
-      where: { id },
-      data: { friends: { connect: { id: friendId } } },
+    await this.prisma.friendship.create({
+      data: {
+        user1Id: id,
+        user2Id: friendId,
+      },
     });
-    await this.prisma.user.update({
-      where: { id: friendId },
-      data: { friends: { connect: { id } } },
-    });
+
     return { message: 'Friend added successfully.' };
   }
 
-  async friendsOf(id, username: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { username },
-      select: {
-        friends: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            displayName: true,
-
-            friends: { where: { id }, select: { id: true } },
-          },
-        },
-      },
-    });
-    const friendsWithCommon = user.friends.map((friend) => ({
-      ...friend,
-      isFriend: friend.friends.length > 0,
-    }));
-    return friendsWithCommon;
-  }
-
   async unfriend(id: number, friendId: number) {
-    await this.prisma.user.update({
-      where: { id },
-      data: { friends: { disconnect: { id: +friendId } } },
-    });
-    await this.prisma.user.update({
-      where: { id: +friendId },
-      data: { friends: { disconnect: { id } } },
+    if (id == friendId) {
+      throw new BadRequestException('You cannot unfriend yourself.');
+    }
+    await this.prisma.friendship.deleteMany({
+      where: {
+        OR: [
+          { user1Id: id, user2Id: friendId },
+          { user1Id: friendId, user2Id: id },
+        ],
+      },
     });
     return { message: 'Friend removed successfully.' };
   }

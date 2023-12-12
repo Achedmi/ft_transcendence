@@ -55,7 +55,7 @@ export class UserController {
 
   @Get('friendsOf/:username')
   async friendsOf(@GetCurrent('id') id: number, @Param('username') username: string) {
-    return await this.userService.friendsOf(id, username);
+    return await this.userService.getUserFriendsByUsername(id, username);
   }
 
   @Delete('unfriend/:id')
