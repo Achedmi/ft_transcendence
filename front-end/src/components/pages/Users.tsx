@@ -33,6 +33,10 @@ function Users() {
   }, [isLoaded]);
 
   useEffect(() => {
+    refetch();
+  }, [username]);
+
+  useEffect(() => {
     if (!isLoading && data && data.username === userData.username) navigate('/profile');
   }, [isLoading, data]);
 

@@ -9,7 +9,7 @@ import { cn } from '../utils/ui';
 import { Dialog, DialogContent } from './Dialog';
 
 const Command = React.forwardRef<React.ElementRef<typeof CommandPrimitive>, React.ComponentPropsWithoutRef<typeof CommandPrimitive>>(({ className, ...props }, ref) => (
-  <CommandPrimitive ref={ref} className={cn('flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground', className)} {...props} />
+  <CommandPrimitive shouldFilter={false} ref={ref} className={cn('flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground', className)} {...props} />
 ));
 Command.displayName = CommandPrimitive.displayName;
 
@@ -19,7 +19,7 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
       <DialogContent className='overflow-hidden p-0 shadow-lg bg-[#D9D9D9] border-2 border-solid border-dark-cl font-Baloo'>
-        <Command className='[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5'>
+        <Command className='[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-4 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5'>
           {children}
         </Command>
       </DialogContent>
@@ -28,20 +28,22 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
 };
 
 const CommandInput = React.forwardRef<React.ElementRef<typeof CommandPrimitive.Input>, React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>>(
-  ({ className, ...props }, ref) => (
-    <div className='flex items-center border-b-2 px-3 border-solid border-dark-cl' cmdk-input-wrapper=''>
-      <Search className='mr-2 h-4 w-4 shrink-0 ' />
-      <CommandPrimitive.Input
-      onChangeCapture={(e) => console.log(e.target.value)}
-        ref={ref}
-        className={cn(
-          'flex h-11 w-full rounded-md bg-transparent py-3 text-md outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
-          className,
-        )}
-        {...props}
-      />
-    </div>
-  ),
+  ({ className, ...props }, ref) => {
+    return (
+      <div className='flex items-center border-b-2 px-3 border-solid border-dark-cl' cmdk-input-wrapper=''>
+        <Search className='mr-2 h-4 w-4 shrink-0 ' />
+
+        <CommandPrimitive.Input
+          ref={ref}
+          className={cn(
+            'flex h-11 w-full rounded-md bg-transparent py-3 text-md outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
+            className,
+          )}
+          {...props}
+        />
+      </div>
+    );
+  },
 );
 
 CommandInput.displayName = CommandPrimitive.Input.displayName;
