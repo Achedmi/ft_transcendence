@@ -19,6 +19,7 @@ interface FriendsState {
   friends: Friends[];
   setFriends: (friends: Friends[]) => void;
   fetchFriendsOf: (userName: string) => Promise<Array<Friends>>;
+  fetchUserAndFriends: (userName: string) => Promise<any>;
   unfriend: (id: number) => Promise<void>;
   beFriends: (id: number) => Promise<void>;
 }
@@ -32,6 +33,15 @@ export const userFriendsStore = create<FriendsState>((set) => ({
     try {
       const response = await axios.get(`/user/friendsOf/${userName}`);
       set({ friends: response.data });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  fetchUserAndFriends: async (userName: string) => {
+    try {
+      const response = await axios.get(`/user/${userName}`);
+      set({ friends: response.data?.friends });
       return response.data;
     } catch (error) {
       console.log(error);
@@ -86,7 +96,7 @@ function FriendRow({
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [id]);
 
   const handleBeFriends = useCallback(async () => {
     try {
@@ -104,7 +114,7 @@ function FriendRow({
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [id]);
 
   return (
     <div className='min-w-[300px] px-5  flex justify-between items-center   '>
@@ -156,10 +166,7 @@ export default function () {
   const { username } = useParams<{ username: string }>();
   const friendsStore = userFriendsStore();
   const me = useUserStore((state) => state.userData.username);
-  const { isLoading, refetch } = useQuery('friends', () => {
-    if (location.pathname.startsWith('/user/')) return friendsStore.fetchFriendsOf(username || '');
-    else return friendsStore.fetchFriendsOf(me || '');
-  });
+  const { isLoading, refetch } = useQuery('friends', () => friendsStore.fetchFriendsOf((location.pathname.startsWith('/user/') ? username : me) || ''));
 
   if (isLoading) {
     return <div className='w-full h-[85%]  flex items-center justify-center  '>Loading...</div>;

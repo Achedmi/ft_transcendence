@@ -29,7 +29,7 @@ export const useUserStore = create<UserState>((set) => ({
   },
   isRefreshed: false,
   setUserData: (userData: User) => {
-    set({ userData });
+    set((state) => ({ userData: { ...state.userData, ...userData } }));
   },
 
   refreshToken: async () => {

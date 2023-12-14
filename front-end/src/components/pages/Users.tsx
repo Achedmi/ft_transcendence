@@ -3,7 +3,6 @@ import { useQuery } from 'react-query';
 import { Outlet, useParams } from 'react-router-dom';
 import { useUserStore } from '../../user/userStore';
 import { useNavigate } from 'react-router-dom';
-import axios from '../../utils/axios';
 import { useCallback, useEffect } from 'react';
 import { useState } from 'react';
 import { SyncLoader } from 'react-spinners';
@@ -18,15 +17,7 @@ function Users() {
   const { username } = useParams<{ username: string }>();
   const { userData } = useUserStore();
   const navigate = useNavigate();
-  const { data, refetch, isLoading } = useQuery('users', async () => {
-    try {
-      const response = await axios.get(`/user/${username}`);
-      friendsStore.setFriends(response.data.friends);
-      return response.data;
-    } catch (error) {
-      navigate('/404');
-    }
-  });
+  const { data, refetch, isLoading } = useQuery('users', () => friendsStore.fetchUserAndFriends(username || ''));
 
   const handleLoaded = useCallback(() => {
     setIsLoaded(true);

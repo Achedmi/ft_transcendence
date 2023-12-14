@@ -4,43 +4,45 @@ import EditProfile from './EditProfile';
 import { useState, useCallback } from 'react';
 import { useUserStore } from '../../../user/userStore';
 import HandleTfa from '../../2fa/HandleTfa';
-import axios, { AxiosError } from 'axios';
+// import axios, { AxiosError } from 'axios';
+import axios from '../../../utils/axios';
 import { SubNavBar } from '../../SubNavBar';
 import { Outlet } from 'react-router-dom';
 import { SyncLoader } from 'react-spinners';
-
+import { toast } from 'react-toastify';
+import toastConfig from '../../../utils/toastConf';
 
 function Profile() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showTfa, setShowTfa] = useState(false);
-  const { userData } = useUserStore();
+  const { userData, setUserData } = useUserStore();
   const [isLoaded, setIsLoaded] = useState(false);
 
- const handleLoaded = useCallback(() => {
-   setIsLoaded(true);
-   console.log('loaded');
- }, [isLoaded]);
+  const handleLoaded = useCallback(() => {
+    setIsLoaded(true);
+    console.log('loaded');
+  }, [isLoaded]);
   console.log('userData', userData);
 
-  async function hanfleToggleTfa() {
+  const hanfleToggleTfa = useCallback(async () => {
     if (userData.isTFAenabled) {
       try {
-        await axios.post(
-          'http://localhost:9696/auth/disableTFA',
-          {},
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            withCredentials: true,
+        toast.promise(
+          async () => {
+            await axios.post('http://localhost:9696/auth/disableTFA');
+            setUserData({ isTFAenabled: false, isTfaVerified: false });
           },
+          toastConfig({
+            success: '2FA Disabled!',
+            error: 'Error Disabling 2FA',
+            pending: 'Disabling 2FA...',
+          }),
         );
-        window.location.reload();
-      } catch (error: AxiosError | any) {
+      } catch (error) {
         console.log(error);
       }
     } else setShowTfa(true);
-  }
+  }, [userData?.isTFAenabled]);
 
   return (
     <div className='flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl   h-full w-full relative overflow-y-scroll no-scrollbar pb-10'>

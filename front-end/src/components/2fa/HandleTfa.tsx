@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
 import { Close, Tfa } from '../icons/icons';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useCallback } from 'react';
 import { useState } from 'react';
-import axios, { AxiosError } from 'axios';
+import axios from '../../utils/axios';
 import { useQuery } from 'react-query';
 import { getQrCode } from './fetchQrCode';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'react-toastify';
+import { useUserStore } from '../../user/userStore';
+import toastConfig from '../../utils/toastConf';
 
 interface HandleTfaProps {
   showTfa: boolean;
@@ -16,33 +18,31 @@ interface HandleTfaProps {
 function HandleTfa(props: HandleTfaProps) {
   const [closeHovered, setCloseHovered] = useState(false);
   const [code, setCode] = useState('');
+  const { setUserData } = useUserStore();
+
   const { data, isLoading } = useQuery('qrcode', getQrCode);
 
-  async function handleVerify() {
+  const handleVerify = useCallback(async () => {
     if (code != '') {
       try {
-        await axios.post(
-          'http://localhost:9696/auth/enableTFA',
-          { TFAcode: code },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            withCredentials: true,
+        toast.promise(
+          async () => {
+            await axios.post('http://localhost:9696/auth/enableTFA', { TFAcode: code });
+            setUserData({ isTFAenabled: true, isTfaVerified: true });
+            props.setShowTfa(false);
           },
+          //
+          toastConfig({
+            success: '2FA Enabled!',
+            error: 'Error Enabling 2FA',
+            pending: 'Enabling 2FA...',
+          }),
         );
-        window.location.reload();
-      } catch (error: AxiosError | any) {
-        if (error instanceof AxiosError) {
-          toast.error('invalid code', {
-            style: {
-              color: '#433650',
-            },
-          });
-        }
+      } catch (error) {
+        console.log(error);
       }
     }
-  }
+  }, [code]);
 
   return (
     <motion.div className='flex flex-col items-center mt-1 w-full h-full'>
