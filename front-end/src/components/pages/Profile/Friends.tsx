@@ -1,12 +1,13 @@
 import { useQuery } from 'react-query';
 import axios from '../../../utils/axios';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { create } from 'zustand';
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../../user/userStore';
 import { MessageIcon, UnfriendIcon } from '../../icons/icons';
 import { useLocation, useParams } from 'react-router-dom';
 import toastConfig from '../../../utils/toastConf';
+import { Shimmer } from 'react-shimmer';
 
 interface Friends {
   username: string;
@@ -84,6 +85,8 @@ function FriendRow({
   me: string | undefined;
   isFriend: boolean;
 }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   const handleUnfriend = useCallback(async () => {
     try {
       toast.promise(
@@ -116,10 +119,15 @@ function FriendRow({
     }
   }, [id]);
 
+  const handleLoaded = useCallback(() => {
+    setIsLoaded(true);
+  }, [isLoaded]);
+
   return (
     <div className='min-w-[300px] px-5  flex justify-between items-center   '>
       <div className='flex items-center  w-full gap-3 '>
-        <img src={avatar} alt='' className='h-12 w-12 rounded-full border-solid border-dark-cl border-[2px]' />
+        {!isLoaded && <Shimmer className='h-12 w-12 rounded-full border-solid border-dark-cl border-[2px]' width={48} height={48} />}
+        <img src={avatar} className={isLoaded ? 'h-12 w-12 rounded-full border-solid border-dark-cl border-[2px]' : 'hidden'} alt='' onLoad={handleLoaded} />
         <div>
           <a href={`/user/${username}`}>
             <p className='text-xl '>{displayName}</p>
