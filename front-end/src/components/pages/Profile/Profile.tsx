@@ -20,9 +20,7 @@ function Profile() {
 
   const handleLoaded = useCallback(() => {
     setIsLoaded(true);
-    console.log('loaded');
   }, [isLoaded]);
-  console.log('userData', userData);
 
   const hanfleToggleTfa = useCallback(async () => {
     if (userData.isTFAenabled) {

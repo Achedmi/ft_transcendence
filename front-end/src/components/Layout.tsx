@@ -92,25 +92,10 @@ export function CommandDialogDemo() {
   );
 }
 
-function Layout() {
-  const location = useLocation();
-  const userStore = useUserStore();
-
-  const {
-    data: isLoggedIn,
-    refetch,
-    isLoading,
-  } = useQuery('profile', userStore.fetchUserProfile, {
-    refetchOnWindowFocus: false,
-  });
-
-  useEffect(() => {
-    refetch();
-  }, [location.pathname]);
+function PrivateRoutes() {
 
   return (
     <>
-      {!isLoading && isLoggedIn && (
         <div className='flex flex-col p-3 gap-4 h-screen font-Baloo font-bold z-0 '>
           <CommandDialogDemo />
           <NavBar />
@@ -119,9 +104,8 @@ function Layout() {
             <Outlet />
           </div>
         </div>
-      )}
     </>
   );
 }
 
-export default Layout;
+export default PrivateRoutes;

@@ -2,6 +2,8 @@ import { create } from 'zustand';
 
 import axios from '../utils/axios';
 
+import { AxiosError } from 'axios';
+
 export interface User {
   username?: string;
   displayName?: string;
@@ -15,7 +17,7 @@ export interface UserState {
   userData: User;
   isRefreshed: boolean;
   setUserData: (userData: Partial<User>) => void;
-  fetchUserProfile: () => Promise<boolean>;
+  fetchUserProfile: () => Promise<boolean> | any;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -40,13 +42,16 @@ export const useUserStore = create<UserState>((set) => ({
       return false;
     }
   },
+
   fetchUserProfile: async () => {
     try {
       const response = await axios.get('/user/me');
       set({ userData: { ...response.data } });
       return true;
-    } catch (error) {
-      return false;
+    } catch (error: AxiosError | any) {
+      if (error.response?.status === 403 && window.location.pathname == '/login') window.location.replace('/tfa');
+      else return false;
+      return null;
     }
   },
 }));
