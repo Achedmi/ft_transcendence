@@ -12,28 +12,18 @@ import '../../src/styles/customToastStyles.css';
 interface DropDownItemProps {
   Icon: any;
   text: string;
-  setItemsHovered: Dispatch<SetStateAction<boolean[]>>;
-  itemsHovered: boolean[];
+  setItemHovered: Dispatch<SetStateAction<boolean>>;
+  isItemHovered: boolean;
   id: number;
 }
 
 const DropDownItem = (prop: DropDownItemProps) => {
   return (
     <motion.div
-      className='flex flex-start gap-4 items-center w-full p-2  hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] non-selectable'
-      onMouseEnter={() => {
-        let temp = [false, false, false];
-        temp[prop.id] = true;
-        prop.setItemsHovered(temp);
-      }}
-      onMouseLeave={() => {
-        let temp = [false, false, false];
-        temp[prop.id] = false;
-        prop.setItemsHovered(temp);
-      }}
+      className='group flex flex-start gap-4 items-center w-full p-2  hover:cursor-pointer hover:bg-[#433650] hover:text-[#D9D9D9] non-selectable '
       whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
     >
-      <prop.Icon size='2rem' fillColor={prop.itemsHovered[prop.id] ? '#D9D9D9' : '#433650'} />
+      <prop.Icon size='2rem' className='fill-dark-cl group-hover:fill-light-gray-cl' />
       <span>{prop.text}</span>
     </motion.div>
   );
@@ -55,7 +45,7 @@ const DropDown = ({ setShowDropDown }: any) => {
       if (error instanceof AxiosError) alert(error.response?.data.message);
     }
   };
-  
+
   const dropShadowStyle = {
     filter: 'drop-shadow(2px 3px 0 #433650)',
   };

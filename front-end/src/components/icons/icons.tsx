@@ -33,16 +33,12 @@ export const Settings = (icon: IconProps) => {
 
 export const Logout = (icon: IconProps) => {
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' width={icon.size} height={icon.size} fill='#433650' viewBox='0 0 32 32'>
+    <svg xmlns='http://www.w3.org/2000/svg' width={icon.size} height={icon.size} fill='#433650' viewBox='0 0 32 32' className={icon.className}>
       <path
-        fill={icon.fillColor}
-        fillRule='evenodd'
         d='M25.23 14.5H9.225a1.5 1.5 0 000 3h16.038l-3.114 3.114a1.501 1.501 0 002.122 2.121l4.242-4.242a3.5 3.5 0 000-4.95L24.272 9.3a1.502 1.502 0 00-2.122 0 1.502 1.502 0 000 2.122l3.08 3.078z'
         clipRule='evenodd'
       ></path>
       <path
-        fill={icon.fillColor}
-        fillRule='evenodd'
         d='M20 24v-4.5H9.226a3.501 3.501 0 01-3.5-3.5c0-1.932 1.568-3.5 3.5-3.5H20V8a5 5 0 00-5-5H8a5.004 5.004 0 00-3.536 1.464A5.004 5.004 0 003 8v16c0 1.326.527 2.598 1.464 3.536A5.004 5.004 0 008 29h7a5.004 5.004 0 003.536-1.464A5.004 5.004 0 0020 24z'
         clipRule='evenodd'
       ></path>
@@ -200,3 +196,25 @@ export const Game = (icon: IconProps) => {
     </svg>
   );
 };
+
+
+
+
+
+//   <label for='states' class='sr-only'>
+//     Choose a state
+//   </label>
+//   <select
+//     id='states'
+//     class='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-e-lg border-s-gray-100 dark:border-s-gray-700 border-s-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+//   >
+//     <option selected>Choose a state</option>
+//     <option value='CA'>California</option>
+//     <option value='TX'>Texas</option>
+//     <option value='WH'>Washinghton</option>
+//     <option value='FL'>Florida</option>
+//     <option value='VG'>Virginia</option>
+//     <option value='GE'>Georgia</option>
+//     <option value='MI'>Michigan</option>
+//   </select>
+// </div>;
