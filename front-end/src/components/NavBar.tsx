@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { Profile, Logout } from './icons/icons';
-import { SetStateAction, Dispatch } from 'react';
 import { useUserStore } from '../user/userStore';
 import axios, { AxiosError } from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,9 +11,6 @@ import '../../src/styles/customToastStyles.css';
 interface DropDownItemProps {
   Icon: any;
   text: string;
-  setItemHovered: Dispatch<SetStateAction<boolean>>;
-  isItemHovered: boolean;
-  id: number;
 }
 
 const DropDownItem = (prop: DropDownItemProps) => {
@@ -49,7 +45,6 @@ const DropDown = ({ setShowDropDown }: any) => {
   const dropShadowStyle = {
     filter: 'drop-shadow(2px 3px 0 #433650)',
   };
-  const [itemsHovered, setItemsHovered] = useState([false, false, false] as boolean[]);
   return (
     <motion.div
       className='flex flex-col justify-center items-center text-2xl bg-[#D9D9D9]  w-44 absolute right-6 top-[5rem] z-20 border-solid border-dark-cl border-[4px] rounded-2xl '
@@ -65,10 +60,10 @@ const DropDown = ({ setShowDropDown }: any) => {
           setShowDropDown();
         }}
       >
-        <DropDownItem Icon={Profile} text='Profile' setItemsHovered={setItemsHovered} itemsHovered={itemsHovered} id={0} />
+        <DropDownItem Icon={Profile} text='Profile'/>
       </Link>
       <Link to='/login' className='w-full' onClick={handleLogout}>
-        <DropDownItem Icon={Logout} text='Logout' setItemsHovered={setItemsHovered} itemsHovered={itemsHovered} id={2} />
+        <DropDownItem Icon={Logout} text='Logout' />
       </Link>
     </motion.div>
   );
@@ -96,6 +91,9 @@ function NavBar() {
           </Link>
           <Link to='ranking' className={location.pathname.startsWith('/ranking') ? 'p-2' : 'p-2 opacity-50 hover:opacity-100'}>
             Ranking
+          </Link>
+          <Link to='chat' className={location.pathname.startsWith('/chat') ? 'p-2' : 'p-2 opacity-50 hover:opacity-100'}>
+            Chat
           </Link>
         </div>
         <motion.div

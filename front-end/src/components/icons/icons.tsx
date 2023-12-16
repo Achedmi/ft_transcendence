@@ -197,24 +197,14 @@ export const Game = (icon: IconProps) => {
   );
 };
 
-
-
-
-
-//   <label for='states' class='sr-only'>
-//     Choose a state
-//   </label>
-//   <select
-//     id='states'
-//     class='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-e-lg border-s-gray-100 dark:border-s-gray-700 border-s-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-//   >
-//     <option selected>Choose a state</option>
-//     <option value='CA'>California</option>
-//     <option value='TX'>Texas</option>
-//     <option value='WH'>Washinghton</option>
-//     <option value='FL'>Florida</option>
-//     <option value='VG'>Virginia</option>
-//     <option value='GE'>Georgia</option>
-//     <option value='MI'>Michigan</option>
-//   </select>
-// </div>;
+export const NoChatIcon = (icon: IconProps) => {
+  return (
+    <svg className={icon.className} width='124' height='124' viewBox='0 0 124 124'  xmlns='http://www.w3.org/2000/svg'>
+      <path
+        fill-rule='evenodd'
+        clip-rule='evenodd'
+        d='M9.36391 9.36415C0.333007 18.395 0.333008 32.9299 0.333008 61.9999C0.333008 91.0696 0.333007 105.605 9.36391 114.636C18.3947 123.667 32.9297 123.667 61.9997 123.667C91.0693 123.667 105.605 123.667 114.635 114.636C123.666 105.605 123.666 91.0696 123.666 61.9999C123.666 32.9299 123.666 18.395 114.635 9.36415C105.605 0.333251 91.0693 0.333252 61.9997 0.333252C32.9297 0.333252 18.3947 0.333251 9.36391 9.36415ZM39.7841 95.5873C41.3051 97.6396 44.2018 98.07 46.2538 96.5487C50.7455 93.2199 56.1666 91.2916 61.9997 91.2916C67.8327 91.2916 73.2538 93.2199 77.7456 96.5487C79.7979 98.07 82.6944 97.6396 84.2151 95.5873C85.7364 93.535 85.306 90.6385 83.2537 89.1178C77.2572 84.6729 69.9238 82.0416 61.9997 82.0416C54.0755 82.0416 46.7421 84.6729 40.7456 89.1178C38.6935 90.6385 38.2631 93.535 39.7841 95.5873ZM86.6663 52.7499C86.6663 57.8584 83.9055 61.9999 80.4997 61.9999C77.0938 61.9999 74.333 57.8584 74.333 52.7499C74.333 47.6413 77.0938 43.4999 80.4997 43.4999C83.9055 43.4999 86.6663 47.6413 86.6663 52.7499ZM43.4997 61.9999C46.9054 61.9999 49.6663 57.8584 49.6663 52.7499C49.6663 47.6413 46.9054 43.4999 43.4997 43.4999C40.0939 43.4999 37.333 47.6413 37.333 52.7499C37.333 57.8584 40.0939 61.9999 43.4997 61.9999Z'
+      />
+    </svg>
+  );
+};

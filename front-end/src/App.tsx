@@ -1,7 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import Login from './components/pages/login/Login.tsx';
 import Layout from './components/Layout.tsx';
-import Ranking from './components/pages/Ranking.tsx';
 import Home from './components/pages/Home.tsx';
 import Profile from './components/pages/Profile/Profile.tsx';
 import { Play } from './components/pages/Play.tsx';
@@ -16,6 +15,8 @@ import NotFound404 from './components/pages/errorPages/NotFound404.tsx';
 import MatchHistory from './components/pages/Profile/MatchHistory.tsx';
 import { useEffect } from 'react';
 import { useUserStore } from './user/userStore.tsx';
+import Chat from './components/pages/chat/Chat.tsx';
+import Ranking from './components/pages/Ranking.tsx';
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path='play' element={<Play />} />
         <Route path='ranking' element={<Ranking />} />
+        <Route path='chat' element={<Chat />} />
         <Route path='profile' element={<Profile />}>
           <Route index element={<MatchHistory />} />
           <Route path='friends' element={<Friends />} />
