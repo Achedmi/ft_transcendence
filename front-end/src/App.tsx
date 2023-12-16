@@ -35,7 +35,7 @@ function App() {
     refetch();
   }, [location.pathname]);
 
-  if (isLoading || isLoggedIn == null) return null;
+  if (isLoading) return null;
 
   return !isLoggedIn ? (
     <Routes>
@@ -74,22 +74,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </QueryClientProvider>,
   // </React.StrictMode>,
 );
-
-{
-  /* <Route path='/login' element={<Login />} />
-  <Route path='tfa' element={<VerifyTfa />} />
-  <Route path='/' element={<Layout />}>
-    <Route index element={<Home />} />
-    <Route path='play' element={<Play />}></Route>
-    <Route path='ranking' element={<Ranking />} />
-    <Route path='profile' element={<Profile />}>
-      <Route index element={<MatchHistory />} />
-      <Route path='friends' element={<Friends />} />
-    </Route>
-    <Route path='user/:username' element={<Users />}>
-      <Route index element={<MatchHistory />} />
-      <Route path='friends' element={<Friends />} />
-    </Route>
-  </Route>
-  <Route path='*' element={<NotFound404 />} /> */
-}

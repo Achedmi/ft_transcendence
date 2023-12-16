@@ -1,7 +1,5 @@
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import NavBar from './NavBar';
-import { useUserStore } from '../user/userStore';
-import { useQuery } from 'react-query';
 import { useCallback, useEffect } from 'react';
 import { Profile, Home, Game } from './icons/icons';
 import { CommandDialog, CommandGroup, CommandItem, CommandList, CommandSeparator, CommandShortcut } from './Command';
@@ -93,17 +91,16 @@ export function CommandDialogDemo() {
 }
 
 function PrivateRoutes() {
-
   return (
     <>
-        <div className='flex flex-col p-3 gap-4 h-screen font-Baloo font-bold z-0 '>
-          <CommandDialogDemo />
-          <NavBar />
+      <div className='flex flex-col p-3 gap-4 h-screen font-Baloo font-bold z-0 '>
+        <CommandDialogDemo />
+        <NavBar />
 
-          <div className='outlet  h-full w-full min-w-[300px] overflow-y-scroll no-scrollbar'>
-            <Outlet />
-          </div>
+        <div className='outlet  h-full w-full min-w-[300px] overflow-y-scroll no-scrollbar'>
+          <Outlet />
         </div>
+      </div>
     </>
   );
 }
