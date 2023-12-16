@@ -89,11 +89,11 @@ function NavBar() {
           <Link to='play' className={location.pathname.startsWith('/play') ? 'p-2' : 'p-2 opacity-50 hover:opacity-100'}>
             Play
           </Link>
-          <Link to='ranking' className={location.pathname.startsWith('/ranking') ? 'p-2' : 'p-2 opacity-50 hover:opacity-100'}>
-            Ranking
-          </Link>
           <Link to='chat' className={location.pathname.startsWith('/chat') ? 'p-2' : 'p-2 opacity-50 hover:opacity-100'}>
             Chat
+          </Link>
+          <Link to='ranking' className={location.pathname.startsWith('/ranking') ? 'p-2' : 'p-2 opacity-50 hover:opacity-100'}>
+            Ranking
           </Link>
         </div>
         <motion.div
