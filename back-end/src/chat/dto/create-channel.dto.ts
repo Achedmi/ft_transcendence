@@ -1,22 +1,16 @@
 import { ChatType, Visibility } from '@prisma/client';
 import { ArrayMinSize, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
 
-export class CreateChatDto {
+export class CreateChanneltDto {
   @IsString()
-  @IsOptional()
   @IsNotEmpty()
-  name?: string;
-
-  @IsEnum(ChatType)
-  type: ChatType;
+  name: string;
 
   @IsEnum(Visibility)
   visibility: Visibility;
 
+  @IsString()
+  @IsOptional()
   @IsNotEmpty()
-  @IsNumber({}, { each: true })
-  @ArrayMinSize(1)
-  members: number[];
+  password?: string;
 }
-
-//if it was protected, i need to ass a pass key

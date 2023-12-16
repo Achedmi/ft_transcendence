@@ -8,12 +8,7 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly helpersService: HelpersService,
-    private readonly socketGateway: SocketGateway,
-    private readonly cloudinaryService: CloudinaryService,
-  ) {}
+  constructor(private readonly prisma: PrismaService, private readonly cloudinaryService: CloudinaryService) {}
 
   async create(createUserDto: CreateUserDto) {
     return await this.prisma.user.create({

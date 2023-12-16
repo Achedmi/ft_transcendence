@@ -44,13 +44,30 @@ model Chat {
   visibility Visibility
   name String? @unique
   ownerId Int?
+  image String?
+  password String?
   createdAt DateTime @default(now())
   owner User? @relation("owner", fields: [ownerId], references: [id])
-  members User[] 
+  members User[]
   messages Message[]
+  chatUser UserChat[]
 }
 
-model Friendship{
+model UserChat {
+  id        Int      @default(autoincrement()) @id
+  userId Int?
+  chatId Int?
+  isMutted Boolean @default(false)
+  mutedById Int?
+  isAdmin Boolean @default(false)
+  user User? @relation(fields: [userId], references: [id])
+  chat Chat? @relation(fields: [chatId], references: [id])
+  mutedBy User? @relation("mutedBy", fields: [mutedById], references: [id])
+  createdAt DateTime @default(now())
+  @@unique([userId, chatId])
+}
+
+model Friendship {
   id        Int      @default(autoincrement()) @id
   user1Id Int?
   user2Id Int?
@@ -86,6 +103,8 @@ model User {
   friendship1 Friendship[] @relation("user1")
   friendship2 Friendship[] @relation("user2")
   BlockedBy Friendship[] @relation("BlockedBy")
+  chatUser UserChat[]
+  mutedBy UserChat[] @relation("mutedBy")
 }
 
 model Game {

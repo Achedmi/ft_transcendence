@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateChatDto } from './create-chat.dto';
+import { CreateChanneltDto } from './create-channel.dto';
 
-export class UpdateChatDto extends PartialType(CreateChatDto) {}
+export class UpdateChatDto extends PartialType(CreateChanneltDto) {}

@@ -10,7 +10,7 @@ export class HelpersService {
   async generateAccessToken(payload) {
     return await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: '1h',
+      expiresIn: '1d',
     });
   }
 
@@ -29,6 +29,7 @@ export class HelpersService {
       accessToken,
     };
   }
+
   setTokenCookies(response: Response, accessToken: string, refreshToken: string) {
     response.cookie('userAT', accessToken, {
       httpOnly: true,
@@ -36,5 +37,14 @@ export class HelpersService {
     response.cookie('userRT', refreshToken, {
       httpOnly: true,
     });
+  }
+
+  async hashPassword(password: string) {
+    if (!password) return password;
+    return await bcrypt.hash(password, 10);
+  }
+
+  async comparePasswords(password: string, hashedPassword: string) {
+    return await bcrypt.compare(password, hashedPassword);
   }
 }
