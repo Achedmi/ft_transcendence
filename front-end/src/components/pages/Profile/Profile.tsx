@@ -15,7 +15,7 @@ import toastConfig from '../../../utils/toastConf';
 function Profile() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showTfa, setShowTfa] = useState(false);
-  const { userData, setUserData } = useUserStore();
+  const { user, setUserData } = useUserStore();
   const [isLoaded, setIsLoaded] = useState(false);
 
   const handleLoaded = useCallback(() => {
@@ -23,7 +23,7 @@ function Profile() {
   }, [isLoaded]);
 
   const hanfleToggleTfa = useCallback(async () => {
-    if (userData.isTFAenabled) {
+    if (user.isTFAenabled) {
       try {
         toast.promise(
           async () => {
@@ -40,7 +40,7 @@ function Profile() {
         console.log(error);
       }
     } else setShowTfa(true);
-  }, [userData?.isTFAenabled]);
+  }, [user?.isTFAenabled]);
 
   return (
     <div className='flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl   h-full w-full relative overflow-y-scroll no-scrollbar pb-10'>
@@ -65,7 +65,7 @@ function Profile() {
             )}
 
             <img
-              src={userData.avatar}
+              src={user.avatar}
               alt=''
               className='xs:h-44 xs:w-44 xs:top-[65px] h-36 w-36 max-h-44 max-w-44 rounded-full absolute top-[85px]  left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px] duration-200'
               onLoad={handleLoaded}
@@ -84,13 +84,13 @@ function Profile() {
           <div className='bg-[#D9D9D9] flex justify-center gap-2 items-center flex-col  rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 left-0 ml-4 p-2 h-16 xs:flex-row xs:h-11 duration-300'>
             <span className='non-selectable '>2FA</span>
             <div onClick={hanfleToggleTfa}>
-              <Toggle on={userData.isTFAenabled} />
+              <Toggle on={user.isTFAenabled} />
             </div>
           </div>
         </div>
         <div className='flex flex-col justify-center items-center '>
-          <span className='text-3xl sm:text-4xl font-bold text-center mt-24 '>{userData.displayName}</span>
-          <span className='text-md opacity-75'>{'@' + userData.username}</span>
+          <span className='text-3xl sm:text-4xl font-bold text-center mt-24 '>{user.displayName}</span>
+          <span className='text-md opacity-75'>{'@' + user.username}</span>
           <div className='flex gap-8 w-full justify-center mt-8 sm:text-xl'>
             <span> {Math.floor(Math.random() * 100)} Wins</span>
             <span>|</span>
@@ -99,7 +99,7 @@ function Profile() {
 
           <div className='BIO  h-16 w-[80%] max-w-3xl bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-8 relative flex justify-center items-center'>
             <span className='absolute -top-8 left-0 text-xl'>About me</span>
-            <span className='text-white text-sm sm:text-lg'>{userData.bio}</span>
+            <span className='text-white text-sm sm:text-lg'>{user.bio}</span>
           </div>
           <div className=' flex flex-col content-center w-[80%] max-w-3xl h-80 border-solid border-dark-cl border-[4px] mt-8 rounded-xl overflow-hidden'>
             <SubNavBar />

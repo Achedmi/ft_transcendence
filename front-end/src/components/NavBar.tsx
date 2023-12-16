@@ -75,7 +75,7 @@ const DropDown = ({ setShowDropDown }: any) => {
 };
 
 function NavBar() {
-  const { userData } = useUserStore();
+  const { user } = useUserStore();
   const location = useLocation();
   const [showDropDown, setShowDropDown] = useState(false);
   return (
@@ -105,7 +105,7 @@ function NavBar() {
             setShowDropDown(!showDropDown);
           }}
         >
-          <img className='h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]' src={userData.avatar} alt='profile' />
+          <img className='h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]' src={user.avatar} alt='profile' />
         </motion.div>
         <AnimatePresence>{showDropDown && <DropDown setShowDropDown={setShowDropDown} />}</AnimatePresence>
       </div>

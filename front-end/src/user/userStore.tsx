@@ -14,14 +14,14 @@ export interface User {
 }
 
 export interface UserState {
-  userData: User;
+  user: User;
   isRefreshed: boolean;
-  setUserData: (userData: Partial<User>) => void;
+  setUserData: (user: Partial<User>) => void;
   fetchUserProfile: () => Promise<boolean> | any;
 }
 
 export const useUserStore = create<UserState>((set) => ({
-  userData: {
+  user: {
     username: '',
     displayName: '',
     bio: '',
@@ -30,8 +30,8 @@ export const useUserStore = create<UserState>((set) => ({
     isTFAenabled: false,
   },
   isRefreshed: false,
-  setUserData: (userData: User) => {
-    set((state) => ({ userData: { ...state.userData, ...userData } }));
+  setUserData: (user: User) => {
+    set((state) => ({ user: { ...state.user, ...user } }));
   },
 
   refreshToken: async () => {
@@ -46,7 +46,7 @@ export const useUserStore = create<UserState>((set) => ({
   fetchUserProfile: async () => {
     try {
       const response = await axios.get('/user/me');
-      set({ userData: { ...response.data } });
+      set({ user: { ...response.data } });
       return true;
     } catch (error: AxiosError | any) {
       return false;

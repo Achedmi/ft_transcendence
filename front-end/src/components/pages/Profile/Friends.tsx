@@ -173,7 +173,7 @@ export default function () {
   const location = useLocation();
   const { username } = useParams<{ username: string }>();
   const friendsStore = userFriendsStore();
-  const me = useUserStore((state) => state.userData.username);
+  const me = useUserStore((state) => state.user.username);
   const { isLoading, refetch } = useQuery('friends', () => friendsStore.fetchFriendsOf((location.pathname.startsWith('/user/') ? username : me) || ''));
 
   if (isLoading) {

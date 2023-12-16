@@ -20,14 +20,14 @@ type newProfile = {
 };
 
 function EditProfile(props: EditProfileProps) {
-  const { userData, setUserData } = useUserStore();
+  const { user, setUserData } = useUserStore();
   const [closeHovered, setCloseHovered] = useState(false);
   const [newImage, setNewImage] = useState<File>();
 
   const [newProfile, setNewProfile] = useState<newProfile>({
-    displayName: userData.displayName || '',
-    bio: userData.bio || '',
-    avatar: userData.avatar || '',
+    displayName: user.displayName || '',
+    bio: user.bio || '',
+    avatar: user.avatar || '',
   });
 
   const handleEditClick = useCallback(() => {
@@ -54,7 +54,7 @@ function EditProfile(props: EditProfileProps) {
           setUserData(response.data);
           return response;
         } catch (error) {
-          setNewProfile({ ...newProfile, ...userData });
+          setNewProfile({ ...newProfile, ...user });
           throw error;
         }
       },
@@ -64,7 +64,7 @@ function EditProfile(props: EditProfileProps) {
         pending: 'Updating user...',
       }),
     );
-  }, [newImage, newProfile, setUserData, userData]);
+  }, [newImage, newProfile, setUserData, user]);
 
   return (
     <motion.div className='flex flex-col mt-1 w-full h-full'>
@@ -83,7 +83,7 @@ function EditProfile(props: EditProfileProps) {
 
       <div className='flex justify-center items-center pt-4 pb-2 border-b-2 border-solid border-dark-cl'>
         <motion.div className='relative'>
-          <img className='w-40 h-40 rounded-full border-solid border-4 border-dark-cl' src={newProfile.avatar || userData.avatar} alt='pfp' />
+          <img className='w-40 h-40 rounded-full border-solid border-4 border-dark-cl' src={newProfile.avatar || user.avatar} alt='pfp' />
           <motion.div
             className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-gray-800 flex  items-center justify-center bg-opacity-75 
 		  hover:cursor-pointer hover:bg-opacity-100 hover:h-12 hover:w-12 transition-all'
@@ -113,7 +113,7 @@ function EditProfile(props: EditProfileProps) {
           <input
             className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64'
             type='text'
-            placeholder={userData.displayName}
+            placeholder={user.displayName}
             onChange={(e) =>
               setNewProfile({
                 ...newProfile,
@@ -127,7 +127,7 @@ function EditProfile(props: EditProfileProps) {
           <input
             type='text'
             className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden'
-            placeholder={userData.bio}
+            placeholder={user.bio}
             onChange={(e) =>
               setNewProfile({
                 ...newProfile,

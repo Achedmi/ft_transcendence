@@ -15,7 +15,7 @@ function Users() {
   const [isLoaded, setIsLoaded] = useState(false);
   const friendsStore = userFriendsStore();
   const { username } = useParams<{ username: string }>();
-  const { userData } = useUserStore();
+  const { user } = useUserStore();
   const navigate = useNavigate();
   const { data, refetch, isLoading } = useQuery('users', () => friendsStore.fetchUserAndFriends(username || ''));
 
@@ -29,7 +29,7 @@ function Users() {
   }, [username]);
 
   useEffect(() => {
-    if (!isLoading && data && username === userData.username) navigate('/profile');
+    if (!isLoading && data && username === user.username) navigate('/profile');
   }, [isLoading, data, username]);
 
   const friendToggle = useCallback(async () => {
