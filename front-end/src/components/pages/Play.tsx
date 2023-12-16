@@ -1,5 +1,4 @@
 import { Outlet } from 'react-router-dom';
-import ChatButton from '../../assets/chatButton.svg?react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
@@ -8,31 +7,9 @@ const Play = () => {
 
   return (
     <div className='h-full w-full flex gap-4'>
-      <div
-        className={
-          !isChatOpen
-            ? 'bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'
-            : 'bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-1/2 flex justify-center items-center md:gap-24 gap-7  flex-col relative'
-        }
-      >
-        {!isChatOpen && (
-          <motion.div
-            onClick={() => setIsChatOpen(true)}
-            className='absolute top-[90%] right-10 hover:cursor-pointer'
-            whileHover={{ scale: 1.2 }}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-          >
-            <ChatButton className='h-full w-full' />
-          </motion.div>
-        )}
-
+      <div className='bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'>
         <motion.div
-          className={
-            !isChatOpen
-              ? 'red relative aspect-[3/4] w-[40%]  md:w-[35%] max-w-[400px] border-solid border-[4px] border-dark-cl  flex flex-col hover:cursor-pointer'
-              : 'w-3/4 red relative aspect-[3/4]  max-w-[250px] border-solid border-[4px] border-dark-cl  flex flex-col hover:cursor-pointer'
-          }
+          className='red relative aspect-[3/4] w-[40%]  md:w-[35%] max-w-[400px] border-solid border-[4px] border-dark-cl  flex flex-col hover:cursor-pointer'
           initial={{ rotate: 6, y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           whileHover={{
