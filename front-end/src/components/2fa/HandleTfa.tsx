@@ -27,7 +27,7 @@ function HandleTfa(props: HandleTfaProps) {
       try {
         toast.promise(
           async () => {
-            await axios.post('http://localhost:9696/auth/enableTFA', { TFAcode: code });
+            await axios.post(`http://${import.meta.env.VITE_ADDRESS}:9696/auth/enableTFA`, { TFAcode: code });
             setUserData({ isTFAenabled: true, isTfaVerified: true });
             props.setShowTfa(false);
           },

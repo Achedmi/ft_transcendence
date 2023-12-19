@@ -127,7 +127,7 @@ function FriendRow({
     <div className='min-w-[300px] px-5  flex justify-between items-center   '>
       <div className='flex items-center  w-full gap-3 '>
         {!isLoaded && <Shimmer className='h-12 w-12 rounded-full border-solid border-dark-cl border-[2px]' width={48} height={48} />}
-        <img src={avatar} className={isLoaded ? 'h-12 w-12 rounded-full border-solid border-dark-cl border-[2px]' : 'hidden'} alt='' onLoad={handleLoaded} />
+        <img src={avatar} className={isLoaded ? 'object-cover h-12 w-12 rounded-full border-solid border-dark-cl border-[2px]' : 'hidden'} alt='' onLoad={handleLoaded} />
         <div>
           <a href={`/user/${username}`}>
             <p className='text-xl '>{displayName}</p>

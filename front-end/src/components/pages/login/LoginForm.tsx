@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 function LoginForm() {
   const handleLoginClick = () => {
-    window.location.href = 'http://localhost:9696/auth/intra/login';
+    window.location.href = `http://${import.meta.env.VITE_ADDRESS}:9696/auth/intra/login`;
   };
 
   return (

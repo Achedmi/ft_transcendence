@@ -83,7 +83,7 @@ function EditProfile(props: EditProfileProps) {
 
       <div className='flex justify-center items-center pt-4 pb-2 border-b-2 border-solid border-dark-cl'>
         <motion.div className='relative'>
-          <img className='w-40 h-40 rounded-full border-solid border-4 border-dark-cl' src={newProfile.avatar || user.avatar} alt='pfp' />
+          <img className='object-cover w-40 h-40 rounded-full border-solid border-4 border-dark-cl' src={newProfile.avatar || user.avatar} alt='pfp' />
           <motion.div
             className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-gray-800 flex  items-center justify-center bg-opacity-75 
 		  hover:cursor-pointer hover:bg-opacity-100 hover:h-12 hover:w-12 transition-all'

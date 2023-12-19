@@ -15,7 +15,7 @@ function VerifyTfa() {
       }
       try {
         await axios.post('/auth/verifyTFAcode', { TFAcode: code });
-        window.location.replace('http://localhost:6969/');
+        window.location.replace(`http://${import.meta.env.VITE_ADDRESS}:6969/`);
       } catch (error) {
         toast.error('invalid code');
       }

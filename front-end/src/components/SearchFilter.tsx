@@ -76,7 +76,7 @@ export default function CommandSearchResults() {
                 searchStore.setIsOpen(false);
               }}
             >
-              <img src={user.avatar} alt='avatar' className='mr-2 w-6 h-6 rounded-full' />
+              <img src={user.avatar} alt='avatar' className='object-cover  mr-2 w-6 h-6 rounded-full' />
               <div className='flex flex-col'>
                 <span className='text-sm font-bold'>{user.displayName}</span>
                 <span className='text-xs font-medium'>{user.username}</span>

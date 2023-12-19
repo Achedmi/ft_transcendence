@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:9696',
+  baseURL: `http://${import.meta.env.VITE_ADDRESS}:9696`,
   withCredentials: true,
 });
 
@@ -10,7 +10,7 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     if (error.response.status === 401 && location.pathname !== '/login') {
       try {
-        await axios.post('http://localhost:9696/auth/refresh', undefined, {
+        await axios.post(`http://${import.meta.env.VITE_ADDRESS}:9696/auth/refresh`, undefined, {
           withCredentials: true,
         });
         return axiosInstance.request(error.config);

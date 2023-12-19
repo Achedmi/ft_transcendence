@@ -29,7 +29,7 @@ const DropDown = ({ setShowDropDown }: any) => {
   const handleLogout = async () => {
     try {
       await axios.post(
-        'http://localhost:9696/auth/logout',
+        `http://${import.meta.env.VITE_ADDRESS}:9696/auth/logout`,
         {},
         {
           withCredentials: true,
@@ -103,7 +103,7 @@ function NavBar() {
             setShowDropDown(!showDropDown);
           }}
         >
-          <img className='h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]' src={user.avatar} alt='profile' />
+          <img className='object-cover h-12 w-12 mr-1 rounded-full border-solid border-dark-cl border-[4px]' src={user.avatar} alt='profile' />
         </motion.div>
         <AnimatePresence>{showDropDown && <DropDown setShowDropDown={setShowDropDown} />}</AnimatePresence>
       </div>

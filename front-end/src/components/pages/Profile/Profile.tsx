@@ -27,7 +27,7 @@ function Profile() {
       try {
         toast.promise(
           async () => {
-            await axios.post('http://localhost:9696/auth/disableTFA');
+            await axios.post(`http://${import.meta.env.VITE_ADDRESS}:9696/auth/disableTFA`);
             setUserData({ isTFAenabled: false, isTfaVerified: false });
           },
           toastConfig({
@@ -67,7 +67,7 @@ function Profile() {
             <img
               src={user.avatar}
               alt=''
-              className='xs:h-44 xs:w-44 xs:top-[65px] h-36 w-36 max-h-44 max-w-44 rounded-full absolute top-[85px]  left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px] duration-200'
+              className='object-cover xs:h-44 xs:w-44 xs:top-[65px] h-36 w-36 max-h-44 max-w-44 rounded-full absolute top-[85px]  left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px] duration-200'
               onLoad={handleLoaded}
             />
           </motion.div>

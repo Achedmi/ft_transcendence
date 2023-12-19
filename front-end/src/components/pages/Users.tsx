@@ -71,7 +71,7 @@ function Users() {
                 <img
                   src={data.avatar}
                   alt=''
-                  className='h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-[65px] left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px]'
+                  className='object-cover h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-[65px] left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px]'
                   onLoad={handleLoaded}
                 />
               </motion.div>
