@@ -5,6 +5,9 @@ import { Profile, Home, Game } from './icons/icons';
 import { CommandDialog, CommandGroup, CommandItem, CommandList, CommandSeparator, CommandShortcut } from './Command';
 import CommandSearchResults, { CommandSearch } from './SearchFilter';
 import { useSearchStore } from './SearchFilter';
+import io, { Socket } from 'socket.io-client';
+import { useUserStore } from '../user/userStore';
+
 
 export function CommandDialogDemo() {
   const navigate = useNavigate();
@@ -91,6 +94,24 @@ export function CommandDialogDemo() {
 }
 
 function PrivateRoutes() {
+  const { socket, setSocket } = useUserStore();
+
+
+  useEffect(() => {
+    const gameSocket = io(`http://${import.meta.env.VITE_ADDRESS}:9696/game`, {
+      withCredentials: true,
+      transports: ['websocket'],
+    });
+    gameSocket.on('connect', () => console.log('connected'));
+
+    setSocket({ game: gameSocket });
+
+    return () => {
+      if (socket?.game)
+        socket.game.disconnect();
+    };
+  }, []); 
+
   return (
     <>
       <div className='flex flex-col p-3 gap-4 h-screen font-Baloo font-bold z-0 '>

@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import axios from '../utils/axios';
 
 import { AxiosError } from 'axios';
+import { Socket } from 'socket.io-client';
 
 export interface User {
   username?: string;
@@ -16,6 +17,8 @@ export interface User {
 export interface UserState {
   user: User;
   isRefreshed: boolean;
+  socket?: { game?: Socket; chat?: Socket };
+  setSocket: (socket: { game?: Socket; chat?: Socket }) => void;
   setUserData: (user: Partial<User>) => void;
   fetchUserProfile: () => Promise<boolean> | any;
 }
@@ -32,6 +35,11 @@ export const useUserStore = create<UserState>((set) => ({
   isRefreshed: false,
   setUserData: (user: User) => {
     set((state) => ({ user: { ...state.user, ...user } }));
+  },
+
+  socket: { game: undefined, chat: undefined },
+  setSocket: (socket: { game?: Socket; chat?: Socket }) => {
+    set({ socket });
   },
 
   refreshToken: async () => {
