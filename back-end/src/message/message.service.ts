@@ -29,7 +29,7 @@ export class MessageService {
   }
 
   async sendDm(from: number, sendDmDto: SendDmDto) {
-    let chat = await this.chatService.findDm(from, sendDmDto.to);
+    let chat: { id: number } = await this.chatService.findDm(from, sendDmDto.to);
     if (!chat) chat = await this.chatService.createDm(from, sendDmDto.to);
 
     const message = await this.prisma.message.create({

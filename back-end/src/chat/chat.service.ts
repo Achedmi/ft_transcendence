@@ -37,8 +37,22 @@ export class ChatService {
           },
         },
       },
+      include: {
+        messages: {
+          include: {
+            user: {
+              select: {
+                username: true,
+                avatar: true,
+                displayName: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
+  //
 
   async createChannel(owner: number, createChatDto: CreateChanneltDto, image: File) {
     if (createChatDto.visibility === Visibility.PROTECTED && !createChatDto.password) throw new BadRequestException('Password is required for protected chats');
