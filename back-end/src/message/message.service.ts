@@ -1,4 +1,4 @@
-import { SocketGateway } from 'src/socket/socket.gateway';
+import { ChatGateway } from 'src/socket/chat.gateway';
 import { Injectable } from '@nestjs/common';
 import { SendMessageDto } from './dto/create-message.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -7,7 +7,7 @@ import { ChatService } from 'src/chat/chat.service';
 
 @Injectable()
 export class MessageService {
-  constructor(private readonly prisma: PrismaService, private readonly chatService: ChatService, private readonly socketService: SocketGateway) {}
+  constructor(private readonly prisma: PrismaService, private readonly chatService: ChatService, private readonly socketService: ChatGateway) {}
   async sendMessage(from: number, sendMessageDto: SendMessageDto) {
     const chat = await this.prisma.chat.findFirstOrThrow({
       where: { id: sendMessageDto.chatId },

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
-import { SocketGateway } from 'src/socket/socket.gateway';
 
 @Injectable()
 export class HelpersService {

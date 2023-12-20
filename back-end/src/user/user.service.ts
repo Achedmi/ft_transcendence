@@ -2,8 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { HelpersService } from 'src/helpers/helpers.service';
-import { SocketGateway } from 'src/socket/socket.gateway';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
