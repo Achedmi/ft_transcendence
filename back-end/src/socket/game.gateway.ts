@@ -2,7 +2,7 @@ import { SubscribeMessage, WebSocketServer, WebSocketGateway } from '@nestjs/web
 import { Server, Socket } from 'socket.io';
 import { GameService } from 'src/game/game.service';
 
-@WebSocketGateway({ namespace: '/game', cors: true, origins: '*:*' })
+@WebSocketGateway({ namespace: '/game', cors: true, origins: 'http://localhost:6969' })
 export class GameGateway {
   constructor(private readonly gameService: GameService) {}
 
