@@ -1,16 +1,17 @@
 import { SubscribeMessage, WebSocketServer, WebSocketGateway } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { GameService } from 'src/game/game.service';
 
-@WebSocketGateway({ namespace: '/game' })
+@WebSocketGateway({ namespace: '/game', cors: true, origins: '*:*' })
 export class GameGateway {
+  constructor(private readonly gameService: GameService) {}
+
   @WebSocketServer()
   server: Server;
 
   readyToPlayQueue: {
     [userId: number]: string;
   } = {};
-
-  //
 
   afterInit(server: Server) {
     console.log('Game Socket initialized');
@@ -25,17 +26,23 @@ export class GameGateway {
   }
 
   @SubscribeMessage('readyToPlay')
-  joinGame(client: Socket, data: { userId: number }) {
+  async readyToPlay(client: Socket, data: { userId: number }) {
     console.log(client.id, 'joining game: ', data.userId);
     this.readyToPlayQueue[data.userId] = client.id;
     if (Object.keys(this.readyToPlayQueue).length >= 2) {
-      const players = Object.keys(this.readyToPlayQueue).map((userId) => ({
-        userId: userId,
+      const gameId = (
+        await this.gameService.create({
+          players: Object.keys(this.readyToPlayQueue).map((userId) => +userId),
+        })
+      ).id;
+      const game = Object.keys(this.readyToPlayQueue).map((userId) => ({
+        userId: +userId,
         socketId: this.readyToPlayQueue[userId],
+        gameId,
       }));
-      this.server.to(players[0].socketId).emit('startGame', players);
-      this.server.to(players[1].socketId).emit('startGame', players);
       this.readyToPlayQueue = {};
+      client.join(String(gameId));
+      this.server.to(String(gameId)).emit('gameIsReady', game);
     }
   }
 }
