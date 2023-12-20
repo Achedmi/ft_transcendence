@@ -77,14 +77,26 @@ export class GameGateway {
       //clear the readyToPlayQueue
       this.readyToPlayQueue = {};
 
-      //start the game
-      this.startGame(this.games[gameId]);
+      //start the game countdown
+      this.startGameCountdown(game);
     }
+  }
+
+  startGameCountdown(game) {
+    let count = 5;
+    const interval = setInterval(() => {
+      this.server.to(String(game.gameId)).emit('countdown', count);
+      count--;
+      if (count === 0) {
+        clearInterval(interval);
+        this.startGame(game);
+      }
+    }, 1000);
   }
 
   startGame(game) {
     setInterval(() => {
-      this.server.to(String(game.gameId)).emit('gameUpdate', game);
+      this.server.to(String(game.gameId)).emit('gameUpdates', game);
     }, 2000);
   }
 
