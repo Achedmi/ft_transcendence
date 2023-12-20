@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { Status } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -149,6 +150,14 @@ export class UserService {
       },
     });
     return { message: 'Friend removed successfully.' };
+  }
+
+  async updateUserStatus(id: number, status: Status) {
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: { status },
+    });
+    return user;
   }
 
   async me(id: number) {

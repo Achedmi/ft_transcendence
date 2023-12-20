@@ -14,7 +14,8 @@ enum Status {
   ONLINE
   OFFLINE
   INGAME
-  INQUEE
+  INQUEUE
+  
 }
 
 enum ChatType {

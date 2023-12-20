@@ -1,10 +1,12 @@
 import { SubscribeMessage, WebSocketServer, WebSocketGateway } from '@nestjs/websockets';
+import { Status } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { GameService } from 'src/game/game.service';
+import { UserService } from 'src/user/user.service';
 
 @WebSocketGateway({ namespace: '/game', cors: true, origins: 'http://localhost:6969' })
 export class GameGateway {
-  constructor(private readonly gameService: GameService) {}
+  constructor(private readonly gameService: GameService, private readonly userService: UserService) {}
 
   @WebSocketServer()
   server: Server;
@@ -39,10 +41,16 @@ export class GameGateway {
     console.log('Client disconnected from Game socket: ', client.id);
   }
 
+  async updateUserStatus(userId: number, status: Status, clientId: string) {
+    await this.userService.updateUserStatus(userId, status);
+    this.server.to(clientId).emit('updateStatus', status);
+  }
+
   @SubscribeMessage('readyToPlay')
   async readyToPlay(client: Socket, data: { userId: number }) {
-    console.log(client.id, 'joining game: ', data.userId);
     this.readyToPlayQueue[data.userId] = client;
+
+    await this.updateUserStatus(data.userId, Status.INQUEUE, client.id);
     if (Object.keys(this.readyToPlayQueue).length >= 2) {
       //create game in DB
       const gameId = (
@@ -76,6 +84,10 @@ export class GameGateway {
 
       //clear the readyToPlayQueue
       this.readyToPlayQueue = {};
+
+      //update the users status to INGAME
+      await this.updateUserStatus(game.player1.userId, Status.INGAME, game.player1.socketId);
+      await this.updateUserStatus(game.player2.userId, Status.INGAME, game.player2.socketId);
 
       //start the game countdown
       this.startGameCountdown(game);
