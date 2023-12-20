@@ -6,18 +6,24 @@ import { AxiosError } from 'axios';
 import { Socket } from 'socket.io-client';
 
 export interface User {
+  id?: string;
   username?: string;
   displayName?: string;
   bio?: string;
   avatar?: string;
   isTfaVerified?: boolean;
   isTFAenabled?: boolean;
+  status?: string;
 }
+
+
 
 export interface UserState {
   user: User;
   isRefreshed: boolean;
+
   socket?: { game?: Socket; chat?: Socket };
+  setUserStatus: (status: string) => void;
   setSocket: (socket: { game?: Socket; chat?: Socket }) => void;
   setUserData: (user: Partial<User>) => void;
   fetchUserProfile: () => Promise<boolean> | any;
@@ -31,12 +37,15 @@ export const useUserStore = create<UserState>((set) => ({
     avatar: '',
     isTfaVerified: false,
     isTFAenabled: false,
+    status: '',
   },
   isRefreshed: false,
   setUserData: (user: User) => {
     set((state) => ({ user: { ...state.user, ...user } }));
   },
-
+  setUserStatus: (status: string) => {
+    set((state) => ({ user: { ...state.user, status } }));
+  },
   socket: { game: undefined, chat: undefined },
   setSocket: (socket: { game?: Socket; chat?: Socket }) => {
     set({ socket });

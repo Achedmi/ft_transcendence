@@ -39,6 +39,10 @@ export class GameGateway {
 
   handleDisconnect(client: Socket) {
     console.log('Client disconnected from Game socket: ', client.id);
+
+    //remove the client from the readyToPlayQueue
+    const userId = Object.keys(this.readyToPlayQueue).find((userId) => this.readyToPlayQueue[userId].id === client.id);
+    if (userId) delete this.readyToPlayQueue[userId];
   }
 
   async updateUserStatus(userId: number, status: Status, clientId: string) {
@@ -51,6 +55,7 @@ export class GameGateway {
     this.readyToPlayQueue[data.userId] = client;
 
     await this.updateUserStatus(data.userId, Status.INQUEUE, client.id);
+
     if (Object.keys(this.readyToPlayQueue).length >= 2) {
       //create game in DB
       const gameId = (
@@ -63,12 +68,12 @@ export class GameGateway {
       const game = {
         player1: {
           userId: +Object.keys(this.readyToPlayQueue)[0],
-          socketId: this.readyToPlayQueue[Object.keys(this.readyToPlayQueue)[0]],
+          socketId: this.readyToPlayQueue[Object.keys(this.readyToPlayQueue)[0]].id,
           score: 0,
         },
         player2: {
           userId: +Object.keys(this.readyToPlayQueue)[1],
-          socketId: this.readyToPlayQueue[Object.keys(this.readyToPlayQueue)[1]],
+          socketId: this.readyToPlayQueue[Object.keys(this.readyToPlayQueue)[1]].id,
           score: 0,
         },
         gameId,
@@ -98,11 +103,11 @@ export class GameGateway {
     let count = 5;
     const interval = setInterval(() => {
       this.server.to(String(game.gameId)).emit('countdown', count);
-      count--;
       if (count === 0) {
         clearInterval(interval);
         this.startGame(game);
       }
+      count--;
     }, 1000);
   }
 
@@ -116,5 +121,9 @@ export class GameGateway {
   updateScore(client: Socket, data: { userId: number; score: number; gameId: number }) {
     if (this.games[data.gameId].player1.userId === data.userId) this.games[data.gameId].player1.score++;
     else this.games[data.gameId].player2.score++;
+  }
+  @SubscribeMessage('setMeOnline')
+  setMeOnline(client: Socket, data: { userId: number }) {
+    this.updateUserStatus(data.userId, Status.ONLINE, client.id);
   }
 }
