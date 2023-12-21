@@ -19,6 +19,11 @@ enum Status {
   
 }
 
+enum GameStatus {
+  ENDED
+  ONGOING
+}
+
 enum ChatType {
   DM
   CHANNEL
@@ -116,6 +121,7 @@ model Game {
   player2    User?    @relation("player2", fields: [player2Id], references: [id])
   player1Score Int    @default(0)
   player2Score Int  @default(0)
+  status GameStatus @default(ONGOING)
   winnerPlayer User? @relation("winnerPlayer", fields: [winnerPlayerId], references: [id])
   player1Id  Int?
   player2Id  Int?

@@ -37,11 +37,16 @@ export class GameGateway {
     console.log('New client connected to Game socket: ', client.id);
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client) {
     console.log('Client disconnected from Game socket: ', client.id);
 
-    //remove the client from the readyToPlayQueue
-    const userId = Object.keys(this.readyToPlayQueue).find((userId) => this.readyToPlayQueue[userId].id === client.id);
+    // console.log('userId disconnected :', client.userId);
+    // console.log('gameId :', client.gameId);
+
+    if (client.userId) await this.updateUserStatus(client.userId, Status.STARTINGGAME, client.id);
+
+    //if the user disconnected and still on the queuee, remove him from the readyToPlayQueue
+    const userId = Object.keys(this.readyToPlayQueue).find((userId) => this.readyToPlayQueue[userId]?.id === client.id);
     if (userId) delete this.readyToPlayQueue[userId];
   }
 
@@ -52,6 +57,7 @@ export class GameGateway {
 
   @SubscribeMessage('readyToPlay')
   async readyToPlay(client: Socket, data: { userId: number }) {
+    console.log('readyToPlay', data.userId);
     this.readyToPlayQueue[data.userId] = client;
 
     await this.updateUserStatus(data.userId, Status.INQUEUE, client.id);
@@ -79,6 +85,14 @@ export class GameGateway {
         gameId,
       };
 
+      //add the gameId to the socket
+      this.readyToPlayQueue[game.player1.userId].gameId = gameId;
+      this.readyToPlayQueue[game.player2.userId].gameId = gameId;
+
+      //add the userId to the socket
+      this.readyToPlayQueue[game.player1.userId].userId = game.player1.userId;
+      this.readyToPlayQueue[game.player2.userId].userId = game.player2.userId;
+
       //joing the clients to the game room
       this.readyToPlayQueue[game.player1.userId].join(String(gameId));
       this.readyToPlayQueue[game.player2.userId].join(String(gameId));
@@ -101,7 +115,7 @@ export class GameGateway {
 
   startGameCountdown(game) {
     let count = 5;
-    const interval =  setInterval(async () => {
+    const interval = setInterval(async () => {
       this.server.to(String(game.gameId)).emit('countdown', count);
       if (count === 0) {
         clearInterval(interval);
@@ -114,14 +128,14 @@ export class GameGateway {
   }
 
   async startGame(game) {
-    
     setInterval(() => {
       this.server.to(String(game.gameId)).emit('gameUpdates', game);
-    }, 1000/60);
+    }, 1000 / 60);
   }
 
   @SubscribeMessage('incrementScore')
   incrementScore(client: Socket, data: { userId: number; gameId: number }) {
+    console.log(data);
     if (this.games[data.gameId].player1.userId === data.userId) this.games[data.gameId].player1.score++;
     else this.games[data.gameId].player2.score++;
   }
@@ -129,12 +143,11 @@ export class GameGateway {
   setMeOnline(client: Socket, data: { userId: number }) {
     this.updateUserStatus(data.userId, Status.ONLINE, client.id);
   }
-  
-  @SubscribeMessage("toggleOnline")
-  async toggleOnline(client:Socket, data:{userId:number})
-  {
-    const userStatus = (await this.userService.findUnique({id:data.userId})).status; 
-    if(userStatus === Status.ONLINE) this.updateUserStatus(data.userId, Status.OFFLINE, client.id);
+
+  @SubscribeMessage('toggleOnline')
+  async toggleOnline(client: Socket, data: { userId: number }) {
+    const userStatus = (await this.userService.findUnique({ id: data.userId })).status;
+    if (userStatus === Status.ONLINE) this.updateUserStatus(data.userId, Status.OFFLINE, client.id);
     else this.updateUserStatus(data.userId, Status.ONLINE, client.id);
   }
 }
