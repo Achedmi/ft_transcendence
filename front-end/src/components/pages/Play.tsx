@@ -3,14 +3,45 @@ import { useUserStore } from '../../user/userStore';
 import { PropagateLoader } from 'react-spinners';
 import { useEffect } from 'react';
 import { useGameStore } from '../../game/gameStore';
+import axios from '../../utils/axios';
+import { toast } from 'react-toastify';
+import toastConfig from '../../utils/toastConf';
 
 const Play = () => {
-  const { socket, user, setUserStatus } = useUserStore();
+  const { socket, user, setUserData, abelToPlay, setAbelToPlay } = useUserStore();
   const game = useGameStore();
-  const handleClassicMode = () => {
+  const handleClassicMode = async () => {
+    // axios.get('/user/isAbleToPlay').then((res) => {
+    //   setAbelToPlay(res?.data);
+    //   console.log(res?.data);
+    // });
+    console.log('isAbleToPlay', abelToPlay);
+    const isAbleToPlay = (await axios.get('/user/isAbleToPlay'))?.data;
+    setAbelToPlay(isAbleToPlay);
+    if (!isAbleToPlay)
+    {
+      toast.promise(
+        async () => {
+          throw new Error();
+        },
+        toastConfig({
+          success: '',
+          pending: '',
+          error: "you're already playing or in queue.",
+        }),
+      );
+      return;
+    } 
     socket?.game?.emit('readyToPlay', { userId: user.id });
     console.log('readyToPlay sent');
   };
+
+  // useEffect(() => {
+  //   axios.get('/user/isAbleToPlay').then((res) => {
+  //     setAbelToPlay(res?.data);
+  //     console.log(res?.data);
+  //   });
+  // }, [abelToPlay]);
 
   const handleIncrement = () => {
     socket?.game?.emit('incrementScore', { userId: user.id, gameId: game.id });
@@ -20,7 +51,7 @@ const Play = () => {
   useEffect(() => {
     socket?.game?.on('updateStatus', (status: string) => {
       console.log('updateStatus', status);
-      setUserStatus(status);
+      setUserData({ status });
     });
 
     socket?.game?.on('gameIsReady', (data: any) => {
@@ -44,11 +75,11 @@ const Play = () => {
     };
   }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore]);
 
+  
   return (
     <div className='h-full w-full flex gap-4'>
-      <button onClick={() => socket?.game?.emit('toggleOnline', {userId:user.id})}>toggle online</button>
       <div className='bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'>
-        {user.status == 'ONLINE' && (
+        {!abelToPlay && (
           <>
             <motion.div
               className='red relative aspect-[3/4] w-[40%]  md:w-[35%] max-w-[400px] border-solid border-[4px] border-dark-cl  flex flex-col hover:cursor-pointer'
@@ -89,18 +120,18 @@ const Play = () => {
             </motion.div>
           </>
         )}
-        {user.status?.startsWith('INQUEUE') && (
+        {user.status?.startsWith('INQUEUE') && abelToPlay && (
           <div className='flex flex-col justify-center items-center gap-4'>
             <div className='text-dark-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>Looking for a game...</div>
             <PropagateLoader color='#433650' speedMultiplier={0.8}></PropagateLoader>
           </div>
         )}
-        {user.status?.startsWith('STARTINGGAME') && (
+        {user.status?.startsWith('STARTINGGAME') && abelToPlay && (
           <div className='flex flex-col justify-center items-center gap-4'>
             {<span className='text-dark-cl text-xl sm:text-xl  lg:text-2xl font-bold'>Starting in {game.counter} seconds...</span>}
           </div>
         )}
-        {user.status?.startsWith('INGAME') && (
+        {user.status?.startsWith('INGAME') && abelToPlay && (
           <div className='flex flex-col justify-center items-center h-full w-full'>
             playing
             <div className='flex gap-10'>

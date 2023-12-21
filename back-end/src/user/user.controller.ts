@@ -27,6 +27,12 @@ import { AddFriendDto } from './dto/addFriend.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+    @Get("isAbleToPlay")
+  isAbleToPlay(@GetCurrent('id') id: number) {
+    console.log("isAbleToPlay", id)
+    return this.userService.isAbleToPlay(id);
+  }
+  
   @Get()
   findAll() {
     return this.userService.findAll();
@@ -72,4 +78,13 @@ export class UserController {
   findUser(@GetCurrent('id') id: number, @Param('username') username: string) {
     return this.userService.findOneByUsername(id, username);
   }
+
+
+  @Post("setMeOnline")
+  setMeOnline(@GetCurrent('id') id: number) {
+    return this.userService.setMeOnline(id);
+  }
+
+
 }
+//

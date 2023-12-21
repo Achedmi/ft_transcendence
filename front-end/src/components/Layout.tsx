@@ -7,6 +7,7 @@ import CommandSearchResults, { CommandSearch } from './SearchFilter';
 import { useSearchStore } from './SearchFilter';
 import io from 'socket.io-client';
 import { useUserStore } from '../user/userStore';
+import axios from '../utils/axios';
 
 export function CommandDialogDemo() {
   const navigate = useNavigate();
@@ -93,19 +94,21 @@ export function CommandDialogDemo() {
 }
 
 function PrivateRoutes() {
-  const { socket, setSocket, user } = useUserStore();
+  const { socket, setSocket, user, setUserData } = useUserStore();
 
   useEffect(() => {
     const gameSocket = io(`http://${import.meta.env.VITE_ADDRESS}:9696/game`, {
       withCredentials: true,
       transports: ['websocket'],
     });
-    // gameSocket.on('connect', () => );
 
-    // gameSocket.on('disconnect', () => gameSocket.emit('setMeOnline', { userId: user.id }));
-
+    gameSocket.on('connect', async () => {
+      if (user.status === 'OFFLINE') {
+        await axios.post('user/setMeOnline');
+        setUserData({ status: 'ONLINE' });
+      }
+    });
     setSocket({ game: gameSocket });
-
     return () => {
       if (socket?.game) socket.game.disconnect();
       if (socket?.chat) socket.chat.disconnect();

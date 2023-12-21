@@ -21,12 +21,13 @@ export interface User {
 export interface UserState {
   user: User;
   isRefreshed: boolean;
+  abelToPlay: boolean;
 
   socket?: { game?: Socket; chat?: Socket };
-  setUserStatus: (status: string) => void;
   setSocket: (socket: { game?: Socket; chat?: Socket }) => void;
   setUserData: (user: Partial<User>) => void;
   fetchUserProfile: () => Promise<boolean> | any;
+  setAbelToPlay: (abelToPlay: boolean) => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -43,9 +44,7 @@ export const useUserStore = create<UserState>((set) => ({
   setUserData: (user: User) => {
     set((state) => ({ user: { ...state.user, ...user } }));
   },
-  setUserStatus: (status: string) => {
-    set((state) => ({ user: { ...state.user, status } }));
-  },
+  abelToPlay: false,
   socket: { game: undefined, chat: undefined },
   setSocket: (socket: { game?: Socket; chat?: Socket }) => {
     set({ socket });
@@ -68,5 +67,8 @@ export const useUserStore = create<UserState>((set) => ({
     } catch (error: AxiosError | any) {
       return false;
     }
+  },
+  setAbelToPlay: (abelToPlay: boolean) => {
+    set({ abelToPlay });
   },
 }));

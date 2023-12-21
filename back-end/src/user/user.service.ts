@@ -164,4 +164,19 @@ export class UserService {
     const user = await this.prisma.user.findUnique({ where: { id } });
     return user;
   }
+
+  async setMeOnline(id: number) {
+    await this.prisma.user.update({
+      where: { id },
+      data: { status: Status.ONLINE },
+    });
+  }
+
+  async isAbleToPlay(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: { status: true },
+    });
+    return user.status === Status.ONLINE;
+  }
 }

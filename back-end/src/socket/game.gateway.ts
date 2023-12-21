@@ -38,13 +38,12 @@ export class GameGateway {
   }
 
   async handleDisconnect(client) {
-    console.log('Client disconnected from Game socket: ', client.id);
+    // console.log('zzzzzzz zz zzz Client disconnected from Game socket: ', client.userId);
 
-    // console.log('userId disconnected :', client.userId);
-    // console.log('gameId :', client.gameId);
 
-    if (client.userId) await this.updateUserStatus(client.userId, Status.STARTINGGAME, client.id);
+    if (client.userId) await this.updateUserStatus(client.userId, Status.OFFLINE, client.id);
 
+    //
     //if the user disconnected and still on the queuee, remove him from the readyToPlayQueue
     const userId = Object.keys(this.readyToPlayQueue).find((userId) => this.readyToPlayQueue[userId]?.id === client.id);
     if (userId) delete this.readyToPlayQueue[userId];
@@ -56,8 +55,8 @@ export class GameGateway {
   }
 
   @SubscribeMessage('readyToPlay')
-  async readyToPlay(client: Socket, data: { userId: number }) {
-    console.log('readyToPlay', data.userId);
+  async readyToPlay(client, data: { userId: number }) {
+    client.userId = data.userId;
     this.readyToPlayQueue[data.userId] = client;
 
     await this.updateUserStatus(data.userId, Status.INQUEUE, client.id);
@@ -90,8 +89,8 @@ export class GameGateway {
       this.readyToPlayQueue[game.player2.userId].gameId = gameId;
 
       //add the userId to the socket
-      this.readyToPlayQueue[game.player1.userId].userId = game.player1.userId;
-      this.readyToPlayQueue[game.player2.userId].userId = game.player2.userId;
+      // this.readyToPlayQueue[game.player1.userId].userId = game.player1.userId;
+      // this.readyToPlayQueue[game.player2.userId].userId = game.player2.userId;
 
       //joing the clients to the game room
       this.readyToPlayQueue[game.player1.userId].join(String(gameId));
@@ -139,10 +138,7 @@ export class GameGateway {
     if (this.games[data.gameId].player1.userId === data.userId) this.games[data.gameId].player1.score++;
     else this.games[data.gameId].player2.score++;
   }
-  @SubscribeMessage('setMeOnline')
-  setMeOnline(client: Socket, data: { userId: number }) {
-    this.updateUserStatus(data.userId, Status.ONLINE, client.id);
-  }
+
 
   @SubscribeMessage('toggleOnline')
   async toggleOnline(client: Socket, data: { userId: number }) {
