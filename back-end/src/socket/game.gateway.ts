@@ -38,7 +38,8 @@ export class GameGateway {
   }
 
   async handleDisconnect(client) {
-    // console.log('zzzzzzz zz zzz Client disconnected from Game socket: ', client.userId);
+    console.log('zzzzzzz zz zzz Client disconnected from Game socket: ', client.userId);
+
 
 
     if (client.userId) await this.updateUserStatus(client.userId, Status.OFFLINE, client.id);
@@ -127,7 +128,15 @@ export class GameGateway {
   }
 
   async startGame(game) {
-    setInterval(() => {
+   const interval = setInterval(async () => {
+      if (game.player1.score > 10 || game.player2.score > 10)
+      {
+        clearInterval(interval)
+        await this.updateUserStatus(game.player1.userId, Status.ONLINE, game.player1.socketId);
+        await this.updateUserStatus(game.player2.userId, Status.ONLINE, game.player2.socketId);
+        this.server.to(String(game.gameId)).emit('gameEnded');
+
+      }
       this.server.to(String(game.gameId)).emit('gameUpdates', game);
     }, 1000 / 60);
   }
@@ -140,10 +149,10 @@ export class GameGateway {
   }
 
 
-  @SubscribeMessage('toggleOnline')
-  async toggleOnline(client: Socket, data: { userId: number }) {
-    const userStatus = (await this.userService.findUnique({ id: data.userId })).status;
-    if (userStatus === Status.ONLINE) this.updateUserStatus(data.userId, Status.OFFLINE, client.id);
-    else this.updateUserStatus(data.userId, Status.ONLINE, client.id);
-  }
+  // @SubscribeMessage('toggleOnline')
+  // async toggleOnline(client: Socket, data: { userId: number }) {
+  //   const userStatus = (await this.userService.findUnique({ id: data.userId })).status;
+  //   if (userStatus === Status.ONLINE) this.updateUserStatus(data.userId, Status.OFFLINE, client.id);
+  //   else this.updateUserStatus(data.userId, Status.ONLINE, client.id);
+  // }
 }

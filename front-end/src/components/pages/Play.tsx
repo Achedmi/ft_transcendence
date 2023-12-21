@@ -68,6 +68,10 @@ const Play = () => {
       game.setOpponentScore(data.player1.userId === user.id ? data.player2.score : data.player1.score);
     });
 
+    socket?.game?.on("gameEnded", ()=>{
+      window.location.reload();
+    })
+
     return () => {
       socket?.game?.off('updateStatus');
       socket?.game?.off('countdown');
