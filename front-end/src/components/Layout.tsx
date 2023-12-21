@@ -100,7 +100,9 @@ function PrivateRoutes() {
       withCredentials: true,
       transports: ['websocket'],
     });
-    gameSocket.on('connect', () => gameSocket.emit('setMeOnline', { userId: user.id }));
+    // gameSocket.on('connect', () => );
+
+    // gameSocket.on('disconnect', () => gameSocket.emit('setMeOnline', { userId: user.id }));
 
     setSocket({ game: gameSocket });
 

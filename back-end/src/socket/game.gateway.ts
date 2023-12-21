@@ -91,8 +91,8 @@ export class GameGateway {
       this.readyToPlayQueue = {};
 
       //update the users status to INGAME
-      await this.updateUserStatus(game.player1.userId, Status.INGAME, game.player1.socketId);
-      await this.updateUserStatus(game.player2.userId, Status.INGAME, game.player2.socketId);
+      await this.updateUserStatus(game.player1.userId, Status.STARTINGGAME, game.player1.socketId);
+      await this.updateUserStatus(game.player2.userId, Status.STARTINGGAME, game.player2.socketId);
 
       //start the game countdown
       this.startGameCountdown(game);
@@ -101,29 +101,40 @@ export class GameGateway {
 
   startGameCountdown(game) {
     let count = 5;
-    const interval = setInterval(() => {
+    const interval =  setInterval(async () => {
       this.server.to(String(game.gameId)).emit('countdown', count);
       if (count === 0) {
         clearInterval(interval);
+        await this.updateUserStatus(game.player1.userId, Status.INGAME, game.player1.socketId);
+        await this.updateUserStatus(game.player2.userId, Status.INGAME, game.player2.socketId);
         this.startGame(game);
       }
       count--;
     }, 1000);
   }
 
-  startGame(game) {
+  async startGame(game) {
+    
     setInterval(() => {
       this.server.to(String(game.gameId)).emit('gameUpdates', game);
-    }, 2000);
+    }, 1000/60);
   }
 
-  @SubscribeMessage('uncrementScore')
-  updateScore(client: Socket, data: { userId: number; score: number; gameId: number }) {
+  @SubscribeMessage('incrementScore')
+  incrementScore(client: Socket, data: { userId: number; gameId: number }) {
     if (this.games[data.gameId].player1.userId === data.userId) this.games[data.gameId].player1.score++;
     else this.games[data.gameId].player2.score++;
   }
   @SubscribeMessage('setMeOnline')
   setMeOnline(client: Socket, data: { userId: number }) {
     this.updateUserStatus(data.userId, Status.ONLINE, client.id);
+  }
+  
+  @SubscribeMessage("toggleOnline")
+  async toggleOnline(client:Socket, data:{userId:number})
+  {
+    const userStatus = (await this.userService.findUnique({id:data.userId})).status; 
+    if(userStatus === Status.ONLINE) this.updateUserStatus(data.userId, Status.OFFLINE, client.id);
+    else this.updateUserStatus(data.userId, Status.ONLINE, client.id);
   }
 }

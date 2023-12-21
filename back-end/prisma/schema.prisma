@@ -15,6 +15,7 @@ enum Status {
   OFFLINE
   INGAME
   INQUEUE
+  STARTINGGAME
   
 }
 

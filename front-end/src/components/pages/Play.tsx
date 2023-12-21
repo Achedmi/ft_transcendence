@@ -6,34 +6,47 @@ import { useGameStore } from '../../game/gameStore';
 
 const Play = () => {
   const { socket, user, setUserStatus } = useUserStore();
-  const { counter, setCounter } = useGameStore();
+  const game = useGameStore();
   const handleClassicMode = () => {
     socket?.game?.emit('readyToPlay', { userId: user.id });
     console.log('readyToPlay sent');
   };
 
-  useEffect(() => {
+  const handleIncrement = () => {
+    socket?.game?.emit('incrementScore', { userId: user.id, gameId: game.id });
+    console.log('increment sent');
+  };
 
+  useEffect(() => {
     socket?.game?.on('updateStatus', (status: string) => {
       console.log('updateStatus', status);
       setUserStatus(status);
     });
 
+    socket?.game?.on('gameIsReady', (data: any) => {
+      game.setId(data.gameId);
+    });
+
     socket?.game?.on('countdown', (count: number) => {
-      setCounter(count);
+      game.setCounter(count);
       console.log('countdown', count);
     });
 
+    socket?.game?.on('gameUpdates', (data: any) => {
+      game.setMyScore(data.player1.userId === user.id ? data.player1.score : data.player2.score);
+      game.setOpponentScore(data.player1.userId === user.id ? data.player2.score : data.player1.score);
+    });
 
     return () => {
       socket?.game?.off('updateStatus');
       socket?.game?.off('countdown');
+      socket?.game?.off('gameUpdates');
     };
-
-  }, [user.status, counter, socket?.game]);
+  }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore]);
 
   return (
     <div className='h-full w-full flex gap-4'>
+      <button onClick={() => socket?.game?.emit('toggleOnline', {userId:user.id})}>toggle online</button>
       <div className='bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'>
         {user.status == 'ONLINE' && (
           <>
@@ -82,15 +95,21 @@ const Play = () => {
             <PropagateLoader color='#433650' speedMultiplier={0.8}></PropagateLoader>
           </div>
         )}
-        {user.status?.startsWith('INGAME') && counter > 0 && (
+        {user.status?.startsWith('STARTINGGAME') && (
           <div className='flex flex-col justify-center items-center gap-4'>
-            {<span className='text-dark-cl text-xl sm:text-xl  lg:text-2xl font-bold'>Starting in {counter} seconds...</span>}
+            {<span className='text-dark-cl text-xl sm:text-xl  lg:text-2xl font-bold'>Starting in {game.counter} seconds...</span>}
           </div>
         )}
-        {user.status?.startsWith('INGAME') && counter < 1 && (
+        {user.status?.startsWith('INGAME') && (
           <div className='flex flex-col justify-center items-center h-full w-full'>
             playing
-            <div className='bg-dark-cl aspect-video w-[90%] max-w-6xl'></div>
+            <div className='flex gap-10'>
+              <span>{`${user.displayName}: ${game.myScore} `}</span>
+              <span>{`Opponent: ${game.opponentScore} `}</span>
+            </div>
+            <div className='bg-dark-cl aspect-video w-[90%] max-w-6xl flex justify-center items-center'>
+              <button onClick={handleIncrement}>add score</button>
+            </div>
           </div>
         )}
       </div>
