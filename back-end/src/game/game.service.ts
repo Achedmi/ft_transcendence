@@ -24,11 +24,28 @@ export class GameService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} game`;
+    return this.prismaService.game.findUnique({
+      where: { id },
+      include: {
+        player1: true,
+        player2: true,
+        winnerPlayer: true,
+      },
+    });
   }
 
-  update(id: number, updateGameDto: UpdateGameDto) {
-    return `This action updates a #${id} game`;
+  async update(id: number, updateGameDto: UpdateGameDto) {
+    await this.prismaService.game.update({
+      where: { id },
+      data: {
+        player1Score: updateGameDto.player1Score,
+        player2Score: updateGameDto.player2Score,
+        winnerPlayer: {
+          connect: { id: updateGameDto.winnerPlayer },
+        },
+        status: updateGameDto.status,
+      },
+    });
   }
 
   remove(id: number) {

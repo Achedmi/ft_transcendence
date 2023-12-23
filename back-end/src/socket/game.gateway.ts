@@ -1,5 +1,5 @@
 import { SubscribeMessage, WebSocketServer, WebSocketGateway } from '@nestjs/websockets';
-import { Status } from '@prisma/client';
+import { GameStatus, Status } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { GameService } from 'src/game/game.service';
 import { UserService } from 'src/user/user.service';
@@ -37,22 +37,32 @@ export class GameGateway {
     console.log('New client connected to Game socket: ', client.id);
   }
 
+  async updateUserStatus(userId: number, status: Status, clientId: string) {
+    await this.userService.updateUserStatus(userId, status);
+    this.server.to(clientId).emit('updateStatus', status);
+  }
+
   async handleDisconnect(client) {
     console.log('zzzzzzz zz zzz Client disconnected from Game socket: ', client.userId);
 
-
-
     if (client.userId) await this.updateUserStatus(client.userId, Status.OFFLINE, client.id);
+    if (client.gameId) {
+      const game = await this.gameService.findOne(client.gameId);
+      if (game.status === GameStatus.ENDED) return;
+      const disconnectedPlayer = game.player1.id === client.userId ? game.player1 : game.player2;
+      await this.gameService.update(game.id, {
+        player1Score: disconnectedPlayer.id === game.player1.id ? this.games[game.id].player1.score : 3,
+        player2Score: disconnectedPlayer.id === game.player2.id ? this.games[game.id].player2.score : 3,
+        winnerPlayer: disconnectedPlayer.id === game.player1.id ? game.player2.id : game.player1.id,
+        status: GameStatus.ENDED,
+      });
+      this.server.to(String(client.gameId)).emit('gameEnded');
+    }
 
     //
     //if the user disconnected and still on the queuee, remove him from the readyToPlayQueue
     const userId = Object.keys(this.readyToPlayQueue).find((userId) => this.readyToPlayQueue[userId]?.id === client.id);
     if (userId) delete this.readyToPlayQueue[userId];
-  }
-
-  async updateUserStatus(userId: number, status: Status, clientId: string) {
-    await this.userService.updateUserStatus(userId, status);
-    this.server.to(clientId).emit('updateStatus', status);
   }
 
   @SubscribeMessage('readyToPlay')
@@ -128,14 +138,18 @@ export class GameGateway {
   }
 
   async startGame(game) {
-   const interval = setInterval(async () => {
-      if (game.player1.score > 10 || game.player2.score > 10)
-      {
-        clearInterval(interval)
+    const interval = setInterval(async () => {
+      if (game.player1.score > 2 || game.player2.score > 2) {
+        clearInterval(interval);
         await this.updateUserStatus(game.player1.userId, Status.ONLINE, game.player1.socketId);
         await this.updateUserStatus(game.player2.userId, Status.ONLINE, game.player2.socketId);
+        await this.gameService.update(game.gameId, {
+          player1Score: game.player1.score,
+          player2Score: game.player2.score,
+          winnerPlayer: game.player1.score > game.player2.score ? game.player1.userId : game.player2.userId,
+          status: GameStatus.ENDED,
+        });
         this.server.to(String(game.gameId)).emit('gameEnded');
-
       }
       this.server.to(String(game.gameId)).emit('gameUpdates', game);
     }, 1000 / 60);
@@ -147,7 +161,6 @@ export class GameGateway {
     if (this.games[data.gameId].player1.userId === data.userId) this.games[data.gameId].player1.score++;
     else this.games[data.gameId].player2.score++;
   }
-
 
   // @SubscribeMessage('toggleOnline')
   // async toggleOnline(client: Socket, data: { userId: number }) {
