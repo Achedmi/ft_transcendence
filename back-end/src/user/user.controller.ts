@@ -27,12 +27,12 @@ import { AddFriendDto } from './dto/addFriend.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-    @Get("isAbleToPlay")
+  @Get('isAbleToPlay')
   isAbleToPlay(@GetCurrent('id') id: number) {
-    console.log("isAbleToPlay", id)
+    console.log('isAbleToPlay', id);
     return this.userService.isAbleToPlay(id);
   }
-  
+
   @Get()
   findAll() {
     return this.userService.findAll();
@@ -52,6 +52,10 @@ export class UserController {
     image,
   ) {
     return await this.userService.update(image, id, updateUserDto);
+  }
+  @Get('games')
+  getGames(@GetCurrent('id') id: number) {
+    return this.userService.getGames(id);
   }
 
   @Post('addFriend/:friendId')
@@ -79,12 +83,9 @@ export class UserController {
     return this.userService.findOneByUsername(id, username);
   }
 
-
-  @Post("setMeOnline")
+  @Post('setMeOnline')
   setMeOnline(@GetCurrent('id') id: number) {
     return this.userService.setMeOnline(id);
   }
-
-
 }
 //

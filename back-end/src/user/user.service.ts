@@ -179,4 +179,39 @@ export class UserService {
     });
     return user.status === Status.ONLINE;
   }
+
+  async getGames(id: number) {
+    const games = await this.prisma.game.findMany({
+      where: {
+        OR: [{ player1Id: id }, { player2Id: id }],
+      },
+      include: {
+        player1: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            avatar: true,
+          },
+        },
+        player2: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            avatar: true,
+          },
+        },
+        winnerPlayer: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+    return games;
+  }
 }
