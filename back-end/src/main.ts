@@ -10,6 +10,7 @@ async function bootstrap() {
     origin: 'http://localhost:6969',
     credentials: true,
   });
+  //
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
