@@ -103,10 +103,10 @@ function PrivateRoutes() {
     });
 
     gameSocket.on('connect', async () => {
-      if (user.status === 'OFFLINE') {
-        await axios.post('user/setMeOnline');
-        setUserData({ status: 'ONLINE' });
-      }
+      // if (user.status === 'OFFLINE') {
+      //   await axios.post('user/setMeOnline');
+      //   setUserData({ status: 'ONLINE' });
+      // }
     });
     setSocket({ game: gameSocket });
     return () => {

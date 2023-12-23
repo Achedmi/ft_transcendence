@@ -40,9 +40,11 @@ export class GameService {
       data: {
         player1Score: updateGameDto.player1Score,
         player2Score: updateGameDto.player2Score,
-        winnerPlayer: {
-          connect: { id: updateGameDto.winnerPlayer },
-        },
+        winnerPlayerId: updateGameDto.winnerPlayer,
+
+        // winnerPlayer: {
+        //   connect: { id: updateGameDto.winnerPlayer },
+        // },
         status: updateGameDto.status,
       },
     });
