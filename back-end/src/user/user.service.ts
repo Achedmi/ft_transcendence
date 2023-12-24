@@ -180,61 +180,39 @@ export class UserService {
     return user.status === Status.ONLINE;
   }
 
-  async getGames(id: number) {
+  async getGames(usernmae: string) {
     const games = await this.prisma.game.findMany({
       where: {
-        OR: [{ player1Id: id }, { player2Id: id }],
+        OR: [{ player1: { username: usernmae } }, { player2: { username: usernmae } }],
       },
       include: {
-        player1: {
-          select: {
-            id: true,
-            username: true,
-            displayName: true,
-            avatar: true,
-          },
-        },
-        player2: {
-          select: {
-            id: true,
-            username: true,
-            displayName: true,
-            avatar: true,
-          },
-        },
-        winnerPlayer: {
-          select: {
-            id: true,
-            username: true,
-            displayName: true,
-            avatar: true,
-          },
-        },
+        player1: true,
+        player2: true,
+        winnerPlayer: true,
       },
     });
+
     return games;
   }
 
-  async getWinsAndLosses(id: number) {
+  async getWinsAndLosses(username: string) {
     const wins = await this.prisma.game.count({
       where: {
-        AND: [
-          { winnerPlayerId: id },
-          {
-            OR: [{ player1Id: id }, { player2Id: id }],
-          },
-        ],
+        winnerPlayer: {
+          username,
+        },
         status: GameStatus.ENDED,
       },
     });
+
     const losses = await this.prisma.game.count({
       where: {
-        AND: [
-          { winnerPlayerId: { not: id } },
-          {
-            OR: [{ player1Id: id }, { player2Id: id }],
+        OR: [{ player1: { username } }, { player2: { username } }],
+        NOT: {
+          winnerPlayer: {
+            username,
           },
-        ],
+        },
         status: GameStatus.ENDED,
       },
     });

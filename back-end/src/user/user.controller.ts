@@ -53,14 +53,14 @@ export class UserController {
   ) {
     return await this.userService.update(image, id, updateUserDto);
   }
-  @Get('games/:id')
-  getGames(@Param('id') id: number) {
-    return this.userService.getGames(id);
+  @Get('games/:username')
+  getGames(@Param('username') username: string) {
+    return this.userService.getGames(username);
   }
 
-  @Get('games/winsAndLosses/:id')
-  getWinsAndLosses(@Param('id') id: number) {
-    return this.userService.getWinsAndLosses(id);
+  @Get('games/winsAndLosses/:username')
+  getWinsAndLosses(@Param('username') username: string) {
+    return this.userService.getWinsAndLosses(username);
   }
 
   @Post('addFriend/:friendId')
