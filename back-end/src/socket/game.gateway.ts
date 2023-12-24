@@ -57,19 +57,13 @@ export class GameGateway {
   //==================================================handleDisconnect==================================================
 
   async handleDisconnect(client) {
-    console.log('################Client disconnected from Game socket: ', client.user.username, client?.gameId, this.games[client?.gameId]);
-
-    // if (client.gameId && this.games[client.gameId].status === GameStatus.ONGOING) {
-    //   this.games[client.gameId].status = GameStatus.ENDED;
-
-    //   this.server.to(client.gameId).emit('gameEnded');
-    // }
+    if (!client.user) return;
+    console.log('Client disconnected from Game socket: ', client.user.username);
     await this.updateUserStatus(client.user.id, Status.OFFLINE, client.id);
     this.connectedUsers.delete(client.user.id);
     delete this.readyToPlayQueue[client.user.id];
-    //
-    //
   }
+
   //==================================================handleDisconnect==================================================
 
   async updateUserStatus(userId: number, status: Status, clientId: string) {
@@ -98,7 +92,7 @@ export class GameGateway {
       await this.updateUserStatus(player2Socket['user'].id, Status.STARTINGGAME, player2Socket.id);
 
       const interval = setInterval(async () => {
-        if (count === 0 && player1Socket.connected && player2Socket.connected) {
+        if (count === 0) {
           clearInterval(interval);
 
           const game = await this.gameService.create({
@@ -107,6 +101,21 @@ export class GameGateway {
 
           player1Socket['gameId'] = game.id;
           player2Socket['gameId'] = game.id;
+
+          this.games[game.id] = {
+            player1: {
+              userId: player1Socket['user'].id,
+              socketId: player1Socket.id,
+              score: 0,
+            },
+            player2: {
+              userId: player2Socket['user'].id,
+              socketId: player2Socket.id,
+              score: 0,
+            },
+            gameId: game.id,
+            status: GameStatus.ONGOING,
+          };
 
           player1Socket.leave(uniqueRoom);
           player2Socket.leave(uniqueRoom);
@@ -125,29 +134,24 @@ export class GameGateway {
             return;
           }
 
-          this.server.to(String(game.id)).emit('gameIsReady', this.games[game.id]);
-
           await Promise.all([
-            await this.userService.updateUserStatus(player1Socket['user'].id, Status.INGAME),
-            await this.userService.updateUserStatus(player2Socket['user'].id, Status.INGAME),
+            await this.updateUserStatus(player1Socket['user'].id, Status.INGAME, player1Socket.id),
+            await this.updateUserStatus(player2Socket['user'].id, Status.INGAME, player2Socket.id),
           ]);
 
-          this.server.to(String(game.id)).emit('updateStatus', Status.INGAME);
+          this.server.to(String(game.id)).emit('gameIsReady', this.games[game.id]);
 
-          this.games[game.id] = {
-            player1: {
-              userId: player1Socket['user'].id,
-              socketId: player1Socket.id,
-              score: 0,
-            },
-            player2: {
-              userId: player2Socket['user'].id,
-              socketId: player2Socket.id,
-              score: 0,
-            },
-            gameId: game.id,
-            status: GameStatus.ONGOING,
-          };
+          if (player1Socket.disconnected || player2Socket.disconnected) {
+            await this.gameService.update(client.gameId, {
+              player1Score: player1Socket.disconnected ? 0 : 3,
+              player2Score: player2Socket.disconnected ? 0 : 3,
+              winnerPlayer: player1Socket.disconnected ? player2Socket.user.id : player1Socket.user.id,
+              status: GameStatus.ENDED,
+            });
+            this.server.to(String(game.id)).emit('gameEnded');
+            return;
+          }
+
           this.startGame(this.games[game.id], player1Socket, player2Socket);
         } else if (player1Socket.disconnected || player2Socket.disconnected) {
           player1Socket.disconnected ?? player2Socket.emit('gameEnded');
@@ -180,7 +184,7 @@ export class GameGateway {
         this.server.to(String(game.gameId)).emit('gameEnded');
       }
       this.server.to(String(game.gameId)).emit('gameUpdates', game);
-    }, 1000);
+    }, 1000 / 60);
   }
 
   @SubscribeMessage('incrementScore')
