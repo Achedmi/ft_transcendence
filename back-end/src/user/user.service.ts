@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { Status } from '@prisma/client';
+import { GameStatus, Status } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -213,5 +213,31 @@ export class UserService {
       },
     });
     return games;
+  }
+
+  async getWinsAndLosses(id: number) {
+    const wins = await this.prisma.game.count({
+      where: {
+        AND: [
+          { winnerPlayerId: id },
+          {
+            OR: [{ player1Id: id }, { player2Id: id }],
+          },
+        ],
+        status: GameStatus.ENDED,
+      },
+    });
+    const losses = await this.prisma.game.count({
+      where: {
+        AND: [
+          { winnerPlayerId: { not: id } },
+          {
+            OR: [{ player1Id: id }, { player2Id: id }],
+          },
+        ],
+        status: GameStatus.ENDED,
+      },
+    });
+    return { wins, losses };
   }
 }

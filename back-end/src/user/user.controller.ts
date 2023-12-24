@@ -58,6 +58,11 @@ export class UserController {
     return this.userService.getGames(id);
   }
 
+  @Get('games/winsAndLosses/:id')
+  getWinsAndLosses(@Param('id') id: number) {
+    return this.userService.getWinsAndLosses(id);
+  }
+
   @Post('addFriend/:friendId')
   async addFriend(@GetCurrent('id') id: number, @Param() addFriendDto: AddFriendDto) {
     return await this.userService.addFriend(id, addFriendDto.friendId);
