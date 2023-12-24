@@ -9,6 +9,8 @@ import io from 'socket.io-client';
 import { useUserStore } from '../user/userStore';
 import axios from '../utils/axios';
 import GameInvitePopup from './GameInvitePopup';
+import { AnimatePresence } from 'framer-motion';
+import { useGameStore } from '../game/gameStore';
 
 export function CommandDialogDemo() {
   const navigate = useNavigate();
@@ -95,8 +97,9 @@ export function CommandDialogDemo() {
 }
 
 function PrivateRoutes() {
-  const { socket, setSocket } = useUserStore();
-
+  const { socket, setSocket, setAbelToPlay, abelToPlay } = useUserStore();
+  const game = useGameStore();
+  const navigate = useNavigate();
   useEffect(() => {
     const gameSocket = io(`http://${import.meta.env.VITE_ADDRESS}:9696/game`, {
       withCredentials: true,
@@ -109,6 +112,20 @@ function PrivateRoutes() {
       if (socket?.chat) socket.chat.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    socket?.game?.on('gameIsReady', (data: any) => {
+      console.log(data);
+      game.setId(data.gameId);
+      console.log('gameIsReady');
+      navigate('/play');
+      setAbelToPlay(true);
+    });
+    console.log('gameIsReady');
+    return () => {
+      socket?.game?.off('gameIsReady');
+    };
+  }, [socket?.game, game.id, abelToPlay]);
 
   return (
     <>

@@ -182,6 +182,7 @@ export class GameGateway {
           player2Socket.leave(uniqueRoom);
 
           const game = await this.createGame(player1Socket, player2Socket);
+          
 
           this.startGame(game, player1Socket, player2Socket);
 
@@ -266,7 +267,9 @@ export class GameGateway {
       const player1Socket = this.connectedUsers[data.inviteOwner];
       const player2Socket = this.connectedUsers[client.user.id];
 
-      const game = this.createGame(player1Socket, player2Socket);
+      const game = await this.createGame(player1Socket, player2Socket);
+      console.log("newwww game", game)
+
       this.startGame(game, player1Socket, player2Socket);
     } catch (error) {
       console.log('invalid token');

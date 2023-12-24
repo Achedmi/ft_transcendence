@@ -3,8 +3,42 @@ import HomePong from '../../assets/homepong.svg?react';
 import BlueBlock from '../../assets/blueblock.svg?react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { useUserStore } from '../../user/userStore';
 
 function Home() {
+  // const { socket } = useUserStore();
+
+  // const [token, setToken] = useState('');
+  // const { user } = useUserStore();
+  // const [inviteOwner, setInviteOwner] = useState(0);
+
+  // const handleAccept = useCallback(() => {
+  //   console.log('token:', token);
+  //   console.log('user:', user);
+  //   console.log('inviteOwner:', inviteOwner);
+  //   socket?.game?.emit('acceptInvite', { token: token, from: user.id, inviteOwner });
+  // }, []);
+
+  // useEffect(() => {
+  //   socket?.game?.on('invite', (data: any) => {
+  //     console.log(data);
+  //     setToken(data.token);
+  //     setInviteOwner(data.from);
+  //   });
+
+  //   socket?.game?.on('invalidInvite', (data: any) => {
+  //     console.log('invalid invite');
+  //     console.log(data);
+  //   });
+
+  //   return () => {
+  //     socket?.game?.off('invite');
+  //     socket?.game?.off('invalidInvite');
+  //     socket?.game?.off('gameIsReady');
+  //   };
+  // }, [socket?.game, open, token, user, inviteOwner]);
+
   return (
     <div className='zwa9 bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl flex items-center h-full justify-around '>
       <div className='red sm:flex flex-end h-full justify-center  hidden'>
@@ -14,6 +48,7 @@ function Home() {
           dragConstraints={{ top: -75, bottom: 120 }}
           initial={{ opacity: 0, y: -200 }}
           animate={{ opacity: 1, y: 0 }}
+          // onClick={handleAccept}
         >
           <RedBlock />
         </motion.div>

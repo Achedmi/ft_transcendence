@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import { useUserStore } from './user/userStore.tsx';
 import Chat from './components/pages/chat/Chat.tsx';
 import Ranking from './components/pages/Ranking.tsx';
+import { AnimatePresence } from 'framer-motion';
 
 const queryClient = new QueryClient();
 
@@ -71,7 +72,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
     <Router>
       <ToastContainer />
-      <App />
+        <App />
     </Router>
   </QueryClientProvider>,
   // </React.StrictMode>,

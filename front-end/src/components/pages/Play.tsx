@@ -46,9 +46,9 @@ const Play = () => {
       setUserData({ status });
     });
 
-    socket?.game?.on('gameIsReady', (data: any) => {
-      game.setId(data.gameId);
-    });
+    // socket?.game?.on('gameIsReady', (data: any) => {
+    //   game.setId(data.gameId);
+    // });
 
     socket?.game?.on('countdown', (count: number) => {
       game.setCounter(count);
@@ -72,7 +72,7 @@ const Play = () => {
       socket?.game?.off('updateStatus');
       socket?.game?.off('countdown');
       socket?.game?.off('gameUpdates');
-      socket?.game?.off('gameIsReady');
+      // socket?.game?.off('gameIsReady');
       socket?.game?.off('gameEnded');
     };
   }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore, gameEnded, winner, game.counter]);
