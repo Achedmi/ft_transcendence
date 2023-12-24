@@ -53,8 +53,8 @@ export class UserController {
   ) {
     return await this.userService.update(image, id, updateUserDto);
   }
-  @Get('games')
-  getGames(@GetCurrent('id') id: number) {
+  @Get('games/:id')
+  getGames(@Param('id') id: number) {
     return this.userService.getGames(id);
   }
 
