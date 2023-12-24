@@ -32,15 +32,27 @@ export class GameGateway {
     };
   } = {};
 
-  private connectedUsers = new Set();
+  private connectedUsers = {};
+
+  private readonly invites: {
+    [userId: number]: string[];
+  } = {};
 
   //==================================================handleConnection==================================================
 
   async handleConnection(client: Socket) {
     try {
+      // const testToken = this.jwtService.sign({ id: client.id }, { secret: 'secret', expiresIn: '1m' });
+      // console.log(testToken);
+      // const ff = this.jwtService.verify(
+      //   'eyJhbGciOiJIUzI1NiIsInR5cCIsdsdf6IkpXVCJ9.eyJpZCI6ImJKcmJ3U3k1eWlQNWVZaTBBQUFCIiwiaWF0IjoxNzAzNDMxNzM3LCJleHAiOjE3MDM0MzE3OTd9.JK3lx4uhImMPrIjrW9fAERgwBDhtuqxK59NteeBRMh8',
+      //   { secret: 'secret' },
+      // );
+      // console.log('=============', ff);
+
       const token = client.handshake.headers.cookie?.split('userAT=')[1]?.split('; ')[0];
       const isValidToken = this.jwtService.verify(token, { publicKey: process.env.JWT_ACCESS_SECRET });
-      if (!isValidToken || this.connectedUsers.has(isValidToken.id)) {
+      if (!isValidToken || this.connectedUsers[isValidToken.id]) {
         console.log('----------', isValidToken?.usernae);
         client.disconnect();
         return;
@@ -49,9 +61,11 @@ export class GameGateway {
       console.log('############################################################online', user.username);
       await this.updateUserStatus(user.id, Status.ONLINE, client.id);
       client['user'] = user;
-      this.connectedUsers.add(client['user'].id);
+      this.connectedUsers[user.id] = client;
+
       // console.log('Client connected to Game socket: ', client['user'].username);
     } catch (err) {
+      console.log(err);
       client.disconnect();
     }
   }
@@ -61,7 +75,7 @@ export class GameGateway {
   async handleDisconnect(client) {
     if (!client.user) return;
     console.log('Client disconnected from Game socket: ', client.user.username);
-    this.connectedUsers.delete(client.user.id);
+    delete this.connectedUsers[client.user.id];
     delete this.readyToPlayQueue[client.user.id];
     await this.updateUserStatus(client.user.id, Status.OFFLINE, client.id);
   }
@@ -115,19 +129,20 @@ export class GameGateway {
       const player2Socket = this.readyToPlayQueue[Object.keys(this.readyToPlayQueue)[1]];
       this.readyToPlayQueue = {};
 
-      let count = 2;
+      let count = 4;
       const uniqueRoom = String(uuidv4());
 
       player1Socket.join(uniqueRoom);
       player2Socket.join(uniqueRoom);
 
-      if (player1Socket.disconnected || player2Socket.disconnected) return;
       await this.updateUserStatus(player1Socket['user'].id, Status.STARTINGGAME, player1Socket.id);
       await this.updateUserStatus(player2Socket['user'].id, Status.STARTINGGAME, player2Socket.id);
 
       const interval = setInterval(async () => {
         if (count < 0) {
           clearInterval(interval);
+          player1Socket.leave(uniqueRoom);
+          player2Socket.leave(uniqueRoom);
 
           const game = await this.gameService.create({
             players: [player1Socket['user'].id, player2Socket['user'].id],
@@ -152,9 +167,6 @@ export class GameGateway {
             status: GameStatus.ONGOING,
           };
 
-          player1Socket.leave(uniqueRoom);
-          player2Socket.leave(uniqueRoom);
-
           player1Socket.join(String(game.id));
           player2Socket.join(String(game.id));
 
@@ -175,6 +187,8 @@ export class GameGateway {
           player1Socket.disconnected
             ? await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id)
             : await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
+          player1Socket.leave(uniqueRoom);
+          player2Socket.leave(uniqueRoom);
           return;
         }
 
@@ -206,6 +220,36 @@ export class GameGateway {
     console.log('incrementScore', data);
     if (this.games[data.gameId].player1.userId === data.userId) this.games[data.gameId].player1.score++;
     else this.games[data.gameId].player2.score++;
+  }
+
+  //=================================================================================INVITES=================================================================================
+  @SubscribeMessage('createInvite')
+  async invite(client, data: { userId: number }) {
+    const token = this.jwtService.sign({ id: client.user.id, username: client.user.username }, { secret: 'secret', expiresIn: '1h' });
+    if (!this.invites[client.user.id]) this.invites[client.user.id] = [];
+    this.invites[client.user.id].push(token);
+    if (data.userId) this.server.to(this.connectedUsers[data.userId].id).emit('invite', { token, from: client.user.id });
+  }
+
+  @SubscribeMessage('acceptInvite')
+  async acceptInvite(client, data: { token: string; from: number }) {
+    try {
+      if (!this.invites[data.from]) {
+        client.emit('invalidToken', { message: 'Invalid token' });
+        return;
+      }
+      const isValidToken = this.jwtService.verify(data.token, { secret: 'secret' });
+      delete this.invites[data.from];
+      this.server.to(this.connectedUsers[data.from].id).emit('inviteAccepted', { id: client.user.id, username: client.user.username });
+      console.log('Create Game NOW');
+    } catch (error) {
+      this.invites[data.from] = this.invites[data.from].filter((token) => token !== data.token);
+      if (error.name === 'TokenExpiredError') {
+        client.emit('invalidToken', { message: 'Token expired' });
+        return;
+      }
+      client.emit('invalidToken', { message: 'Invalid token' });
+    }
   }
 }
 //
