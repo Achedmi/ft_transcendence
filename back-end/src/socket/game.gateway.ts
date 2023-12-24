@@ -225,34 +225,42 @@ export class GameGateway {
   //=================================================================================INVITES=================================================================================
   @SubscribeMessage('createInvite')
   async invite(client, data: { userId: number }) {
-    const token = this.jwtService.sign({ id: client.user.id, username: client.user.username }, { secret: 'secret', expiresIn: '1h' });
+    console.log('createInvite', data);
+    const token = this.jwtService.sign({ id: client.user.id, username: client.user.username }, { secret: 'secret', expiresIn: '1m' });
     if (!this.invites[client.user.id]) this.invites[client.user.id] = [];
     this.invites[client.user.id].push(token);
     if (data.userId) this.server.to(this.connectedUsers[data.userId].id).emit('invite', { token, from: client.user.id });
   }
 
   @SubscribeMessage('acceptInvite')
-  async acceptInvite(client, data: { token: string; from: number }) {
+  async acceptInvite(client, data: { token: string; from: number, inviteOwner: number }) {
+    console.log('acceptInvite', data);
     try {
-      if (!this.invites[data.from]) {
-        client.emit('invalidToken', { message: 'Invalid token' });
+      if (data.from == data.inviteOwner) 
+        return;
+      console.log(this.invites)
+      if (!this.invites[data.inviteOwner]) {
+        client.emit('invalidInvite', { message: 'Invalid token' });
         return;
       }
+      console.log("verifing token")
       const isValidToken = this.jwtService.verify(data.token, { secret: 'secret' });
-      delete this.invites[data.from];
-      this.server.to(this.connectedUsers[data.from].id).emit('inviteAccepted', { id: client.user.id, username: client.user.username });
+      console.log("token verified")
+      delete this.invites[data.inviteOwner];
+      this.server.to(this.connectedUsers[data.inviteOwner].id).emit('inviteAccepted', { id: client.user.id, username: client.user.username });
       console.log('Create Game NOW');
     } catch (error) {
-      this.invites[data.from] = this.invites[data.from].filter((token) => token !== data.token);
+      console.log('invalid token');
+      this.invites[data.inviteOwner] = this.invites[data.inviteOwner].filter((token) => token !== data.token);
       if (error.name === 'TokenExpiredError') {
-        client.emit('invalidToken', { message: 'Token expired' });
+        client.emit('invalidInvite', { message: 'Token expired' });
         return;
       }
-      client.emit('invalidToken', { message: 'Invalid token' });
+      client.emit('invalidInvite', { message: 'Invalid token' });
     }
   }
 }
 //
 //
-
+//
 //

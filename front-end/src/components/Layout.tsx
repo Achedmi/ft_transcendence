@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import NavBar from './NavBar';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Profile, Home, Game } from './icons/icons';
 import { CommandDialog, CommandGroup, CommandItem, CommandList, CommandSeparator, CommandShortcut } from './Command';
 import CommandSearchResults, { CommandSearch } from './SearchFilter';
@@ -8,6 +8,7 @@ import { useSearchStore } from './SearchFilter';
 import io from 'socket.io-client';
 import { useUserStore } from '../user/userStore';
 import axios from '../utils/axios';
+import GameInvitePopup from './GameInvitePopup';
 
 export function CommandDialogDemo() {
   const navigate = useNavigate();
@@ -114,7 +115,7 @@ function PrivateRoutes() {
       <div className='flex flex-col p-3 gap-4 h-screen font-Baloo font-bold z-0 '>
         <CommandDialogDemo />
         <NavBar />
-
+        <GameInvitePopup />
         <div className='outlet  h-full w-full min-w-[300px] overflow-y-scroll no-scrollbar'>
           <Outlet />
         </div>

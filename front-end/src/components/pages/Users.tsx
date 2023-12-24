@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useQuery } from 'react-query';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useActionData, useParams } from 'react-router-dom';
 import { useUserStore } from '../../user/userStore';
 import { useNavigate } from 'react-router-dom';
 import { useCallback, useEffect } from 'react';
@@ -19,7 +19,7 @@ function Users() {
   const { user } = useUserStore();
   const navigate = useNavigate();
   const { data, refetch, isLoading } = useQuery('users', () => friendsStore.fetchUserAndFriends(username || ''));
-
+  const game = useUserStore((state) => state.socket?.game);
   const handleLoaded = useCallback(() => {
     setIsLoaded(true);
     console.log('loaded');
@@ -30,6 +30,7 @@ function Users() {
   }, [username]);
 
   useEffect(() => {
+
     if (!isLoading && data && username === user.username) navigate('/profile');
   }, [isLoading, data, username]);
 
@@ -51,6 +52,12 @@ function Users() {
       console.log(error);
     }
   }, [data?.isFriend]);
+
+
+  const sendGameInvite = useCallback(() => {
+    console.log('sending invite');
+      game?.emit('createInvite', { userId: data?.id });
+  }, [data?.id, game]);
 
   return (
     <>
@@ -74,6 +81,7 @@ function Users() {
                   alt=''
                   className='object-cover h-44 w-44 max-h-44 max-w-44 rounded-full absolute top-[65px] left-1/2 transform -translate-x-1/2 border-solid border-dark-cl border-[4px]'
                   onLoad={handleLoaded}
+                  onClick={sendGameInvite}
                 />
               </motion.div>
               {data.isFriend ? (
