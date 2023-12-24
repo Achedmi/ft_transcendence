@@ -104,9 +104,9 @@ function Users() {
               <span className='text-3xl sm:text-4xl font-bold text-center mt-24 '>{data.displayName}</span>
               <span className='text-md opacity-75'>{'@' + data.username}</span>
               <div className='flex gap-8 w-full justify-center mt-8 sm:text-xl'>
-                <span> {data.wins} Wins</span>
+                <span> {`${data.wins} Win${data.wins != 1 ? 's' : ''}`}</span>
                 <span>|</span>
-                <span>{data.losses} Losses</span>
+                <span>{`${data.losses} Loss${data.losses != 1 ? 'es' : ''}`}</span>
               </div>
 
               <div className='BIO  h-16 w-[80%] max-w-3xl bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-8 relative flex justify-center items-center'>

@@ -1,25 +1,22 @@
 import { motion } from 'framer-motion';
 import { useUserStore } from '../../user/userStore';
 import { PropagateLoader } from 'react-spinners';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameStore } from '../../game/gameStore';
 import axios from '../../utils/axios';
 import { toast } from 'react-toastify';
 import toastConfig from '../../utils/toastConf';
 
 const Play = () => {
+  const [gameEnded, setGameEnded] = useState(false);
   const { socket, user, setUserData, abelToPlay, setAbelToPlay } = useUserStore();
   const game = useGameStore();
   const handleClassicMode = async () => {
-    // axios.get('/user/isAbleToPlay').then((res) => {
-    //   setAbelToPlay(res?.data);
-    //   console.log(res?.data);
-    // });
+
     console.log('isAbleToPlay', abelToPlay);
     const isAbleToPlay = (await axios.get('/user/isAbleToPlay'))?.data;
     setAbelToPlay(isAbleToPlay);
-    if (!isAbleToPlay)
-    {
+    if (!isAbleToPlay) {
       toast.promise(
         async () => {
           throw new Error();
@@ -31,17 +28,11 @@ const Play = () => {
         }),
       );
       return;
-    } 
+    }
     socket?.game?.emit('readyToPlay', { userId: user.id });
     console.log('readyToPlay sent');
   };
 
-  // useEffect(() => {
-  //   axios.get('/user/isAbleToPlay').then((res) => {
-  //     setAbelToPlay(res?.data);
-  //     console.log(res?.data);
-  //   });
-  // }, [abelToPlay]);
 
   const handleIncrement = () => {
     socket?.game?.emit('incrementScore', { userId: user.id, gameId: game.id });
@@ -68,21 +59,40 @@ const Play = () => {
       game.setOpponentScore(data.player1.userId === user.id ? data.player2.score : data.player1.score);
     });
 
-    socket?.game?.on("gameEnded", ()=>{
-      window.location.reload();
-    })
+    socket?.game?.on('gameEnded', () => {
+      setGameEnded(true);
+      setAbelToPlay(false);
+    });
 
     return () => {
       socket?.game?.off('updateStatus');
       socket?.game?.off('countdown');
       socket?.game?.off('gameUpdates');
+      socket?.game?.off('gameIsReady');
+      socket?.game?.off('gameEnded');
     };
-  }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore]);
+  }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore, gameEnded]);
 
-  
+  if (gameEnded)
+    return (
+      <div className='bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'>
+        <div className='flex flex-col gap-7'>
+          <span className='text-dark-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>Game Over</span>
+          <button
+            className='h-10 bg-red-cl rounded-xl border-2 border-solid border-dark-cl text-white '
+            onClick={() => {
+              setGameEnded(false);
+            }}
+          >
+            Leave
+          </button>
+        </div>
+      </div>
+    );
+
   return (
     <div className='h-full w-full flex gap-4'>
-      <div className='bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'>
+      <div className='bg-[rgb(217,217,217)] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'>
         {!abelToPlay && (
           <>
             <motion.div

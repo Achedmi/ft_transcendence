@@ -92,9 +92,9 @@ function Profile() {
           <span className='text-3xl sm:text-4xl font-bold text-center mt-24 '>{user.displayName}</span>
           <span className='text-md opacity-75'>{'@' + user.username}</span>
           <div className='flex gap-8 w-full justify-center mt-8 sm:text-xl'>
-            <span> {user.wins} Wins</span>
+            <span> {`${user.wins} Win${user.wins != 1 ? 's': ''}`} </span>
             <span>|</span>
-            <span>{user.losses} Losses</span>
+            <span>{`${user.losses} Loss${user.losses != 1 ? 'es': ''}`}</span>
           </div>
 
           <div className='BIO  h-16 w-[80%] max-w-3xl bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-8 relative flex justify-center items-center'>
