@@ -82,10 +82,11 @@ export class UserService {
         bio: true,
       },
     });
+    const { wins, losses } = await this.getWinsAndLosses(username);
     user['friends'] = await this.getUserFriendsByUsername(id, username);
     const isFriend = user['friends'].some((friend) => friend.id === id || friend.id === id);
 
-    return { ...user, isFriend };
+    return { ...user, isFriend, wins, losses };
   }
 
   async findOne(id: number) {
@@ -160,11 +161,6 @@ export class UserService {
     return user;
   }
 
-  async me(id: number) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
-    return user;
-  }
-
   async setMeOnline(id: number) {
     await this.prisma.user.update({
       where: { id },
@@ -189,6 +185,9 @@ export class UserService {
         player1: true,
         player2: true,
         winnerPlayer: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
 
