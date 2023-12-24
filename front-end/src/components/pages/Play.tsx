@@ -10,6 +10,7 @@ import toastConfig from '../../utils/toastConf';
 const Play = () => {
   const [gameEnded, setGameEnded] = useState(false);
   const { socket, user, setUserData, abelToPlay, setAbelToPlay } = useUserStore();
+  const [winner , setWinner] = useState<string>('');
   const game = useGameStore();
   const handleClassicMode = async () => {
 
@@ -59,7 +60,9 @@ const Play = () => {
       game.setOpponentScore(data.player1.userId === user.id ? data.player2.score : data.player1.score);
     });
 
-    socket?.game?.on('gameEnded', () => {
+    socket?.game?.on('gameEnded', (data) => {
+      if (data)
+        setWinner(data.winner);
       setGameEnded(true);
       setAbelToPlay(false);
       game.setCounter(5);
@@ -72,15 +75,21 @@ const Play = () => {
       socket?.game?.off('gameIsReady');
       socket?.game?.off('gameEnded');
     };
-  }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore, gameEnded]);
+  }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore, gameEnded, winner]);
 
   if (gameEnded)
     return (
       <div className='bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'>
-        <div className='flex flex-col gap-7'>
+        <div className='flex flex-col gap-7 items-center'>
           <span className='text-dark-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>Game Over</span>
+          {winner &&  (
+            winner === user.username ?
+            <span className='text-blue-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>You Won</span>
+            :
+            <span className='text-red-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>You Lost</span>)
+          }
           <button
-            className='h-10 bg-red-cl rounded-xl border-2 border-solid border-dark-cl text-white '
+            className='h-10 w-24 bg-red-cl rounded-xl border-2 border-solid border-dark-cl text-white '
             onClick={() => {
               setGameEnded(false);
             }}
