@@ -171,6 +171,13 @@ export class GameGateway {
       if (player1Socket.disconnected || player2Socket.disconnected) {
         clearInterval(interval);
         this.server.to(String(game.gameId)).emit('gameEnded');
+        await this.gameService.update(game.gameId, {
+          player1Score: player1Socket.disconnected ? 0 : 3,
+          player2Score: player2Socket.disconnected ? 0 : 3,
+          winnerPlayer: player1Socket.disconnected ? player2Socket.user.id : player1Socket.user.id,
+          status: GameStatus.ENDED,
+        });
+        this.server.to(String(game.id)).emit('gameEnded');
         return;
       }
       if (game.player1.score > 2 || game.player2.score > 2) {
