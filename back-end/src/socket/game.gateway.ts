@@ -118,6 +118,43 @@ export class GameGateway {
     this.server.to(String(game.gameId)).emit('gameEnded', { winner: game.player1.score > game.player2.score ? player1Socket.user.username : player2Socket.user.username });
   }
 
+  async createGame(player1Socket, player2Socket) {
+    const game = await this.gameService.create({
+      players: [player1Socket['user'].id, player2Socket['user'].id],
+    });
+    console.log('GAME CREATED', game.id);
+
+    player1Socket['gameId'] = game.id;
+    player2Socket['gameId'] = game.id;
+
+    this.games[game.id] = {
+      player1: {
+        userId: player1Socket['user'].id,
+        socketId: player1Socket.id,
+        score: 0,
+      },
+      player2: {
+        userId: player2Socket['user'].id,
+        socketId: player2Socket.id,
+        score: 0,
+      },
+      gameId: game.id,
+      status: GameStatus.ONGOING,
+    };
+
+    player1Socket.join(String(game.id));
+    player2Socket.join(String(game.id));
+
+    if (await this.handlGameEndOnDisconnect(game.id, player1Socket, player2Socket)) return;
+
+    if (player1Socket.connected && player2Socket.connected) await this.updateUserStatus(player1Socket['user'].id, Status.INGAME, player1Socket.id);
+    if (player1Socket.connected && player2Socket.connected) await this.updateUserStatus(player2Socket['user'].id, Status.INGAME, player2Socket.id);
+
+    if (await this.handlGameEndOnDisconnect(game.id, player1Socket, player2Socket)) return;
+
+    return this.games[game.id];
+  }
+
   @SubscribeMessage('readyToPlay')
   async readyToPlay(client, data: { userId: number }) {
     this.readyToPlayQueue[data.userId] = client;
@@ -144,40 +181,9 @@ export class GameGateway {
           player1Socket.leave(uniqueRoom);
           player2Socket.leave(uniqueRoom);
 
-          const game = await this.gameService.create({
-            players: [player1Socket['user'].id, player2Socket['user'].id],
-          });
-          console.log('GAME CREATED', game.id);
+          const game = await this.createGame(player1Socket, player2Socket);
 
-          player1Socket['gameId'] = game.id;
-          player2Socket['gameId'] = game.id;
-
-          this.games[game.id] = {
-            player1: {
-              userId: player1Socket['user'].id,
-              socketId: player1Socket.id,
-              score: 0,
-            },
-            player2: {
-              userId: player2Socket['user'].id,
-              socketId: player2Socket.id,
-              score: 0,
-            },
-            gameId: game.id,
-            status: GameStatus.ONGOING,
-          };
-
-          player1Socket.join(String(game.id));
-          player2Socket.join(String(game.id));
-
-          if (await this.handlGameEndOnDisconnect(game.id, player1Socket, player2Socket)) return;
-
-          if (player1Socket.connected && player2Socket.connected) await this.updateUserStatus(player1Socket['user'].id, Status.INGAME, player1Socket.id);
-          if (player1Socket.connected && player2Socket.connected) await this.updateUserStatus(player2Socket['user'].id, Status.INGAME, player2Socket.id);
-
-          if (await this.handlGameEndOnDisconnect(game.id, player1Socket, player2Socket)) return;
-
-          this.startGame(this.games[game.id], player1Socket, player2Socket);
+          this.startGame(game, player1Socket, player2Socket);
 
           return;
         } else if (player1Socket.disconnected || player2Socket.disconnected) {
@@ -233,22 +239,35 @@ export class GameGateway {
   }
 
   @SubscribeMessage('acceptInvite')
-  async acceptInvite(client, data: { token: string; from: number, inviteOwner: number }) {
+  async acceptInvite(client, data: { token: string; from: number; inviteOwner: number }) {
     console.log('acceptInvite', data);
     try {
-      if (data.from == data.inviteOwner) 
-        return;
-      console.log(this.invites)
+      if (data.from == data.inviteOwner) return;
+      console.log(this.invites);
       if (!this.invites[data.inviteOwner]) {
         client.emit('invalidInvite', { message: 'Invalid token' });
         return;
       }
-      console.log("verifing token")
+      console.log('verifing token');
       const isValidToken = this.jwtService.verify(data.token, { secret: 'secret' });
-      console.log("token verified")
+      console.log('token verified');
       delete this.invites[data.inviteOwner];
       this.server.to(this.connectedUsers[data.inviteOwner].id).emit('inviteAccepted', { id: client.user.id, username: client.user.username });
       console.log('Create Game NOW');
+
+      const user1 = await this.userService.findUnique({ id: data.inviteOwner });
+      const user2 = await this.userService.findUnique({ id: client.user.id });
+
+      if (user1.status !== Status.ONLINE || user2.status !== Status.ONLINE) {
+        client.emit('invalidInvite', { message: 'User is not online' });
+        return;
+      }
+
+      const player1Socket = this.connectedUsers[data.inviteOwner];
+      const player2Socket = this.connectedUsers[client.user.id];
+
+      const game = this.createGame(player1Socket, player2Socket);
+      this.startGame(game, player1Socket, player2Socket);
     } catch (error) {
       console.log('invalid token');
       this.invites[data.inviteOwner] = this.invites[data.inviteOwner].filter((token) => token !== data.token);
