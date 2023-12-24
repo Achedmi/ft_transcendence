@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { SubNavBar } from '../SubNavBar';
 import { userFriendsStore } from './Profile/Friends';
 import toastConfig from '../../utils/toastConf';
+import { AddFriendIcon, UnfriendIcon } from '../icons/icons';
 
 function Users() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -83,6 +84,7 @@ function Users() {
                   title='Unfriend'
                   onClick={friendToggle}
                 >
+                  <UnfriendIcon />
                   <span className='hidden sm:block non-selectable'>Unfriend</span>
                 </motion.div>
               ) : (
@@ -93,6 +95,7 @@ function Users() {
                   title='Be Friends'
                   onClick={friendToggle}
                 >
+                  <AddFriendIcon className='h-5 w-5 fill-white' />
                   <span className='hidden sm:block non-selectable'>Add Friend</span>
                 </motion.div>
               )}
@@ -101,9 +104,9 @@ function Users() {
               <span className='text-3xl sm:text-4xl font-bold text-center mt-24 '>{data.displayName}</span>
               <span className='text-md opacity-75'>{'@' + data.username}</span>
               <div className='flex gap-8 w-full justify-center mt-8 sm:text-xl'>
-                <span> {Math.floor(Math.random() * 100)} Wins</span>
+                <span> {data.wins} Wins</span>
                 <span>|</span>
-                <span>{Math.floor(Math.random() * 100)} Losses</span>
+                <span>{data.losses} Losses</span>
               </div>
 
               <div className='BIO  h-16 w-[80%] max-w-3xl bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-8 relative flex justify-center items-center'>

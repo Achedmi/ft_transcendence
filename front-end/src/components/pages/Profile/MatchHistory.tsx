@@ -2,10 +2,11 @@ import { motion } from 'framer-motion';
 import axiosInstance from '../../../utils/axios';
 import { useQuery } from 'react-query';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useUserStore } from '../../../user/userStore';
 
 function Row({ match }: any) {
-  const [ongoing] = useState(match.status == 'ongoing');
+  const [ongoing] = useState(match.status == 'ONGOING');
   const navigate = useNavigate();
 
   const visitPlayer1Profile = useCallback(() => {
@@ -62,17 +63,24 @@ function Row({ match }: any) {
   );
 }
 
-export default function () {
-  const { data, isLoading } = useQuery('matchHistory', async () => {
-    return await axiosInstance.get('/user/games').then((res) => res.data);
+export default function ( ) {
+
+  const CurrentUsername = useUserStore((state) => state.user.username);
+
+  const { username } = useParams<{ username: string }>();
+
+
+  const { data, isLoading, isError } = useQuery('matchHistory', async () => {
+    return await axiosInstance.get(`/user/games/${username ? username: CurrentUsername}`).then((res) => res.data);
   });
 
-  useEffect(() => {
-    if (!isLoading) console.log(data);
-  }, []);
 
   if (isLoading) {
     return <div className='w-full h-[85%]  flex items-center justify-center  '>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div className='w-full h-[85%]  flex items-center justify-center  '>Something went wrong :(</div>;
   }
 
   return (

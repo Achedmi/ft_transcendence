@@ -37,10 +37,10 @@ export function CommandDialogDemo() {
     };
 
     const handleCmdp = (e: KeyboardEvent) => {
-      if (searchStore.isOpen && (e.metaKey || e.ctrlKey)) {
+      if (e.metaKey || e.ctrlKey) {
         if (e.key === 'escape') {
           e.preventDefault();
-          searchStore.setIsOpen(false);
+          if (searchStore.isOpen) searchStore.setIsOpen(false);
         }
         if (e.key === 'g') {
           e.preventDefault();
@@ -94,7 +94,7 @@ export function CommandDialogDemo() {
 }
 
 function PrivateRoutes() {
-  const { socket, setSocket, user, setUserData } = useUserStore();
+  const { socket, setSocket } = useUserStore();
 
   useEffect(() => {
     const gameSocket = io(`http://${import.meta.env.VITE_ADDRESS}:9696/game`, {
@@ -102,12 +102,6 @@ function PrivateRoutes() {
       transports: ['websocket'],
     });
 
-    gameSocket.on('connect', async () => {
-      // if (user.status === 'OFFLINE') {
-      //   await axios.post('user/setMeOnline');
-      //   setUserData({ status: 'ONLINE' });
-      // }
-    });
     setSocket({ game: gameSocket });
     return () => {
       if (socket?.game) socket.game.disconnect();

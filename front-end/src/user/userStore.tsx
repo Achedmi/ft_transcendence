@@ -14,6 +14,8 @@ export interface User {
   isTfaVerified?: boolean;
   isTFAenabled?: boolean;
   status?: string;
+  wins?: number;
+  losses?: number;
 }
 
 
@@ -40,6 +42,8 @@ export const useUserStore = create<UserState>((set) => ({
     isTfaVerified: false,
     isTFAenabled: false,
     status: '',
+    wins: 0,
+    losses: 0,
   },
   isRefreshed: false,
   setUserData: (user: User) => {

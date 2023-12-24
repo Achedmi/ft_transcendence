@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { create } from 'zustand';
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../../user/userStore';
-import { MessageIcon, UnfriendIcon } from '../../icons/icons';
+import { AddFriendIcon, MessageIcon, UnfriendIcon } from '../../icons/icons';
 import { useLocation, useParams } from 'react-router-dom';
 import toastConfig from '../../../utils/toastConf';
 import { Shimmer } from 'react-shimmer';
@@ -150,8 +150,8 @@ function FriendRow({
               onClick={handleBeFriends}
               className=' bg-blue-cl  rounded-2xl h-9 gap-2 text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
             >
-              {/* <UnfriendIcon /> */}
-              <p className='pt-[2px] hidden sm:block'>Be friends</p>
+              <AddFriendIcon className='w-6 h-6  min-h-max min-w-max fill-white' />
+              <p className='pt-[2px] hidden sm:block'>Add friend</p>
             </div>
           )}
           <div

@@ -92,9 +92,9 @@ function Profile() {
           <span className='text-3xl sm:text-4xl font-bold text-center mt-24 '>{user.displayName}</span>
           <span className='text-md opacity-75'>{'@' + user.username}</span>
           <div className='flex gap-8 w-full justify-center mt-8 sm:text-xl'>
-            <span> {Math.floor(Math.random() * 100)} Wins</span>
+            <span> {user.wins} Wins</span>
             <span>|</span>
-            <span>{Math.floor(Math.random() * 100)} Losses</span>
+            <span>{user.losses} Losses</span>
           </div>
 
           <div className='BIO  h-16 w-[80%] max-w-3xl bg-dark-cl border-solid border-dark-cl rounded-xl border-[4px] mt-8 relative flex justify-center items-center'>
