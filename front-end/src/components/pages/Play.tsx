@@ -75,7 +75,7 @@ const Play = () => {
       socket?.game?.off('gameIsReady');
       socket?.game?.off('gameEnded');
     };
-  }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore, gameEnded, winner]);
+  }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore, gameEnded, winner, game.counter]);
 
   if (gameEnded)
     return (
