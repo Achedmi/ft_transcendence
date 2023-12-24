@@ -90,6 +90,7 @@ export class GameGateway {
       player1Socket.join(uniqueRoom);
       player2Socket.join(uniqueRoom);
 
+      if (player1Socket.disconnected || player2Socket.disconnected) return;
       await this.updateUserStatus(player1Socket['user'].id, Status.STARTINGGAME, player1Socket.id);
       await this.updateUserStatus(player2Socket['user'].id, Status.STARTINGGAME, player2Socket.id);
 
@@ -132,7 +133,10 @@ export class GameGateway {
               winnerPlayer: player1Socket.disconnected ? player2Socket.user.id : player1Socket.user.id,
               status: GameStatus.ENDED,
             });
-            this.server.to(String(game.id)).emit('gameEnded');
+            player1Socket.disconnected
+              ? await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id)
+              : await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
+            this.server.to(String(game.id)).emit('gameEnded', { winner: player1Socket.disconnected ? player2Socket.user.username : player1Socket.user.username });
             return;
           }
 
@@ -146,15 +150,23 @@ export class GameGateway {
               winnerPlayer: player1Socket.disconnected ? player2Socket.user.id : player1Socket.user.id,
               status: GameStatus.ENDED,
             });
-            this.server.to(String(game.id)).emit('gameEnded');
+            player1Socket.disconnected
+              ? await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id)
+              : await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
+            this.server.to(String(game.id)).emit('gameEnded', { winner: player1Socket.disconnected ? player2Socket.user.username : player1Socket.user.username });
             return;
           }
 
           this.startGame(this.games[game.id], player1Socket, player2Socket);
+
+          return;
         } else if (player1Socket.disconnected || player2Socket.disconnected) {
+          clearInterval(interval);
           player2Socket.emit('gameEnded');
           player1Socket.emit('gameEnded');
-          clearInterval(interval);
+          player1Socket.disconnected
+            ? await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id)
+            : await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
           return;
         }
 
@@ -164,6 +176,7 @@ export class GameGateway {
     }
   }
 
+  //
   async startGame(game, player1Socket, player2Socket) {
     this.server.to(String(game.gameId)).emit('gameIsReady', game);
 
@@ -176,10 +189,10 @@ export class GameGateway {
           winnerPlayer: player1Socket.disconnected ? player2Socket.user.id : player1Socket.user.id,
           status: GameStatus.ENDED,
         });
-        this.server.to(String(game.gameId)).emit('gameEnded');
         player1Socket.disconnected
           ? await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id)
           : await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
+        this.server.to(String(game.gameId)).emit('gameEnded', { winner: player1Socket.disconnected ? player2Socket.user.username : player1Socket.user.username });
         return;
       }
       if (game.player1.score > 2 || game.player2.score > 2) {
@@ -192,7 +205,7 @@ export class GameGateway {
         });
         await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
         await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id);
-        this.server.to(String(game.gameId)).emit('gameEnded');
+        this.server.to(String(game.gameId)).emit('gameEnded', { winner: game.player1.score > game.player2.score ? player1Socket.user.username : player2Socket.user.username });
       }
       this.server.to(String(game.gameId)).emit('gameUpdates', game);
     }, 1000 / 60);
@@ -205,5 +218,6 @@ export class GameGateway {
     else this.games[data.gameId].player2.score++;
   }
 }
+//
 //
 //
