@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useUserStore } from '../../user/userStore';
 import { PropagateLoader } from 'react-spinners';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useGameStore } from '../../game/gameStore';
 import axios from '../../utils/axios';
 import { toast } from 'react-toastify';
@@ -10,14 +10,14 @@ import toastConfig from '../../utils/toastConf';
 const Play = () => {
   const [gameEnded, setGameEnded] = useState(false);
   const { socket, user, setUserData, abelToPlay, setAbelToPlay } = useUserStore();
-  const [winner , setWinner] = useState<string>('');
+  const [winner, setWinner] = useState<string>('');
   const game = useGameStore();
-  const handleClassicMode = async () => {
-
-    console.log('isAbleToPlay', abelToPlay);
-    const isAbleToPlay = (await axios.get('/user/isAbleToPlay'))?.data;
-    setAbelToPlay(isAbleToPlay);
-    if (!isAbleToPlay) {
+  const handleClassicMode = useCallback(async () => {
+    const fetchedAbleToPlay = (await axios.get('/user/isAbleToPlay'))?.data;
+    if (fetchedAbleToPlay == abelToPlay) return;
+    console.log('isAbleToPlay', fetchedAbleToPlay);
+    setAbelToPlay(fetchedAbleToPlay);
+    if (!fetchedAbleToPlay) {
       toast.promise(
         async () => {
           throw new Error();
@@ -29,11 +29,11 @@ const Play = () => {
         }),
       );
       return;
+    } else {
+      socket?.game?.emit('readyToPlay', { userId: user.id });
+      console.log('readyToPlay sent');
     }
-    socket?.game?.emit('readyToPlay', { userId: user.id });
-    console.log('readyToPlay sent');
-  };
-
+  }, [abelToPlay, socket?.game]);
 
   const handleIncrement = () => {
     socket?.game?.emit('incrementScore', { userId: user.id, gameId: game.id });
@@ -61,8 +61,8 @@ const Play = () => {
     });
 
     socket?.game?.on('gameEnded', (data) => {
-      if (data)
-        setWinner(data.winner);
+      if (data?.winner) setWinner(data.winner);
+      else setWinner('');
       setGameEnded(true);
       setAbelToPlay(false);
       game.setCounter(5);
@@ -82,12 +82,12 @@ const Play = () => {
       <div className='bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'>
         <div className='flex flex-col gap-7 items-center'>
           <span className='text-dark-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>Game Over</span>
-          {winner &&  (
-            winner === user.username ?
-            <span className='text-blue-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>You Won</span>
-            :
-            <span className='text-red-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>You Lost</span>)
-          }
+          {winner &&
+            (winner === user.username ? (
+              <span className='text-blue-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>You Won</span>
+            ) : (
+              <span className='text-red-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>You Lost</span>
+            ))}
           <button
             className='h-10 w-24 bg-red-cl rounded-xl border-2 border-solid border-dark-cl text-white '
             onClick={() => {

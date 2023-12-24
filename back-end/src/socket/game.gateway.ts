@@ -73,6 +73,37 @@ export class GameGateway {
     this.server.to(clientId).emit('updateStatus', status);
   }
 
+  async handlGameEndOnDisconnect(gameId: number, player1Socket, player2Socket, interval?: NodeJS.Timeout) {
+    if (interval) clearInterval(interval);
+    if (player1Socket.disconnected || player2Socket.disconnected) {
+      await this.gameService.update(gameId, {
+        player1Score: player1Socket.disconnected ? 0 : 3,
+        player2Score: player2Socket.disconnected ? 0 : 3,
+        winnerPlayer: player1Socket.disconnected ? player2Socket.user.id : player1Socket.user.id,
+        status: GameStatus.ENDED,
+      });
+      player1Socket.disconnected
+        ? await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id)
+        : await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
+      this.server.to(String(gameId)).emit('gameEnded', { winner: player1Socket.disconnected ? player2Socket.user.username : player1Socket.user.username });
+      return true;
+    }
+    return false;
+  }
+
+  async handlEndGame(game, player1Socket, player2Socket, interval) {
+    clearInterval(interval);
+    await this.gameService.update(game.gameId, {
+      player1Score: game.player1.score,
+      player2Score: game.player2.score,
+      winnerPlayer: game.player1.score > game.player2.score ? game.player1.userId : game.player2.userId,
+      status: GameStatus.ENDED,
+    });
+    await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
+    await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id);
+    this.server.to(String(game.gameId)).emit('gameEnded', { winner: game.player1.score > game.player2.score ? player1Socket.user.username : player2Socket.user.username });
+  }
+
   @SubscribeMessage('readyToPlay')
   async readyToPlay(client, data: { userId: number }) {
     this.readyToPlayQueue[data.userId] = client;
@@ -95,12 +126,13 @@ export class GameGateway {
       await this.updateUserStatus(player2Socket['user'].id, Status.STARTINGGAME, player2Socket.id);
 
       const interval = setInterval(async () => {
-        if (count === 0) {
+        if (count < 0) {
           clearInterval(interval);
 
           const game = await this.gameService.create({
             players: [player1Socket['user'].id, player2Socket['user'].id],
           });
+          console.log('GAME CREATED', game.id);
 
           player1Socket['gameId'] = game.id;
           player2Socket['gameId'] = game.id;
@@ -126,36 +158,12 @@ export class GameGateway {
           player1Socket.join(String(game.id));
           player2Socket.join(String(game.id));
 
-          if (player1Socket.disconnected || player2Socket.disconnected) {
-            await this.gameService.update(client.gameId, {
-              player1Score: player1Socket.disconnected ? 0 : 3,
-              player2Score: player2Socket.disconnected ? 0 : 3,
-              winnerPlayer: player1Socket.disconnected ? player2Socket.user.id : player1Socket.user.id,
-              status: GameStatus.ENDED,
-            });
-            player1Socket.disconnected
-              ? await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id)
-              : await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
-            this.server.to(String(game.id)).emit('gameEnded', { winner: player1Socket.disconnected ? player2Socket.user.username : player1Socket.user.username });
-            return;
-          }
+          if (await this.handlGameEndOnDisconnect(game.id, player1Socket, player2Socket)) return;
 
-          await this.updateUserStatus(player1Socket['user'].id, Status.INGAME, player1Socket.id);
-          await this.updateUserStatus(player2Socket['user'].id, Status.INGAME, player2Socket.id);
+          if (player1Socket.connected && player2Socket.connected) await this.updateUserStatus(player1Socket['user'].id, Status.INGAME, player1Socket.id);
+          if (player1Socket.connected && player2Socket.connected) await this.updateUserStatus(player2Socket['user'].id, Status.INGAME, player2Socket.id);
 
-          if (player1Socket.disconnected || player2Socket.disconnected) {
-            await this.gameService.update(client.gameId, {
-              player1Score: player1Socket.disconnected ? 0 : 3,
-              player2Score: player2Socket.disconnected ? 0 : 3,
-              winnerPlayer: player1Socket.disconnected ? player2Socket.user.id : player1Socket.user.id,
-              status: GameStatus.ENDED,
-            });
-            player1Socket.disconnected
-              ? await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id)
-              : await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
-            this.server.to(String(game.id)).emit('gameEnded', { winner: player1Socket.disconnected ? player2Socket.user.username : player1Socket.user.username });
-            return;
-          }
+          if (await this.handlGameEndOnDisconnect(game.id, player1Socket, player2Socket)) return;
 
           this.startGame(this.games[game.id], player1Socket, player2Socket);
 
@@ -182,30 +190,12 @@ export class GameGateway {
 
     const interval = setInterval(async () => {
       if (player1Socket.disconnected || player2Socket.disconnected) {
-        clearInterval(interval);
-        await this.gameService.update(game.gameId, {
-          player1Score: player1Socket.disconnected ? 0 : 3,
-          player2Score: player2Socket.disconnected ? 0 : 3,
-          winnerPlayer: player1Socket.disconnected ? player2Socket.user.id : player1Socket.user.id,
-          status: GameStatus.ENDED,
-        });
-        player1Socket.disconnected
-          ? await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id)
-          : await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
-        this.server.to(String(game.gameId)).emit('gameEnded', { winner: player1Socket.disconnected ? player2Socket.user.username : player1Socket.user.username });
+        await this.handlGameEndOnDisconnect(game.gameId, player1Socket, player2Socket, interval);
         return;
       }
       if (game.player1.score > 2 || game.player2.score > 2) {
-        clearInterval(interval);
-        await this.gameService.update(game.gameId, {
-          player1Score: game.player1.score,
-          player2Score: game.player2.score,
-          winnerPlayer: game.player1.score > game.player2.score ? game.player1.userId : game.player2.userId,
-          status: GameStatus.ENDED,
-        });
-        await this.updateUserStatus(player1Socket['user'].id, Status.ONLINE, player1Socket.id);
-        await this.updateUserStatus(player2Socket['user'].id, Status.ONLINE, player2Socket.id);
-        this.server.to(String(game.gameId)).emit('gameEnded', { winner: game.player1.score > game.player2.score ? player1Socket.user.username : player2Socket.user.username });
+        await this.handlEndGame(game, player1Socket, player2Socket, interval);
+        return;
       }
       this.server.to(String(game.gameId)).emit('gameUpdates', game);
     }, 1000 / 60);
@@ -220,4 +210,5 @@ export class GameGateway {
 }
 //
 //
+
 //
