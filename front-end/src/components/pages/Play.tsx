@@ -62,6 +62,7 @@ const Play = () => {
     socket?.game?.on('gameEnded', () => {
       setGameEnded(true);
       setAbelToPlay(false);
+      game.setCounter(5);
     });
 
     return () => {
