@@ -29,7 +29,6 @@ export class UserController {
 
   @Get('isAbleToPlay')
   isAbleToPlay(@GetCurrent('id') id: number) {
-    console.log('isAbleToPlay', id);
     return this.userService.isAbleToPlay(id);
   }
 
