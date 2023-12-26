@@ -211,7 +211,7 @@ export const NoChatIcon = (icon: IconProps) => {
 
 export const AddFriendIcon = (icon: IconProps) => {
   return (
-    <svg  className={icon.className}  version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg'  viewBox='0 0 45.902 45.902' >
+    <svg className={icon.className} version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45.902 45.902'>
       <g id='SVGRepo_bgCarrier' stroke-width='0'></g>
       <g id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'></g>
       <g id='SVGRepo_iconCarrier'>
@@ -226,6 +226,28 @@ export const AddFriendIcon = (icon: IconProps) => {
           </g>{' '}
         </g>{' '}
       </g>
+    </svg>
+  );
+};
+
+export const SendIcon = (icon: IconProps) => {
+  return (
+    <svg  viewBox='0 0 40 37' className={icon.className} xmlns='http://www.w3.org/2000/svg'>
+      <g >
+        <path
+          d='M7.77445 9.82877L8.84115 11.6954C9.52024 12.8839 9.85977 13.478 9.85977 14.1294C9.85977 14.7809 9.52024 15.375 8.84117 16.5635L7.77445 18.4301C4.73702 23.7456 3.21831 26.4035 4.40262 27.7215C5.58693 29.0394 8.39136 27.8125 14.0002 25.3586L29.3938 18.6239C33.798 16.6971 36 15.7336 36 14.1294C36 12.5252 33.798 11.5617 29.3938 9.63499L14.0002 2.90029C8.39138 0.446433 5.58693 -0.78051 4.40262 0.537484C3.21831 1.85548 4.73702 4.51323 7.77445 9.82877Z'
+        />
+      </g>
+      <defs>
+          <feFlood flood-opacity='0' result='BackgroundImageFix' />
+          <feColorMatrix in='SourceAlpha' type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0' result='hardAlpha' />
+          <feOffset dy='4' />
+          <feGaussianBlur stdDeviation='2' />
+          <feComposite in2='hardAlpha' operator='out' />
+          <feColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0' />
+          <feBlend mode='normal' in2='BackgroundImageFix' result='effect1_dropShadow_602_120' />
+          <feBlend mode='normal' in='SourceGraphic' in2='effect1_dropShadow_602_120' result='shape' />
+      </defs>
     </svg>
   );
 };
