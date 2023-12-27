@@ -71,25 +71,6 @@ function Dms({ messages, CurrentUsername }: any) {
   return (
     <div className='flex flex-col space-y-2'>
       {messages.map((message: Message) => {
-        if (message.content.length > 39) {
-          let words = message.content.split(' ');
-          let newMessage = '';
-          words.forEach((word) => {
-            if (word.length > 39) {
-              let newWord = '';
-              for (let i = 0; i < word.length; i++) {
-                if (i % 39 == 0) {
-                  newWord += ' ';
-                }
-                newWord += word[i];
-              }
-              newMessage += newWord + ' ';
-            } else {
-              newMessage += word + ' ';
-            }
-          });
-          message.content = newMessage;
-        }
         return (
           <>
             {message.sender != CurrentUsername ? (
@@ -116,10 +97,31 @@ function Chat() {
 
   const handleNewMessage = useCallback(() => {
     if (message) {
+      let buffer = '';
+      if (message.length > 34) {
+        let words = message.split(' ');
+        words.forEach((word) => {
+          if (word.length > 34) {
+            let newWord = '';
+            for (let i = 0; i < word.length; i++) {
+              if (i % 34 == 0) {
+                newWord += ' ';
+              }
+              newWord += word[i];
+            }
+            buffer += newWord + ' ';
+          } else {
+            buffer += word + ' ';
+          }
+        });
+      } else {
+        buffer = message;
+      }
+
       const newMessage = {
         id: 3,
         sender: 'sgamraou',
-        content: message,
+        content: buffer,
         time: '12:01',
         type: 'text',
         avatar: '',
@@ -127,7 +129,7 @@ function Chat() {
       let newMessages = [...messages, newMessage];
       setMessages(newMessages);
     }
-  }, [message]);
+  }, [message, messages]);
 
   return (
     <div className='h-full w-full bg-gray-cl border-solid border-[4px] border-dark-cl rounded-xl  flex justify-center items-center'>
@@ -167,7 +169,6 @@ function Chat() {
               <input
                 type='text'
                 onKeyDown={(e: any) => {
-                  console.log(e.key);
                   if (e.key === 'Enter') {
                     handleNewMessage();
                     setMessage('');
