@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { SendIcon } from '../../icons/icons';
+import { BlockIcon, Game, Profile, SendIcon } from '../../icons/icons';
 
 function DmColumn() {
   return (
     <div className='flex justify-start m-2  items-center gap-2 hover:bg-gray-cl hover:rounded-full cursor-pointer'>
       <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl ' src='https://res.cloudinary.com/dwrysd8sm/image/upload/v1702374192/wp8ylrz4ejczvz8gthwr.png' />
       <div className='name and message flex flex-col'>
-        <span className='name text-xl'>Achedmi</span>
+        <span className='name text-xl'>scratch</span>
         <span className='message opacity-75 text-sm'>alo fay9 ?</span>
       </div>
     </div>
@@ -25,7 +25,7 @@ interface Message {
 let messagess = [
   {
     id: 1,
-    semder: 'Achedmi',
+    semder: 'scratch',
     content: 'alo fay9 ?',
     time: '12:00',
     type: 'text',
@@ -41,7 +41,7 @@ let messagess = [
   },
   {
     id: 3,
-    sender: 'Achedmi',
+    sender: 'scratch',
     content: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`,
     time: '12:01',
     type: 'text',
@@ -75,7 +75,7 @@ function Dms({ messages, CurrentUsername }: any) {
           <>
             {message.sender != CurrentUsername ? (
               <div key={message.id} className='self-start flex justify-center items-start  gap-2'>
-                <img className='h-8 w-8 rounded-full ' src={message.avatar} />
+                <img className='h-8 w-8 rounded-full border-2 border-solid border-dark-cl ' src={message.avatar} />
                 <p className='text-md bg-gray-cl rounded-3xl flex justify-center items-start p-3 max-w-xs break-words'>{message.content}</p>
               </div>
             ) : (
@@ -143,7 +143,7 @@ function Chat() {
               <span>Groups</span>
             </div>
           </div>
-          <div className='bg-[#ECE8E8] w-full h-full rounded-3xl border-2 border-solid border-dark-cl'>
+          <div className='bg-[#ECE8E8] w-full h-full rounded-3xl border-2 border-solid border-dark-cl flex flex-col'>
             <DmColumn />
             <DmColumn />
             <DmColumn />
@@ -153,7 +153,7 @@ function Chat() {
         <div className='MIDDLE flex flex-col gap-4  border-2   w-[40rem] m-2 relative overflow-hidden'>
           <div className='header h-14 m-0 w-full bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-3xl flex items-center justify-center flex-none'>
             <div className='h-2 w-2 rounded-full bg-blue-cl '></div>
-            <span className='text-2xl mx-2'>Achedmi</span>
+            <span className='text-2xl mx-2'>scratch</span>
           </div>
 
           <div
@@ -187,7 +187,39 @@ function Chat() {
             </div>
           </div>
         </div>
-        <div className='RIGHT bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2 hidden'></div>
+        <div className='RIGHT bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2 hidden flex-col p-2 gap-4'>
+          <div className='flex justify-center mt-10'>
+            <img
+              className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl'
+              src='https://res.cloudinary.com/dwrysd8sm/image/upload/v1702374192/wp8ylrz4ejczvz8gthwr.png'
+              alt='pfp'
+            />
+          </div>
+          <div className='flex flex-col items-center justify-center'>
+            <span className='text-2xl'>Scratch</span>
+            <span className='text-sm  text-dark-cl/75'>@achedmi</span>
+          </div>
+          <div className='flex flex-wrap gap-3 mt-4'>
+            <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2'>
+              <div className='h-10 w-10 flex bg-dark-cl/30 rounded-full justify-center items-center'>
+                <Profile className='fill-dark-cl w-8 h-8' />
+              </div>
+              <span className='text-lg'>Profile</span>
+            </div>
+            <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2'>
+              <div className='h-10 w-10 flex bg-dark-cl/30 rounded-full justify-center items-center'>
+                <BlockIcon className='fill-dark-cl w-7 h-7' />
+              </div>
+              <span className='text-lg'>Block</span>
+            </div>
+            <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2'>
+              <div className='h-10 w-10 flex bg-dark-cl/30 rounded-full justify-center items-center'>
+                <Game className='fill-dark-cl w-8 h-8' />
+              </div>
+              <span className='text-lg'>Invite to play</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

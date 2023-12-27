@@ -232,22 +232,32 @@ export const AddFriendIcon = (icon: IconProps) => {
 
 export const SendIcon = (icon: IconProps) => {
   return (
-    <svg  viewBox='0 0 40 37' className={icon.className} xmlns='http://www.w3.org/2000/svg'>
-      <g >
-        <path
-          d='M7.77445 9.82877L8.84115 11.6954C9.52024 12.8839 9.85977 13.478 9.85977 14.1294C9.85977 14.7809 9.52024 15.375 8.84117 16.5635L7.77445 18.4301C4.73702 23.7456 3.21831 26.4035 4.40262 27.7215C5.58693 29.0394 8.39136 27.8125 14.0002 25.3586L29.3938 18.6239C33.798 16.6971 36 15.7336 36 14.1294C36 12.5252 33.798 11.5617 29.3938 9.63499L14.0002 2.90029C8.39138 0.446433 5.58693 -0.78051 4.40262 0.537484C3.21831 1.85548 4.73702 4.51323 7.77445 9.82877Z'
-        />
+    <svg viewBox='0 0 40 37' className={icon.className} xmlns='http://www.w3.org/2000/svg'>
+      <g>
+        <path d='M7.77445 9.82877L8.84115 11.6954C9.52024 12.8839 9.85977 13.478 9.85977 14.1294C9.85977 14.7809 9.52024 15.375 8.84117 16.5635L7.77445 18.4301C4.73702 23.7456 3.21831 26.4035 4.40262 27.7215C5.58693 29.0394 8.39136 27.8125 14.0002 25.3586L29.3938 18.6239C33.798 16.6971 36 15.7336 36 14.1294C36 12.5252 33.798 11.5617 29.3938 9.63499L14.0002 2.90029C8.39138 0.446433 5.58693 -0.78051 4.40262 0.537484C3.21831 1.85548 4.73702 4.51323 7.77445 9.82877Z' />
       </g>
       <defs>
-          <feFlood flood-opacity='0' result='BackgroundImageFix' />
-          <feColorMatrix in='SourceAlpha' type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0' result='hardAlpha' />
-          <feOffset dy='4' />
-          <feGaussianBlur stdDeviation='2' />
-          <feComposite in2='hardAlpha' operator='out' />
-          <feColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0' />
-          <feBlend mode='normal' in2='BackgroundImageFix' result='effect1_dropShadow_602_120' />
-          <feBlend mode='normal' in='SourceGraphic' in2='effect1_dropShadow_602_120' result='shape' />
+        <feFlood flood-opacity='0' result='BackgroundImageFix' />
+        <feColorMatrix in='SourceAlpha' type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0' result='hardAlpha' />
+        <feOffset dy='4' />
+        <feGaussianBlur stdDeviation='2' />
+        <feComposite in2='hardAlpha' operator='out' />
+        <feColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0' />
+        <feBlend mode='normal' in2='BackgroundImageFix' result='effect1_dropShadow_602_120' />
+        <feBlend mode='normal' in='SourceGraphic' in2='effect1_dropShadow_602_120' result='shape' />
       </defs>
+    </svg>
+  );
+};
+
+export const BlockIcon = (icon: IconProps) => {
+  return (
+    <svg className={icon.className} viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'>
+      <path d='M9.85971 22.3513C8.99729 23.2136 8.99729 24.6119 9.85971 25.4743C10.7221 26.3367 12.1203 26.3367 12.9828 25.4743L25.4749 12.982C26.3375 12.1196 26.3375 10.7214 25.4749 9.85897C24.6125 8.99655 23.2142 8.99655 22.3519 9.85897L9.85971 22.3513Z' />
+      <path
+        clip-rule='evenodd'
+        d='M5.17446 30.159C12.0737 37.058 23.2597 37.058 30.159 30.159C37.058 23.2597 37.058 12.0737 30.159 5.17446C23.2597 -1.72482 12.0737 -1.72482 5.17446 5.17446C-1.72482 12.0737 -1.72482 23.2597 5.17446 30.159ZM27.0357 27.0357C21.8614 32.2103 13.4719 32.2103 8.2975 27.0357C3.12305 21.8614 3.12305 13.4719 8.2975 8.2975C13.4719 3.12305 21.8614 3.12305 27.0357 8.2975C32.2103 13.4719 32.2103 21.8614 27.0357 27.0357Z'
+      />
     </svg>
   );
 };
