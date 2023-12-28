@@ -3,7 +3,7 @@ import axiosInstance from '../../../utils/axios';
 import { useQuery } from 'react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUserStore } from '../../../user/userStore';
+import { useUserStore } from '../../../stores/userStore';
 
 function Row({ match }: any) {
   const [ongoing] = useState(match.status == 'ONGOING');
@@ -63,17 +63,14 @@ function Row({ match }: any) {
   );
 }
 
-export default function ( ) {
-
+export default function () {
   const CurrentUsername = useUserStore((state) => state.user.username);
 
   const { username } = useParams<{ username: string }>();
 
-
   const { data, isLoading, isError } = useQuery('matchHistory', async () => {
-    return await axiosInstance.get(`/user/games/${username ? username: CurrentUsername}`).then((res) => res.data);
+    return await axiosInstance.get(`/user/games/${username ? username : CurrentUsername}`).then((res) => res.data);
   });
-
 
   if (isLoading) {
     return <div className='w-full h-[85%]  flex items-center justify-center  '>Loading...</div>;

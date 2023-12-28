@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { Profile, Logout } from './icons/icons';
-import { useUserStore } from '../user/userStore';
+import { useUserStore } from '../stores/userStore';
 import axios, { AxiosError } from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../src/styles/customToastStyles.css';
@@ -60,7 +60,7 @@ const DropDown = ({ setShowDropDown }: any) => {
           setShowDropDown();
         }}
       >
-        <DropDownItem Icon={Profile} text='Profile'/>
+        <DropDownItem Icon={Profile} text='Profile' />
       </Link>
       <Link to='/login' className='w-full' onClick={handleLogout}>
         <DropDownItem Icon={Logout} text='Logout' />

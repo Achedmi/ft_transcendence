@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useUserStore } from '../../user/userStore';
+import { useUserStore } from '../../stores/userStore';
 import { PropagateLoader } from 'react-spinners';
 import { useCallback, useEffect, useState } from 'react';
 import { useGameStore } from '../../game/gameStore';

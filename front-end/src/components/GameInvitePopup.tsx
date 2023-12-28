@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useUserStore } from '../user/userStore';
+import { useUserStore } from '../stores/userStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';

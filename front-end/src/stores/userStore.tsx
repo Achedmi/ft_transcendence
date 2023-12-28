@@ -6,7 +6,7 @@ import { AxiosError } from 'axios';
 import { Socket } from 'socket.io-client';
 
 export interface User {
-  id?: string;
+  id?: number;
   username?: string;
   displayName?: string;
   bio?: string;

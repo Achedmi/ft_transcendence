@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import toastConfig from './toastConf';
 
 const axiosInstance = axios.create({
   baseURL: `http://${import.meta.env.VITE_ADDRESS}:9696`,
@@ -18,7 +20,10 @@ axiosInstance.interceptors.response.use(
         window.location.href = '/login';
       }
     } else if (error.response?.status === 403 && location.pathname !== '/tfa') window.location.href = '/tfa';
+    else
+      toast.error('Something went wrong, please try again later')
     return Promise.reject(error);
+  
   },
 );
 

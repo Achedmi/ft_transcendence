@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { Close, Edit, Check, Error } from '../../icons/icons';
 import { motion } from 'framer-motion';
 import { useState, useCallback } from 'react';
-import { useUserStore } from '../../../user/userStore';
+import { useUserStore } from '../../../stores/userStore';
 import { toast } from 'react-toastify';
 import axios from '../../../utils/axios';
 import '../../../styles/customToastStyles.css';

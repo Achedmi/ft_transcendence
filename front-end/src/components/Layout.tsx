@@ -1,12 +1,12 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import NavBar from './NavBar';
 import { useCallback, useEffect, useState } from 'react';
-import { Profile, Home, Game } from './icons/icons';
+import { Profile, Home, Game, MessageIcon } from './icons/icons';
 import { CommandDialog, CommandGroup, CommandItem, CommandList, CommandSeparator, CommandShortcut } from './Command';
 import CommandSearchResults, { CommandSearch } from './SearchFilter';
 import { useSearchStore } from './SearchFilter';
 import io from 'socket.io-client';
-import { useUserStore } from '../user/userStore';
+import { useUserStore } from '../stores/userStore';
 import axios from '../utils/axios';
 import GameInvitePopup from './GameInvitePopup';
 import { AnimatePresence } from 'framer-motion';
@@ -28,6 +28,11 @@ export function CommandDialogDemo() {
 
   const handleSelectHome = useCallback(() => {
     navigate('/');
+    searchStore.setIsOpen(false);
+  }, [navigate]);
+
+  const handleSelectChat = useCallback(() => {
+    navigate('/chat');
     searchStore.setIsOpen(false);
   }, [navigate]);
 
@@ -56,6 +61,10 @@ export function CommandDialogDemo() {
         if (e.key === 'p') {
           e.preventDefault();
           handleSelectProfile();
+        }
+        if (e.key === 'c') {
+          e.preventDefault();
+          handleSelectChat();
         }
       }
     };
@@ -89,6 +98,11 @@ export function CommandDialogDemo() {
             <Home className='mr-2 h-4 w-4' />
             <span>Home</span>
             <CommandShortcut>⌘H</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={handleSelectChat}>
+            <MessageIcon className='mr-2 h-4 w-4' />
+            <span>Chat</span>
+            <CommandShortcut>⌘C</CommandShortcut>
           </CommandItem>
         </CommandGroup>
       </CommandList>

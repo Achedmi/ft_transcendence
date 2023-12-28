@@ -16,13 +16,39 @@ export class ChatService {
   constructor(private readonly prisma: PrismaService, private readonly cloudinaryService: CloudinaryService, private readonly helpersService: HelpersService) {}
 
   async GetChatById(me: number, id: number) {
-    const chat = await this.prisma.chat.findFirstOrThrow({
+    return await this.prisma.chat.findFirstOrThrow({
       where: { id },
-      include: {
-        messages: true,
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        visibility: true,
+        type: true,
+        ownerId: true,
+        chatUser: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true,
+                displayName: true,
+              },
+            },
+            isAdmin: true,
+          },
+        },
+        messages: {
+          include: {
+            user: {
+              select: {
+                avatar: true,
+              },
+            },
+          },
+        },
       },
     });
-    return { chat, isOwner: chat.ownerId === me, isAdmin: await this.isAdmin(me, id) };
   }
 
   async findDm(from: number, to: number) {
@@ -81,6 +107,9 @@ export class ChatService {
           },
         },
         messages: {
+          orderBy: {
+            createdAt: 'desc',
+          },
           take: 1,
         },
       },

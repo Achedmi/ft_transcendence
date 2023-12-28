@@ -3,7 +3,7 @@ import axios from '../../../utils/axios';
 import { useCallback, useState } from 'react';
 import { create } from 'zustand';
 import { toast } from 'react-toastify';
-import { useUserStore } from '../../../user/userStore';
+import { useUserStore } from '../../../stores/userStore';
 import { AddFriendIcon, MessageIcon, UnfriendIcon } from '../../icons/icons';
 import { useLocation, useParams } from 'react-router-dom';
 import toastConfig from '../../../utils/toastConf';
@@ -160,7 +160,7 @@ function FriendRow({
             }}
             className=' bg-blue-cl gap-2 rounded-2xl h-9  text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
           >
-            <MessageIcon />
+            <MessageIcon  className='w-6 h-6  min-h-max min-w-max fill-white' />
             <p className='pt-[2px] hidden sm:block'>Message</p>
           </div>
         </div>

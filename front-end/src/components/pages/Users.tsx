@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useQuery } from 'react-query';
 import { Outlet, useActionData, useParams } from 'react-router-dom';
-import { useUserStore } from '../../user/userStore';
+import { useUserStore } from '../../stores/userStore';
 import { useNavigate } from 'react-router-dom';
 import { useCallback, useEffect } from 'react';
 import { useState } from 'react';
@@ -30,7 +30,6 @@ function Users() {
   }, [username]);
 
   useEffect(() => {
-
     if (!isLoading && data && username === user.username) navigate('/profile');
   }, [isLoading, data, username]);
 
@@ -53,10 +52,9 @@ function Users() {
     }
   }, [data?.isFriend]);
 
-
   const sendGameInvite = useCallback(() => {
     console.log('sending invite');
-      game?.emit('createInvite', { userId: data?.id });
+    game?.emit('createInvite', { userId: data?.id });
   }, [data?.id, game]);
 
   return (

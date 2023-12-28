@@ -7,7 +7,7 @@ import { useQuery } from 'react-query';
 import { getQrCode } from './fetchQrCode';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'react-toastify';
-import { useUserStore } from '../../user/userStore';
+import { useUserStore } from '../../stores/userStore';
 import toastConfig from '../../utils/toastConf';
 
 interface HandleTfaProps {

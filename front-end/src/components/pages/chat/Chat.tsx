@@ -1,25 +1,48 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BlockIcon, Game, Profile, SendIcon } from '../../icons/icons';
+import useChatStore, { ChatInterface, ChatType } from '../../../stores/chatStore';
+import { useUserStore } from '../../../stores/userStore';
+import { useQuery } from 'react-query';
+import axios from '../../../utils/axios';
 
-function DmColumn() {
+function DmColumn({ chat, CurrentUserId }: { chat: ChatInterface; CurrentUserId: number }) {
+  const chatStore = useChatStore();
   return (
-    <div className='flex justify-start m-2  items-center gap-2 hover:bg-gray-cl hover:rounded-full cursor-pointer'>
-      <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl ' src='https://res.cloudinary.com/dwrysd8sm/image/upload/v1702374192/wp8ylrz4ejczvz8gthwr.png' />
-      <div className='name and message flex flex-col'>
-        <span className='name text-xl'>scratch</span>
-        <span className='message opacity-75 text-sm'>alo fay9 ?</span>
+    <div
+      className=' flex justify-start m-2  items-center gap-2 hover:bg-gray-cl hover:rounded-full cursor-pointer'
+      onClick={() => {
+        if (chat.id) chatStore.setSelectedChatId(chat.id);
+      }}
+    >
+      <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl ' src={chat.image} />
+      <div className='name and message flex flex-col max-w-sm'>
+        <span className='name text-xl'>{chat.name}</span>
+        <span className='message opacity-75 text-sm overflow-hidden truncate w-36'>{`${CurrentUserId == chat.lastMessageSender ? 'You: ' : ''} ${chat.lastMessage}`}</span>
       </div>
+    </div>
+  );
+}
+
+function Chats({ currentUserId }: { currentUserId: number } | any) {
+  const chatStore = useChatStore();
+
+  return (
+    <div className='flex flex-col gap-2'>
+      {chatStore.chats.map((chat: ChatInterface) => {
+        return <DmColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} />;
+      })}
     </div>
   );
 }
 
 interface Message {
   id: number;
-  sender: string;
-  content: string;
-  time?: string;
-  type?: string;
+  userId: number;
+  message: string;
   avatar?: string;
+  user?: {
+    avatar: string;
+  };
 }
 
 let messagess = [
@@ -57,35 +80,45 @@ let messagess = [
   },
 ];
 
-function Dms({ messages, CurrentUsername }: any) {
+function Dms({ CurrentUserId }: { CurrentUserId: number | undefined }) {
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const chatStore = useChatStore();
+
+  console.log('gta: ', chatStore.selectedChatId);
+
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [chatStore.selectedChat.messages]);
 
   return (
     <div className='flex flex-col space-y-2'>
-      {messages.map((message: Message) => {
-        return (
-          <>
-            {message.sender != CurrentUsername ? (
-              <div key={message.id} className='self-start flex justify-center items-start  gap-2'>
-                <img className='h-8 w-8 rounded-full border-2 border-solid border-dark-cl ' src={message.avatar} />
-                <p className='text-md bg-gray-cl rounded-3xl flex justify-center items-start p-3 max-w-xs break-words'>{message.content}</p>
-              </div>
-            ) : (
-              <div key={message.id} className=' bg-blue-cl rounded-3xl self-end flex justify-center items-center p-3 max-w-xs '>
-                <p className='text-md break-words px-2 '>{message.content}</p>
-              </div>
-            )}
-          </>
-        );
-      })}
+      {chatStore.selectedChat.messages &&
+        chatStore.selectedChat.messages.map((message: Message) => {
+          return (
+            <div
+              key={message.id}
+              className={
+                message.userId != CurrentUserId
+                  ? 'self-start flex justify-center items-start  gap-2'
+                  : 'bg-blue-cl rounded-3xl self-end flex justify-center items-center p-3 max-w-xs '
+              }
+            >
+              {message.userId != CurrentUserId ? (
+                <>
+                  <img className='h-8 w-8 rounded-full border-2 border-solid border-dark-cl ' src={message.user?.avatar} />
+                  <p className='text-md bg-gray-cl rounded-3xl flex justify-center items-start p-3 max-w-xs break-words'>{message.message}</p>
+                </>
+              ) : (
+                <p className='text-md break-words px-2 '>{message.message}</p>
+              )}
+            </div>
+          );
+        })}
       <div ref={lastMessageRef}></div>
     </div>
   );
@@ -94,8 +127,12 @@ function Dms({ messages, CurrentUsername }: any) {
 function Chat() {
   const [messages, setMessages] = useState(messagess);
   const [message, setMessage] = useState<string>('');
+  const user = useUserStore((state) => state.user);
+  const chatStore = useChatStore();
 
-  const handleNewMessage = useCallback(() => {
+  const { isLoading: chatsLoading, isRefetching: chatsRefreching } = useQuery(['chats', ChatType.DM], chatStore.getChats);
+  const { isLoading: selectedChatLoading, isRefetching: selectedChatRefetching } = useQuery(['chat', chatStore.selectedChatId], chatStore.getSelectedChat);
+  const handleNewMessage = useCallback(async () => {
     if (message) {
       let buffer = '';
       if (message.length > 34) {
@@ -119,13 +156,19 @@ function Chat() {
       }
 
       const newMessage = {
-        id: 3,
+        id: messages.length + 1,
         sender: 'sgamraou',
         content: buffer,
         time: '12:01',
         type: 'text',
         avatar: '',
       };
+
+      await axios.post('/message/sendMessage', {
+        message: newMessage.content,
+        chatId: 11,
+      });
+
       let newMessages = [...messages, newMessage];
       setMessages(newMessages);
     }
@@ -144,16 +187,23 @@ function Chat() {
             </div>
           </div>
           <div className='bg-[#ECE8E8] w-full h-full rounded-3xl border-2 border-solid border-dark-cl flex flex-col'>
-            <DmColumn />
-            <DmColumn />
-            <DmColumn />
+            {chatsLoading || chatsRefreching ? <div className='w-full h-[85%]  flex items-center justify-center  '>Loading...</div> : <Chats currentUserId={user.id} />}
           </div>
         </div>
 
         <div className='MIDDLE flex flex-col gap-4  border-2   w-[40rem] m-2 relative overflow-hidden'>
           <div className='header h-14 m-0 w-full bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-3xl flex items-center justify-center flex-none'>
             <div className='h-2 w-2 rounded-full bg-blue-cl '></div>
-            <span className='text-2xl mx-2'>scratch</span>
+            <span className='text-2xl mx-2'>
+              {selectedChatLoading || selectedChatRefetching || !chatStore.selectedChat
+                ? '...'
+                : chatStore.selectedChat.name
+                  ? chatStore.selectedChat.name
+                  : chatStore.selectedChat.users[0].user.id == user.id
+                    ? chatStore.selectedChat.users[1].user.displayName
+                    : chatStore.selectedChat.users[0].user.displaName}
+                    
+            </span>
           </div>
 
           <div
@@ -161,7 +211,7 @@ function Chat() {
           scroll-smooth
           overflow-y-auto scrollbar-none'
           >
-            <Dms messages={messages} CurrentUsername={'sgamraou'} />
+            {selectedChatLoading || selectedChatRefetching ? <div className='w-full h-[85%]  flex items-center justify-center  ' /> : <Dms CurrentUserId={user.id} />}
           </div>
 
           <div className='input h-14 w-full  flex justify-center items-center flex-none'>
@@ -187,17 +237,13 @@ function Chat() {
             </div>
           </div>
         </div>
-        <div className='RIGHT bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2 hidden flex-col p-2 gap-4'>
+        {/* <div className='RIGHT bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2 hidden flex-col p-2 gap-4'>
           <div className='flex justify-center mt-10'>
-            <img
-              className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl'
-              src='https://res.cloudinary.com/dwrysd8sm/image/upload/v1702374192/wp8ylrz4ejczvz8gthwr.png'
-              alt='pfp'
-            />
+            <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl' src={chatStore.selectedChat.image} alt='pfp' />
           </div>
           <div className='flex flex-col items-center justify-center'>
-            <span className='text-2xl'>Scratch</span>
-            <span className='text-sm  text-dark-cl/75'>@achedmi</span>
+            <span className='text-2xl'>{chatStore.selectedChat.name}</span>
+            <span className='text-sm  text-dark-cl/75'>{`@${chatStore.selectedChat.name}`}</span>
           </div>
           <div className='flex flex-wrap gap-3 mt-4'>
             <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2'>
@@ -219,7 +265,7 @@ function Chat() {
               <span className='text-lg'>Invite to play</span>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

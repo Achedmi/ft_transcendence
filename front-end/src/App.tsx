@@ -14,10 +14,9 @@ import Friends from './components/pages/Profile/Friends.tsx';
 import NotFound404 from './components/pages/errorPages/NotFound404.tsx';
 import MatchHistory from './components/pages/Profile/MatchHistory.tsx';
 import { useEffect } from 'react';
-import { useUserStore } from './user/userStore.tsx';
+import { useUserStore } from './stores/userStore.tsx';
 import Chat from './components/pages/chat/Chat.tsx';
 import Ranking from './components/pages/Ranking.tsx';
-import { AnimatePresence } from 'framer-motion';
 
 const queryClient = new QueryClient();
 
@@ -72,7 +71,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
     <Router>
       <ToastContainer />
-        <App />
+      <App />
     </Router>
   </QueryClientProvider>,
   // </React.StrictMode>,
