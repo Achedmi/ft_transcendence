@@ -52,7 +52,63 @@ export class ChatService {
       },
     });
   }
-  //
+
+  async getDms(me: number) {
+    return await this.prisma.chat.findMany({
+      where: {
+        type: ChatType.DM,
+        members: {
+          some: {
+            id: me,
+          },
+        },
+      },
+      select: {
+        id: true,
+        type: true,
+        visibility: true,
+        members: {
+          where: {
+            id: {
+              not: me,
+            },
+          },
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            displayName: true,
+          },
+        },
+        messages: {
+          take: 1,
+        },
+      },
+    });
+  }
+
+  async getChannels(me: number) {
+    return await this.prisma.chat.findMany({
+      where: {
+        type: ChatType.CHANNEL,
+        members: {
+          some: {
+            id: me,
+          },
+        },
+      },
+      select: {
+        id: true,
+        type: true,
+        visibility: true,
+        image: true,
+        name: true,
+        messages: {
+          take: 1,
+        },
+      },
+    });
+  }
 
   async createChannel(owner: number, createChatDto: CreateChanneltDto, image: File) {
     if (createChatDto.visibility === Visibility.PROTECTED && !createChatDto.password) throw new BadRequestException('Password is required for protected chats');

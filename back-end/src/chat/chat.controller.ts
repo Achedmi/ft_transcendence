@@ -13,6 +13,8 @@ import {
   FileTypeValidator,
   MaxFileSizeValidator,
   Query,
+  ValidationPipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChanneltDto } from './dto/create-channel.dto';
@@ -68,8 +70,18 @@ export class ChatController {
   }
 
   @Get('getDm')
-  getDm(@Query('from') from: number, @Query('to') to: number) {
+  getDm(@Query('from', new ParseIntPipe()) from: number, @Query('to', new ParseIntPipe()) to: number) {
     return this.chatService.findDm(from, to);
+  }
+
+  @Get('getDms')
+  getDms(@GetCurrent('id') me: number) {
+    return this.chatService.getDms(me);
+  }
+
+  @Get('getChannels')
+  getChannels(@GetCurrent('id') me: number) {
+    return this.chatService.getChannels(me);
   }
 
   @Get()
