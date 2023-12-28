@@ -38,6 +38,7 @@ const useChatStore = create<ChatStore>((set) => ({
     messages: [],
     name: '',
     image: '',
+    username: '',
   },
   getChats: async ({ queryKey }: { queryKey: any[] }) => {
     const [_, type] = queryKey;
@@ -64,7 +65,7 @@ const useChatStore = create<ChatStore>((set) => ({
       if (id == 0) return;
       const { data } = await axios.get(`/chat/${id}`);
       console.log('dataaaaa', data);
-      set({ selectedChat: { id: data.id, users: data.chatUser, messages: data.messages, name: data.name, image: data.image } });
+      set({ selectedChat: { id: data.id, users: data.chatUser, messages: data.messages, name: data.name, image: data.image, username: data.username } });
     } catch (error) {
       const err = error as AxiosError;
       console.log(err.response?.data);

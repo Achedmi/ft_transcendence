@@ -234,7 +234,7 @@ function Chat() {
           </div>
           <div className='flex flex-col items-center justify-center'>
             <span className='text-2xl'>{chatStore.selectedChat.name}</span>
-            <span className='text-sm  text-dark-cl/75'>{`@${chatStore.selectedChat.name}`}</span>
+            <span className='text-sm  text-dark-cl/75'>{`@${chatStore.selectedChat.username}`}</span>
           </div>
           <div className='flex flex-wrap gap-3 mt-4'>
             <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2'>

@@ -56,6 +56,7 @@ export class ChatService {
     if (chat.type === ChatType.DM) {
       const otherUser = chat.chatUser.find((chatUser) => chatUser.user.id !== me);
       chat.name = otherUser.user.displayName;
+      chat['username'] = otherUser.user.username;
       chat.image = otherUser.user.avatar;
     }
     return chat;
