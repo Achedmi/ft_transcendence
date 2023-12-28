@@ -228,7 +228,7 @@ function Chat() {
             </div>
           </div>
         </div>
-        {/* <div className='RIGHT bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2 hidden flex-col p-2 gap-4'>
+        <div className='RIGHT bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2 hidden flex-col p-2 gap-4'>
           <div className='flex justify-center mt-10'>
             <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl' src={chatStore.selectedChat.image} alt='pfp' />
           </div>
@@ -256,7 +256,7 @@ function Chat() {
               <span className='text-lg'>Invite to play</span>
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   );
