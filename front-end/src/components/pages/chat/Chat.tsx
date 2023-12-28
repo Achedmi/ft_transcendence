@@ -194,16 +194,7 @@ function Chat() {
         <div className='MIDDLE flex flex-col gap-4  border-2   w-[40rem] m-2 relative overflow-hidden'>
           <div className='header h-14 m-0 w-full bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-3xl flex items-center justify-center flex-none'>
             <div className='h-2 w-2 rounded-full bg-blue-cl '></div>
-            <span className='text-2xl mx-2'>
-              {selectedChatLoading || selectedChatRefetching || !chatStore.selectedChat
-                ? '...'
-                : chatStore.selectedChat.name
-                  ? chatStore.selectedChat.name
-                  : chatStore.selectedChat.users[0].user.id == user.id
-                    ? chatStore.selectedChat.users[1].user.displayName
-                    : chatStore.selectedChat.users[0].user.displaName}
-                    
-            </span>
+            <span className='text-2xl mx-2'>{selectedChatLoading || selectedChatRefetching || !chatStore.selectedChat ? '...' : chatStore.selectedChat.name}</span>
           </div>
 
           <div
