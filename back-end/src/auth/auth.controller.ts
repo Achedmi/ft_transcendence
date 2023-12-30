@@ -123,7 +123,7 @@ export class AuthController {
 
   @Get('defaultLogin')
   async defaultLogin(@Res({ passthrough: true }) response: Response) {
-    const user = await this.userService.findOne(1);
+    const user = await this.userService.findOne(2);
     const { accessToken, refreshToken } = await this.helpersService.generateRefreshAndAccessToken({
       id: user.id,
       username: user.username,

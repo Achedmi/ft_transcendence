@@ -59,6 +59,13 @@ export class ChatService {
       chat['username'] = otherUser.user.username;
       chat.image = otherUser.user.avatar;
     }
+
+    const members = {};
+    chat.chatUser.forEach((chatUser) => {
+      members[chatUser.user.id] = chatUser;
+    });
+    chat['members'] = members;
+
     return chat;
   }
 
