@@ -1,8 +1,13 @@
+import { JwtService } from '@nestjs/jwt';
 import { SubscribeMessage, WebSocketServer, WebSocketGateway } from '@nestjs/websockets';
+import { Status } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserService } from 'src/user/user.service';
 
 @WebSocketGateway({ namespace: '/chat' })
 export class ChatGateway {
+  constructor(private readonly userService: UserService, private readonly jwtService: JwtService, private readonly prisma: PrismaService) {}
   @WebSocketServer()
   server: Server;
 
@@ -10,12 +15,54 @@ export class ChatGateway {
     console.log('chat Socket initialized');
   }
 
-  handleConnection(client: Socket) {
-    console.log('New client connected to chat socket: ', client.id);
+  private connectedUsers = {};
+
+  async handleConnection(client: Socket) {
+    try {
+      // const testToken = this.jwtService.sign({ id: client.id }, { secret: 'secret', expiresIn: '1m' });
+      // console.log(testToken);
+      // const ff = this.jwtService.verify(
+      //   'eyJhbGciOiJIUzI1NiIsInR5cCIsdsdf6IkpXVCJ9.eyJpZCI6ImJKcmJ3U3k1eWlQNWVZaTBBQUFCIiwiaWF0IjoxNzAzNDMxNzM3LCJleHAiOjE3MDM0MzE3OTd9.JK3lx4uhImMPrIjrW9fAERgwBDhtuqxK59NteeBRMh8',
+      //   { secret: 'secret' },
+      // );
+      // console.log('=============', ff);
+
+      const token = client.handshake.headers.cookie?.split('userAT=')[1]?.split('; ')[0];
+      const isValidToken = this.jwtService.verify(token, { publicKey: process.env.JWT_ACCESS_SECRET });
+      if (!isValidToken || this.connectedUsers[isValidToken.id]) {
+        console.log('----------', isValidToken?.usernae);
+        client.disconnect();
+        return;
+      }
+      const user = await this.userService.findUnique({ id: isValidToken.id });
+      console.log('========================================online', user.username);
+      client['user'] = user;
+      this.connectedUsers[user.id] = client;
+      const chats = await this.prisma.chat.findMany({
+        where: {
+          members: {
+            some: {
+              id: user.id,
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+      chats.forEach((chat) => {
+        client.join(String(chat.id));
+      });
+    } catch (err) {
+      console.log(err);
+      client.disconnect();
+    }
   }
 
-  handleDisconnect(client: Socket) {
-    console.log('Client disconnected from chat socket: ', client.id);
+  handleDisconnect(client) {
+    if (!client.user) return;
+    console.log('Client disconnected from Game socket: ', client.user.username);
+    delete this.connectedUsers[client.user.id];
   }
 
   @SubscribeMessage('joinChat')
