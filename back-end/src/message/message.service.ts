@@ -21,6 +21,7 @@ export class MessageService {
       },
     });
     this.socketService.toChat({
+      id: message.id,
       chatId: chat.id,
       message: sendMessageDto.message,
       from: from,
@@ -41,6 +42,7 @@ export class MessageService {
     });
 
     this.socketService.toChat({
+      id: message.id,
       chatId: chat.id,
       message: sendDmDto.message,
       from: from,
