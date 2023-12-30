@@ -25,7 +25,6 @@ export class ChatGateway {
       //   'eyJhbGciOiJIUzI1NiIsInR5cCIsdsdf6IkpXVCJ9.eyJpZCI6ImJKcmJ3U3k1eWlQNWVZaTBBQUFCIiwiaWF0IjoxNzAzNDMxNzM3LCJleHAiOjE3MDM0MzE3OTd9.JK3lx4uhImMPrIjrW9fAERgwBDhtuqxK59NteeBRMh8',
       //   { secret: 'secret' },
       // );
-      // console.log('=============', ff);
 
       const token = client.handshake.headers.cookie?.split('userAT=')[1]?.split('; ')[0];
       const isValidToken = this.jwtService.verify(token, { publicKey: process.env.JWT_ACCESS_SECRET });
@@ -51,8 +50,13 @@ export class ChatGateway {
         },
       });
       chats.forEach((chat) => {
+        console.log('user: ' + user.username + ' joining room: ', chat.id);
         client.join(String(chat.id));
       });
+
+      this.server.to('11').emit('message', { message: 'hello' });
+      console.log('Client connected to Game socket: ', user.username);
+
     } catch (err) {
       console.log(err);
       client.disconnect();
@@ -78,6 +82,7 @@ export class ChatGateway {
   }
 
   toChat(data) {
-    this.server.to(data.chatId).emit('message', data);
+    console.log('toChat', data);
+    this.server.to(String(data.chatId)).emit('message', data);
   }
 }

@@ -7,20 +7,26 @@ import axios from '../../../utils/axios';
 
 function DmColumn({ chat, CurrentUserId }: { chat: ChatInterface; CurrentUserId: number }) {
   const chatStore = useChatStore();
-  const { socket } = useUserStore();
 
   const handleSelectChat = useCallback(() => {
     if (chat.id) chatStore.setSelectedChatId(chat.id);
-    if (socket?.chat) socket?.chat.emit('joinChat', { chatId: chat.id });
-  }, []);
+  }, [chat.id]);
 
   return (
-    <div className=' flex justify-start m-2  items-center gap-2 hover:bg-gray-cl hover:rounded-full cursor-pointer' onClick={handleSelectChat}>
-      <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl ' src={chat.image} />
+    <div className=' flex justify-start m-2  items-center gap-2 hover:bg-gray-cl hover:rounded-full cursor-pointer relative' onClick={handleSelectChat}>
+      <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl object-cover
+       ' src={chat.image} />
       <div className='name and message flex flex-col max-w-sm'>
         <span className='name text-xl'>{chat.name}</span>
         <span className='message opacity-75 text-sm overflow-hidden truncate w-36'>{`${CurrentUserId == chat.lastMessageSender ? 'You: ' : ''} ${chat.lastMessage}`}</span>
       </div>
+      {
+        chat.id != chatStore.selectedChatId && chat.newMessages > 0 && (
+          <div className='absolute right-1 h-5 w-5 rounded-full bg-red-cl flex justify-center'>
+            <span className='text-white absolute top-1'>{chat.newMessages > 10 ? '+10' : chat.newMessages}</span>
+          </div>
+        )
+      }
     </div>
   );
 }
@@ -41,57 +47,31 @@ interface Message {
   id: number;
   userId: number;
   message: string;
-  avatar?: string;
   user?: {
-    avatar: string;
+    avatar?: string;
   };
 }
 
-let messagess = [
-  {
-    id: 1,
-    semder: 'scratch',
-    content: 'alo fay9 ?',
-    time: '12:00',
-    type: 'text',
-    avatar: 'https://res.cloudinary.com/dwrysd8sm/image/upload/v1702374192/wp8ylrz4ejczvz8gthwr.png',
-  },
-  {
-    id: 2,
-    sender: 'sgamraou',
-    content: 'wa9ila hhh',
-    time: '12:01',
-    type: 'text',
-    avatar: '',
-  },
-  {
-    id: 3,
-    sender: 'scratch',
-    content: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`,
-    time: '12:01',
-    type: 'text',
-    avatar: 'https://res.cloudinary.com/dwrysd8sm/image/upload/v1702374192/wp8ylrz4ejczvz8gthwr.png',
-  },
-  {
-    id: 4,
-    sender: 'sgamraou',
-    content: 'Khyaaaar hhhh 💀',
-    time: '12:01',
-    type: 'text',
-    avatar: '',
-  },
-];
-
 function Dms({ CurrentUserId }: { CurrentUserId: number | undefined }) {
   const lastMessageRef = useRef<HTMLDivElement>(null);
-
+  const { socket } = useUserStore();
   const scrollToBottom = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
   const chatStore = useChatStore();
 
-  console.log('gta: ', chatStore.selectedChatId);
+  useEffect(() => {
+    socket?.chat?.on('message', (data: any) => {
+      if (data.chatId == chatStore.selectedChatId) {
+        chatStore.pushNewMessage(data);
+      }
+      chatStore.updateChat(data.chatId, { lastMessage: data.message, lastMessageSender: data.from });
+    });
+
+    return () => {
+      socket?.chat?.off('message');
+    };
+  }, [socket?.chat, socket]);
 
   useEffect(() => {
     scrollToBottom();
@@ -112,7 +92,7 @@ function Dms({ CurrentUserId }: { CurrentUserId: number | undefined }) {
             >
               {message.userId != CurrentUserId ? (
                 <>
-                  <img className='h-8 w-8 rounded-full border-2 border-solid border-dark-cl ' src={message.user?.avatar} />
+                  <img className='h-8 w-8 rounded-full border-2 border-solid border-dark-cl object-cover' src={message.user?.avatar} />
                   <p className='text-md bg-gray-cl rounded-3xl flex justify-center items-start p-3 max-w-xs break-words'>{message.message}</p>
                 </>
               ) : (
@@ -127,25 +107,16 @@ function Dms({ CurrentUserId }: { CurrentUserId: number | undefined }) {
 }
 
 function Chat() {
-  const [messages, setMessages] = useState(messagess);
+  const [chatType, setChatType] = useState<ChatType>(ChatType.DM);
+
   const [message, setMessage] = useState<string>('');
-  const { user, socket } = useUserStore();
+  const { user } = useUserStore();
   const chatStore = useChatStore();
 
-  const { isLoading: chatsLoading, isRefetching: chatsRefreching } = useQuery(['chats', ChatType.DM, socket?.chat], chatStore.getChats, { refetchOnWindowFocus: false });
+  const { isLoading: chatsLoading, isRefetching: chatsRefreching } = useQuery(['chats', chatType], chatStore.getChats, { refetchOnWindowFocus: false });
   const { isLoading: selectedChatLoading, isRefetching: selectedChatRefetching } = useQuery(['chat', chatStore.selectedChatId], chatStore.getSelectedChat, {
     refetchOnWindowFocus: false,
   });
-
-  useEffect(() => {
-    if (!(chatsLoading || selectedChatLoading || chatsRefreching || selectedChatRefetching)) {
-      if (socket?.chat) {
-        socket.chat.on('message', (data: any) => {
-          console.log('message: ', data);
-        });
-      }
-    }
-  }, [socket?.chat, chatsLoading, selectedChatLoading, chatsRefreching, selectedChatRefetching]);
 
   const handleNewMessage = useCallback(async () => {
     if (message) {
@@ -171,8 +142,7 @@ function Chat() {
       }
 
       const newMessage = {
-        id: messages.length + 1,
-        sender: 'sgamraou',
+        sender: user.username,
         content: buffer,
         time: '12:01',
         type: 'text',
@@ -181,24 +151,34 @@ function Chat() {
 
       await axios.post('/message/sendMessage', {
         message: newMessage.content,
-        chatId: 11,
+        chatId: chatStore.selectedChatId,
       });
 
-      let newMessages = [...messages, newMessage];
-      setMessages(newMessages);
       setMessage('');
     }
-  }, [message, messages]);
+  }, [message]);
 
   return (
     <div className='h-full w-full bg-gray-cl border-solid border-[4px] border-dark-cl rounded-xl  flex justify-center items-center'>
       <div className='text-dark-cl p-2 h-full w-full flex justify-center'>
         <div className=' LEFT  md:flex flex-col gap-4  w-72 m-2 hidden'>
           <div className='buttons w-full h-14 flex gap-2 m-0'>
-            <div className='text-xl flex justify-center items-center rounded-3xl bg-[#ECE8E8] w-1/2 h-full border-2 border-solid border-dark-cl'>
+            <div
+              onClick={() => {
+                setChatType(ChatType.DM);
+              }}
+              className={`text-xl flex justify-center items-center rounded-3xl w-1/2 h-full cursor-pointer
+               ${chatType == ChatType.DM ? 'bg-[#ECE8E8]   border-2 border-solid border-dark-cl' : ''}`}
+            >
               <span>Dms</span>
             </div>
-            <div className='text-xl flex justify-center items-center rounded-3xl w-1/2 h-full'>
+            <div
+              onClick={() => {
+                setChatType(ChatType.CHANNEL);
+              }}
+              className={`text-xl flex justify-center items-center rounded-3xl w-1/2 h-full  cursor-pointer
+              ${chatType == ChatType.CHANNEL ? 'bg-[#ECE8E8]  border-2 border-solid border-dark-cl' : ''}`}
+            >
               <span>Groups</span>
             </div>
           </div>
@@ -245,7 +225,7 @@ function Chat() {
         </div>
         <div className='RIGHT bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2 hidden flex-col p-2 gap-4'>
           <div className='flex justify-center mt-10'>
-            <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl' src={chatStore.selectedChat.image} alt='pfp' />
+            <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl object-cover' src={chatStore.selectedChat.image} alt='pfp' />
           </div>
           <div className='flex flex-col items-center justify-center'>
             <span className='text-2xl'>{chatStore.selectedChat.name}</span>

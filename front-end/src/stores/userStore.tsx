@@ -18,14 +18,12 @@ export interface User {
   losses?: number;
 }
 
-
-
 export interface UserState {
   user: User;
   isRefreshed: boolean;
   abelToPlay: boolean;
 
-  socket?: { game?: Socket; chat?: Socket };
+  socket?: any;
   setSocket: (socket: { game?: Socket; chat?: Socket }) => void;
   setUserData: (user: Partial<User>) => void;
   fetchUserProfile: () => Promise<boolean> | any;
@@ -50,8 +48,8 @@ export const useUserStore = create<UserState>((set) => ({
     set((state) => ({ user: { ...state.user, ...user } }));
   },
   abelToPlay: false,
-  socket: { game: undefined, chat: undefined },
-  setSocket: (socket: { game?: Socket; chat?: Socket }) => {
+  socket: {  },
+  setSocket: (socket: any) => {
     set({ socket });
   },
 

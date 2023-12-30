@@ -125,9 +125,12 @@ function PrivateRoutes() {
       transports: ['websocket'],
     });
 
-    setSocket({ chat: chatSocket });
+    setSocket({ chat: chatSocket, game: gameSocket });
 
-    setSocket({ game: gameSocket });
+    chatSocket?.on('connect', () => {
+      console.log('connected');
+    });
+
     return () => {
       if (socket?.game) socket.game.disconnect();
       if (socket?.chat) socket.chat.disconnect();
