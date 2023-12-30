@@ -7,13 +7,15 @@ import axios from '../../../utils/axios';
 
 function DmColumn({ chat, CurrentUserId }: { chat: ChatInterface; CurrentUserId: number }) {
   const chatStore = useChatStore();
+  const { socket } = useUserStore();
+
+  const handleSelectChat = useCallback(() => {
+    if (chat.id) chatStore.setSelectedChatId(chat.id);
+    if (socket?.chat) socket?.chat.emit('joinChat', { chatId: chat.id });
+  }, []);
+
   return (
-    <div
-      className=' flex justify-start m-2  items-center gap-2 hover:bg-gray-cl hover:rounded-full cursor-pointer'
-      onClick={() => {
-        if (chat.id) chatStore.setSelectedChatId(chat.id);
-      }}
-    >
+    <div className=' flex justify-start m-2  items-center gap-2 hover:bg-gray-cl hover:rounded-full cursor-pointer' onClick={handleSelectChat}>
       <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl ' src={chat.image} />
       <div className='name and message flex flex-col max-w-sm'>
         <span className='name text-xl'>{chat.name}</span>
@@ -127,11 +129,24 @@ function Dms({ CurrentUserId }: { CurrentUserId: number | undefined }) {
 function Chat() {
   const [messages, setMessages] = useState(messagess);
   const [message, setMessage] = useState<string>('');
-  const user = useUserStore((state) => state.user);
+  const { user, socket } = useUserStore();
   const chatStore = useChatStore();
 
-  const { isLoading: chatsLoading, isRefetching: chatsRefreching } = useQuery(['chats', ChatType.DM], chatStore.getChats);
-  const { isLoading: selectedChatLoading, isRefetching: selectedChatRefetching } = useQuery(['chat', chatStore.selectedChatId], chatStore.getSelectedChat);
+  const { isLoading: chatsLoading, isRefetching: chatsRefreching } = useQuery(['chats', ChatType.DM, socket?.chat], chatStore.getChats, { refetchOnWindowFocus: false });
+  const { isLoading: selectedChatLoading, isRefetching: selectedChatRefetching } = useQuery(['chat', chatStore.selectedChatId], chatStore.getSelectedChat, {
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    if (!(chatsLoading || selectedChatLoading || chatsRefreching || selectedChatRefetching)) {
+      if (socket?.chat) {
+        socket.chat.on('message', (data: any) => {
+          console.log('message: ', data);
+        });
+      }
+    }
+  }, [socket?.chat, chatsLoading, selectedChatLoading, chatsRefreching, selectedChatRefetching]);
+
   const handleNewMessage = useCallback(async () => {
     if (message) {
       let buffer = '';
@@ -171,6 +186,7 @@ function Chat() {
 
       let newMessages = [...messages, newMessage];
       setMessages(newMessages);
+      setMessage('');
     }
   }, [message, messages]);
 
@@ -212,7 +228,6 @@ function Chat() {
                 onKeyDown={(e: any) => {
                   if (e.key === 'Enter') {
                     handleNewMessage();
-                    setMessage('');
                   }
                 }}
                 onChange={(e: any) => {

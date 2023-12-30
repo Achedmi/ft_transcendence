@@ -21,6 +21,7 @@ interface ChatStore {
   chats: ChatInterface[];
   selectedChatId?: number;
   selectedChat?: any;
+  pushNewMessage: (message: any) => void;
   getChats: ({ queryKey }: { queryKey: any[] }) => void;
   setSelectedChatId: (id: number) => void;
   getSelectedChat: ({ queryKey }: { queryKey: any[] }) => void;
@@ -35,13 +36,27 @@ const useChatStore = create<ChatStore>((set) => ({
     // chat that is currently selected
     id: 0,
     users: [],
+    members: {},
     messages: [],
     name: '',
     image: '',
     username: '',
   },
+
+  pushNewMessage: (message: any) => {
+    set((state) => {
+      message.userId = message.from;
+      message.avatar = state.selectedChat.members[message.from].avatar;
+      return {
+        selectedChat: {
+          ...state.selectedChat,
+          messages: [...state.selectedChat.messages, message],
+        },
+      };
+    });
+  },
   getChats: async ({ queryKey }: { queryKey: any[] }) => {
-    const [_, type] = queryKey;
+    const [_, type, socket] = queryKey;
     try {
       const { data } = await axios.get(`/chat/${type === ChatType.DM ? 'getDms' : 'getChannels'}`);
       const chats = data.map((chat: any) => ({
@@ -54,6 +69,7 @@ const useChatStore = create<ChatStore>((set) => ({
       }));
       set({ chats });
       set({ selectedChatId: chats[0].id });
+      if (socket) socket.emit('joinChat', { chatId: chats[0].id });
     } catch (error) {
       const err = error as AxiosError;
       console.log(err.response?.data);
@@ -65,7 +81,7 @@ const useChatStore = create<ChatStore>((set) => ({
       if (id == 0) return;
       const { data } = await axios.get(`/chat/${id}`);
       console.log('dataaaaa', data);
-      set({ selectedChat: { id: data.id, users: data.chatUser, messages: data.messages, name: data.name, image: data.image, username: data.username } });
+      set({ selectedChat: { id: data.id, users: data.chatUser, members: data.members, messages: data.messages, name: data.name, image: data.image, username: data.username } });
     } catch (error) {
       const err = error as AxiosError;
       console.log(err.response?.data);

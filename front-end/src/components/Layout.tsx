@@ -120,6 +120,13 @@ function PrivateRoutes() {
       transports: ['websocket'],
     });
 
+    const chatSocket = io(`http://${import.meta.env.VITE_ADDRESS}:9696/chat`, {
+      withCredentials: true,
+      transports: ['websocket'],
+    });
+
+    setSocket({ chat: chatSocket });
+
     setSocket({ game: gameSocket });
     return () => {
       if (socket?.game) socket.game.disconnect();
@@ -139,7 +146,7 @@ function PrivateRoutes() {
     return () => {
       socket?.game?.off('gameIsReady');
     };
-  }, [socket?.game, game.id, abelToPlay]);
+  }, [socket?.game, game.id, abelToPlay, socket?.chat]);
 
   return (
     <>
