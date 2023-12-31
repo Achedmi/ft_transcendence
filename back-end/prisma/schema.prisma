@@ -64,12 +64,11 @@ model UserChat {
   id        Int      @default(autoincrement()) @id
   userId Int?
   chatId Int?
-  isMutted Boolean @default(false)
-  mutedById Int?
+  isMuted Boolean @default(false)
+  mutedUntil DateTime? 
   isAdmin Boolean @default(false)
   user User? @relation(fields: [userId], references: [id])
   chat Chat? @relation(fields: [chatId], references: [id])
-  mutedBy User? @relation("mutedBy", fields: [mutedById], references: [id])
   createdAt DateTime @default(now())
   @@unique([userId, chatId])
 }
@@ -79,14 +78,22 @@ model Friendship {
   user1Id Int?
   user2Id Int?
   
-  isBlocked Boolean @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Blocking {
+  id        Int      @default(autoincrement()) @id
+  
+  user1Id Int?
+  user2Id Int?
   BlockedById Int?
   
-  BlockedBy User? @relation("BlockedBy", fields: [BlockedById], references: [id])
   user1 User? @relation("user1", fields: [user1Id], references: [id])
   user2 User? @relation("user2", fields: [user2Id], references: [id])
+  BlockedBy User? @relation("BlockedBy", fields: [BlockedById], references: [id])
   
   createdAt DateTime @default(now())
+  @@unique([user1Id, user2Id])
 }
 
 model User {
@@ -107,11 +114,10 @@ model User {
   chats Chat[]
   owner Chat[]  @relation("owner")
   messages Message[]
-  friendship1 Friendship[] @relation("user1")
-  friendship2 Friendship[] @relation("user2")
-  BlockedBy Friendship[] @relation("BlockedBy")
+  friendship1 Blocking[] @relation("user1")
+  friendship2 Blocking[] @relation("user2")
+  BlockedBy Blocking[] @relation("BlockedBy")
   chatUser UserChat[]
-  mutedBy UserChat[] @relation("mutedBy")
 }
 
 model Game {

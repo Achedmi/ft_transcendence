@@ -1,5 +1,5 @@
 import { ChatGateway } from 'src/socket/chat.gateway';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { SendMessageDto } from './dto/create-message.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SendDmDto } from './dto/send-dm.dto';
@@ -13,6 +13,9 @@ export class MessageService {
       where: { id: sendMessageDto.chatId },
     });
 
+    const isMuted = await this.chatService.isMuted(from, chat.id);
+    if (isMuted) throw new BadRequestException(`You are muted in this chat until ${isMuted}`);
+
     const message = await this.prisma.message.create({
       data: {
         chatId: chat.id,
@@ -20,6 +23,7 @@ export class MessageService {
         userId: from,
       },
     });
+
     this.socketService.toChat({
       id: message.id,
       chatId: chat.id,
@@ -32,6 +36,8 @@ export class MessageService {
   async sendDm(from: number, sendDmDto: SendDmDto) {
     let chat: { id: number } = await this.chatService.findDm(from, sendDmDto.to);
     if (!chat) chat = await this.chatService.createDm(from, sendDmDto.to);
+
+    // const blocked =
 
     const message = await this.prisma.message.create({
       data: {

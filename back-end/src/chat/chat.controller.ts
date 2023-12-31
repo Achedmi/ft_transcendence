@@ -27,6 +27,8 @@ import { AddAdmindDto } from 'src/chat/dto/addAdmin.dto';
 import { RemoveAdminDto } from './dto/removeAdmin.dto';
 import { AddMemberDto } from './dto/addMember.dto';
 import { KickMemberDto } from './dto/kickMember.dto';
+import { MuteDto } from './dto/mute.dto';
+import { BlockeDto } from './dto/block.dto';
 
 @Controller('chat')
 @UseGuards(TFAGuard)
@@ -92,6 +94,21 @@ export class ChatController {
   @Post('giveOwnership')
   giveOwnership(@GetCurrent('id') me: number, @Body() giveOwnershipDto: GiveOwnershipDto) {
     return this.chatService.giveOwnership(me, giveOwnershipDto);
+  }
+
+  @Post('mute')
+  mute(@GetCurrent('id') me: number, @Body() muteDto: MuteDto) {
+    return this.chatService.mute(me, muteDto);
+  }
+
+  @Post('block')
+  block(@GetCurrent('id') me: number, @Body() blockDto: BlockeDto) {
+    return this.chatService.block(me, blockDto);
+  }
+
+  @Post('unblock')
+  unblock(@GetCurrent('id') me: number, @Body() blockDto: BlockeDto) {
+    return this.chatService.unblock(me, blockDto);
   }
 
   @Get(':id')

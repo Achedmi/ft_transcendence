@@ -1,5 +1,5 @@
 import { IntraGuard } from './guards/intra.guard';
-import { Controller, Post, Body, Res, Get, Req, UseGuards, HttpCode, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, Res, Get, Req, UseGuards, HttpCode, BadRequestException, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { GetCurrent } from './decorator/current.decorator';
@@ -122,8 +122,8 @@ export class AuthController {
   //===================================Postman Login=====================================
 
   @Get('defaultLogin')
-  async defaultLogin(@Res({ passthrough: true }) response: Response) {
-    const user = await this.userService.findOne(2);
+  async defaultLogin(@Res({ passthrough: true }) response: Response, @Query('id') id: number) {
+    const user = await this.userService.findOne(id);
     const { accessToken, refreshToken } = await this.helpersService.generateRefreshAndAccessToken({
       id: user.id,
       username: user.username,

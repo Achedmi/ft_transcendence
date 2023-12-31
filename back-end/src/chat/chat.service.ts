@@ -10,6 +10,8 @@ import { AddAdmindDto } from 'src/chat/dto/addAdmin.dto';
 import { RemoveAdminDto } from './dto/removeAdmin.dto';
 import { AddMemberDto } from './dto/addMember.dto';
 import { KickMemberDto } from './dto/kickMember.dto';
+import { MuteDto } from './dto/mute.dto';
+import { BlockeDto } from './dto/block.dto';
 
 @Injectable()
 export class ChatService {
@@ -232,6 +234,7 @@ export class ChatService {
   }
 
   async createDm(me: number, friendId: number) {
+    if (me === friendId) throw new BadRequestException('You can not create a dm with yourself');
     return await this.prisma.chat.create({
       data: {
         type: ChatType.DM,
@@ -275,6 +278,7 @@ export class ChatService {
   }
 
   async giveOwnership(me: number, giveOwnershipDto: GiveOwnershipDto) {
+    if (me === giveOwnershipDto.userId) throw new BadRequestException('You can not give yourself ownership');
     const isOwner = await this.isOwner(me, giveOwnershipDto.chatId);
     if (!isOwner) throw new BadRequestException('You are not the owner of this chat');
     const isUserInChat = await this.isUserInChat(giveOwnershipDto.userId, giveOwnershipDto.chatId);
@@ -304,6 +308,7 @@ export class ChatService {
   }
 
   async addAdmin(me: number, addAdminDto: AddAdmindDto) {
+    if (me === addAdminDto.userId) throw new BadRequestException('You can not add yourself');
     const isAbleto = await this.isAdminOrOwner(me, addAdminDto.chatId);
     if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
     const isUserInChat = await this.isUserInChat(addAdminDto.userId, addAdminDto.chatId);
@@ -322,6 +327,7 @@ export class ChatService {
   }
 
   async removeAdmin(me: number, remvoeAdminDto: RemoveAdminDto) {
+    if (me === remvoeAdminDto.userId) throw new BadRequestException('You can not remove yourself');
     const isAbleto = await this.isAdminOrOwner(me, remvoeAdminDto.chatId);
     if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
     const isUserInChat = await this.isUserInChat(remvoeAdminDto.userId, remvoeAdminDto.chatId);
@@ -341,6 +347,7 @@ export class ChatService {
   }
 
   async addMember(me: number, addMemberDto: AddMemberDto) {
+    if (me === addMemberDto.userId) throw new BadRequestException('You can not add yourself');
     const isAbleto = await this.isAdminOrOwner(me, addMemberDto.chatId);
     if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
     await this.prisma.userChat.create({
@@ -363,12 +370,17 @@ export class ChatService {
   }
 
   async kickMember(me: number, kickMemberDto: KickMemberDto) {
+    if (me === kickMemberDto.userId) throw new BadRequestException('You can not kick yourself');
+
     const isAbleto = await this.isAdminOrOwner(me, kickMemberDto.chatId);
     if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
+
     const isOwner = await this.isOwner(kickMemberDto.userId, kickMemberDto.chatId);
     if (isOwner) throw new BadRequestException('You can not kick the owner of this chat');
+
     const isUserInChat = await this.isUserInChat(kickMemberDto.userId, kickMemberDto.chatId);
     if (!isUserInChat) throw new BadRequestException('User is not in this chat');
+
     const chat = await this.prisma.userChat.delete({
       where: {
         userId_chatId: {
@@ -400,5 +412,113 @@ export class ChatService {
 
   remove(id: number) {
     return `This action removes a #${id} chat`;
+  }
+
+  async isMuted(me: number, chatId: number) {
+    const chat = await this.prisma.userChat.findFirstOrThrow({
+      where: {
+        userId: me,
+        chatId,
+      },
+      select: {
+        isMuted: true,
+        mutedUntil: true,
+      },
+    });
+    if (chat.isMuted && chat.mutedUntil >= new Date()) return chat.mutedUntil;
+    else if (chat.isMuted && chat.mutedUntil <= new Date()) {
+      await this.prisma.userChat.update({
+        where: {
+          userId_chatId: {
+            userId: me,
+            chatId,
+          },
+        },
+        data: {
+          isMuted: false,
+          mutedUntil: null,
+        },
+      });
+    }
+    return false;
+  }
+
+  async mute(me: number, muteDto: MuteDto) {
+    if (me === muteDto.userId) throw new BadRequestException('You can not mute yourself');
+
+    const isAbleto = await this.isAdminOrOwner(me, muteDto.chatId);
+    if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
+
+    const isUserInChat = await this.isUserInChat(muteDto.userId, muteDto.chatId);
+    if (!isUserInChat) throw new BadRequestException('User is not in this chat');
+
+    const isOwnerOrAdmin = await this.isOwner(muteDto.userId, muteDto.chatId);
+    if (isOwnerOrAdmin) throw new BadRequestException('You can not mute the owner or an admin of this chat');
+
+    if (muteDto.time > 20) throw new BadRequestException('You can not mute for more than 20 minutes');
+
+    const mutedUntil = new Date();
+    mutedUntil.setMinutes(mutedUntil.getMinutes() + muteDto.time);
+
+    return await this.prisma.userChat.update({
+      where: {
+        userId_chatId: {
+          userId: muteDto.userId,
+          chatId: muteDto.chatId,
+        },
+      },
+      data: {
+        mutedUntil,
+        isMuted: true,
+      },
+    });
+  }
+
+  async block(me: number, blockDto: BlockeDto) {
+    if (me === blockDto.userId) throw new BadRequestException('You can not block yourself');
+
+    return await this.prisma.blocking.create({
+      data: {
+        user1Id: me,
+        user2Id: blockDto.userId,
+        BlockedById: me,
+      },
+    });
+  }
+
+  async unblock(me: number, blockDto: BlockeDto) {
+    if (me === blockDto.userId) throw new BadRequestException('You can not unblock yourself');
+
+    const blockedBy = await this.prisma.blocking.findUnique({
+      where: {
+        user1Id_user2Id: {
+          user1Id: me,
+          user2Id: blockDto.userId,
+        },
+        BlockedById: me,
+      },
+    });
+    if (!blockedBy) throw new BadRequestException('You have not blocked this user');
+
+    return await this.prisma.blocking.delete({
+      where: {
+        user1Id_user2Id: {
+          user1Id: me,
+          user2Id: blockDto.userId,
+        },
+      },
+    });
+  }
+
+  async isBlocked(me: number, userId: number) {
+    const blockedBy = await this.prisma.blocking.findUnique({
+      where: {
+        user1Id_user2Id: {
+          user1Id: me,
+          user2Id: userId,
+        },
+      },
+    });
+    return blockedBy;
   }
 }
