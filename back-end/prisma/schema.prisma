@@ -78,6 +78,10 @@ model Friendship {
   user1Id Int?
   user2Id Int?
   
+  
+  user1 User? @relation("user1", fields: [user1Id], references: [id])
+  user2 User? @relation("user2", fields: [user2Id], references: [id])
+  
   createdAt DateTime @default(now())
 }
 
@@ -114,6 +118,10 @@ model User {
   chats Chat[]
   owner Chat[]  @relation("owner")
   messages Message[]
+  
+  friendship1 Friendship[] @relation("user1")
+  friendship2 Friendship[] @relation("user2")
+  
   blocking1 Blocking[] @relation("user1")
   blocking2 Blocking[] @relation("user2")
   BlockedBy Blocking[] @relation("BlockedBy")
