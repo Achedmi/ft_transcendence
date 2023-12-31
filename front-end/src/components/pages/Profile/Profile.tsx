@@ -78,7 +78,7 @@ function Profile() {
             title='Edit profile'
             onClick={() => setShowEditProfile(true)}
           >
-            <Edit size='26' fillColor='#433650' />
+            <Edit size='26' fillColor='#433650'  />
             <span className='hidden sm:block non-selectable'>Edit profile</span>
           </motion.div>
           <div className='bg-[#D9D9D9] flex justify-center gap-2 items-center flex-col  rounded-3xl border-solid border-dark-cl border-[4px] absolute -bottom-5 left-0 ml-4 p-2 h-16 xs:flex-row xs:h-11 duration-300'>
