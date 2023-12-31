@@ -67,7 +67,7 @@ export class ChatService {
     const members = {};
     await Promise.all(
       chat.chatUser.map(async (chatUser) => {
-        if (await this.isBlocked(me, chatUser.user.id)) blockedUsers.add(chatUser.user.id);
+        if ((await this.isBlocked(me, chatUser.user.id)) && chat.type === ChatType.CHANNEL) blockedUsers.add(chatUser.user.id);
         members[chatUser.user.id] = chatUser;
       }),
     );
@@ -147,7 +147,7 @@ export class ChatService {
   }
 
   async getChannels(me: number) {
-    return await this.prisma.chat.findMany({
+    const channles = await this.prisma.chat.findMany({
       where: {
         type: ChatType.CHANNEL,
         members: {
@@ -178,6 +178,14 @@ export class ChatService {
         },
       },
     });
+    await Promise.all(
+      channles.map(async (channel) => {
+        if (channel.messages.length === 0) return;
+        const isLastMessageFromBlockedUser = await this.isBlocked(me, channel.messages[0].userId);
+        if (isLastMessageFromBlockedUser) channel.messages[0].message = 'blocked message';
+      }),
+    );
+    return channles;
   }
 
   async createChannel(owner: number, createChatDto: CreateChanneltDto, image: File) {
@@ -533,7 +541,6 @@ export class ChatService {
         ],
       },
     });
-    console.log(me, userId, blockedBy);
     return blockedBy?.BlockedById;
   }
 }
