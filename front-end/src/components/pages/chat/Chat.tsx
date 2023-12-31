@@ -1,9 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { BlockIcon, Game, Profile, SendIcon } from '../../icons/icons';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { BlockIcon, Edit, Game, GroupMembersIcon, Profile, SendIcon } from '../../icons/icons';
 import useChatStore, { ChatInterface, ChatType } from '../../../stores/chatStore';
 import { useUserStore } from '../../../stores/userStore';
 import { useQuery } from 'react-query';
 import axios from '../../../utils/axios';
+
+function InfoButton({ text, Icon, onClick }: { text: string; Icon: any; onClick?: any }) {
+  return (
+    <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2'>
+      <div className='h-10 w-10 flex bg-dark-cl/30 rounded-full justify-center items-center'>
+        {Icon == Edit ? <Icon size='30' fillColor='#433650' /> : <Icon className='fill-dark-cl w-8 h-8' />}
+      </div>
+      <span className='text-md'>{text}</span>
+    </div>
+  );
+}
 
 function DmColumn({ chat, CurrentUserId }: { chat: ChatInterface; CurrentUserId: number }) {
   const chatStore = useChatStore();
@@ -14,19 +25,20 @@ function DmColumn({ chat, CurrentUserId }: { chat: ChatInterface; CurrentUserId:
 
   return (
     <div className=' flex justify-start m-2  items-center gap-2 hover:bg-gray-cl hover:rounded-full cursor-pointer relative' onClick={handleSelectChat}>
-      <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl object-cover
-       ' src={chat.image} />
+      <img
+        className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl object-cover
+       '
+        src={chat.image}
+      />
       <div className='name and message flex flex-col max-w-sm'>
         <span className='name text-xl'>{chat.name}</span>
         <span className='message opacity-75 text-sm overflow-hidden truncate w-36'>{`${CurrentUserId == chat.lastMessageSender ? 'You: ' : ''} ${chat.lastMessage}`}</span>
       </div>
-      {
-        chat.id != chatStore.selectedChatId && chat.newMessages > 0 && (
-          <div className='absolute right-1 h-5 w-5 rounded-full bg-red-cl flex justify-center'>
-            <span className='text-white absolute top-1'>{chat.newMessages > 10 ? '+10' : chat.newMessages}</span>
-          </div>
-        )
-      }
+      {chat.id != chatStore.selectedChatId && chat.newMessages > 0 && (
+        <div className='absolute right-1 h-5 w-5 rounded-full bg-red-cl flex justify-center'>
+          <span className='text-white absolute top-1'>{chat.newMessages > 10 ? '+10' : chat.newMessages}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -102,6 +114,30 @@ function Dms({ CurrentUserId }: { CurrentUserId: number | undefined }) {
           );
         })}
       <div ref={lastMessageRef}></div>
+    </div>
+  );
+}
+
+function GroupMembers({ members }: { members: any }) {
+  const chatStore = useChatStore();
+  return (
+    <div className='h-full m-3 ml-2 flex flex-col gap-2'>
+      {members.map((member: any) => {
+        let isAdmin = member.isAdmin;
+        let isOwner = member.user.id == chatStore.selectedChat.ownerId;
+        return (
+          <div key={member.user.id} className='hover:bg-gray-cl h-12 w-full flex justify-between items-center relative rounded-xl'>
+            <div className='flex justify-center items-center'>
+              <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl object-cover' src={member.user.avatar} />
+              <div className='flex flex-col  ml-2'>
+                <span>{member.user.displayName}</span>
+                {isOwner ? <span className='text-sm text-red-cl'>Owner</span> : <span className='text-sm text-blue-cl'>{isAdmin ? 'Admin' : ''} </span>}
+              </div>
+            </div>
+            <span className='text-4xl cursor-pointer absolute right-1 top-0'>...</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -223,34 +259,30 @@ function Chat() {
             </div>
           </div>
         </div>
-        <div className='RIGHT bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2 hidden flex-col p-2 gap-4'>
+
+        <div className='RIGHT bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2  lg:flex-col hidden overflow-hidden overflow-y-auto scrollbar-none'>
           <div className='flex justify-center mt-10'>
             <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl object-cover' src={chatStore.selectedChat.image} alt='pfp' />
           </div>
           <div className='flex flex-col items-center justify-center'>
-            <span className='text-2xl'>{chatStore.selectedChat.name}</span>
-            <span className='text-sm  text-dark-cl/75'>{`@${chatStore.selectedChat.username}`}</span>
+            <span className='mt-4 text-2xl'>{chatStore.selectedChat.name}</span>
+            {chatType == ChatType.DM && <span className='text-sm  text-dark-cl/75'>{`@${chatStore.selectedChat.username}`}</span>}
           </div>
           <div className='flex flex-wrap gap-3 mt-4'>
-            <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2'>
-              <div className='h-10 w-10 flex bg-dark-cl/30 rounded-full justify-center items-center'>
-                <Profile className='fill-dark-cl w-8 h-8' />
-              </div>
-              <span className='text-lg'>Profile</span>
-            </div>
-            <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2'>
-              <div className='h-10 w-10 flex bg-dark-cl/30 rounded-full justify-center items-center'>
-                <BlockIcon className='fill-dark-cl w-7 h-7' />
-              </div>
-              <span className='text-lg'>Block</span>
-            </div>
-            <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2'>
-              <div className='h-10 w-10 flex bg-dark-cl/30 rounded-full justify-center items-center'>
-                <Game className='fill-dark-cl w-8 h-8' />
-              </div>
-              <span className='text-lg'>Invite to play</span>
-            </div>
+            {chatType == ChatType.DM ? (
+              <>
+                <InfoButton text='Profile' Icon={Profile} />
+                <InfoButton text='Block' Icon={BlockIcon} />
+                <InfoButton text='Invite to play' Icon={Game} />
+              </>
+            ) : (
+              <>
+                <InfoButton text='Edit Group' Icon={Edit} />
+                <InfoButton text={`Group Members (${chatStore.selectedChat.users.length})`} Icon={GroupMembersIcon} />
+              </>
+            )}
           </div>
+          {chatType == ChatType.CHANNEL && !chatsLoading && !selectedChatLoading && <GroupMembers members={chatStore.selectedChat.users} />}
         </div>
       </div>
     </div>

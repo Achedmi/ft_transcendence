@@ -55,6 +55,7 @@ const useChatStore = create<ChatStore>((set) => ({
     image: '',
     username: '',
     newMessages: 0,
+    ownerId: 0,
   },
 
   pushNewMessage: (message: any) => {
@@ -99,7 +100,7 @@ const useChatStore = create<ChatStore>((set) => ({
       const { data } = await axios.get(`/chat/${id}`);
       console.log('dataaaaa', data);
 
-      set({ selectedChat: { id: data.id, users: data.chatUser, members: data.members, messages: data.messages, name: data.name, image: data.image, username: data.username } });
+      set({ selectedChat: { id: data.id, users: data.chatUser, members: data.members, messages: data.messages, name: data.name, image: data.image, username: data.username, ownerId: data.ownerId } });
     } catch (error) {
       const err = error as AxiosError;
       console.log(err.response?.data);
