@@ -4,6 +4,7 @@ import { SendMessageDto } from './dto/create-message.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SendDmDto } from './dto/send-dm.dto';
 import { ChatService } from 'src/chat/chat.service';
+import { ChatType } from '@prisma/client';
 
 @Injectable()
 export class MessageService {
@@ -11,10 +12,27 @@ export class MessageService {
   async sendMessage(from: number, sendMessageDto: SendMessageDto) {
     const chat = await this.prisma.chat.findFirstOrThrow({
       where: { id: sendMessageDto.chatId },
+      include: {
+        members: {
+          where: {
+            NOT: {
+              id: from,
+            },
+          },
+        },
+      },
     });
 
     const isMuted = await this.chatService.isMuted(from, chat.id);
     if (isMuted) throw new BadRequestException(`You are muted in this chat until ${isMuted}`);
+
+    if (chat.type === ChatType.DM) {
+      const blockedBy = await this.chatService.isBlocked(from, chat.members[0].id);
+      if (blockedBy) {
+        if (blockedBy === from) throw new BadRequestException(`You have blocked this user`);
+        else throw new BadRequestException(`You are blocked by this user`);
+      }
+    }
 
     const message = await this.prisma.message.create({
       data: {
@@ -37,7 +55,11 @@ export class MessageService {
     let chat: { id: number } = await this.chatService.findDm(from, sendDmDto.to);
     if (!chat) chat = await this.chatService.createDm(from, sendDmDto.to);
 
-    // const blocked =
+    const blockedBy = await this.chatService.isBlocked(from, sendDmDto.to);
+    if (blockedBy) {
+      if (blockedBy === from) throw new BadRequestException(`You have blocked this user`);
+      else throw new BadRequestException(`You are blocked by this user`);
+    }
 
     const message = await this.prisma.message.create({
       data: {

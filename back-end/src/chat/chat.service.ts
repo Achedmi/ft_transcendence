@@ -18,6 +18,7 @@ export class ChatService {
   constructor(private readonly prisma: PrismaService, private readonly cloudinaryService: CloudinaryService, private readonly helpersService: HelpersService) {}
 
   async GetChatById(me: number, id: number) {
+    const blockedUsers = new Set();
     const chat = await this.prisma.chat.findFirstOrThrow({
       where: { id },
       select: {
@@ -48,6 +49,7 @@ export class ChatService {
             user: {
               select: {
                 avatar: true,
+                id: true,
               },
             },
           },
@@ -63,9 +65,17 @@ export class ChatService {
     }
 
     const members = {};
-    chat.chatUser.forEach((chatUser) => {
-      members[chatUser.user.id] = chatUser;
+    await Promise.all(
+      chat.chatUser.map(async (chatUser) => {
+        if (await this.isBlocked(me, chatUser.user.id)) blockedUsers.add(chatUser.user.id);
+        members[chatUser.user.id] = chatUser;
+      }),
+    );
+
+    chat.messages.map((message) => {
+      if (blockedUsers.has(message.user.id)) message.message = 'blocked message';
     });
+
     chat['members'] = members;
 
     return chat;
@@ -477,6 +487,12 @@ export class ChatService {
   async block(me: number, blockDto: BlockeDto) {
     if (me === blockDto.userId) throw new BadRequestException('You can not block yourself');
 
+    const blockedBy = await this.isBlocked(me, blockDto.userId);
+    if (blockedBy) {
+      if (blockedBy === me) throw new BadRequestException('You have already blocked this user');
+      else throw new BadRequestException('You have been blocked by this user');
+    }
+
     return await this.prisma.blocking.create({
       data: {
         user1Id: me,
@@ -489,16 +505,8 @@ export class ChatService {
   async unblock(me: number, blockDto: BlockeDto) {
     if (me === blockDto.userId) throw new BadRequestException('You can not unblock yourself');
 
-    const blockedBy = await this.prisma.blocking.findUnique({
-      where: {
-        user1Id_user2Id: {
-          user1Id: me,
-          user2Id: blockDto.userId,
-        },
-        BlockedById: me,
-      },
-    });
-    if (!blockedBy) throw new BadRequestException('You have not blocked this user');
+    const isBlocked = await this.isBlocked(me, blockDto.userId);
+    if (!isBlocked) throw new BadRequestException('You have not blocked this user');
 
     return await this.prisma.blocking.delete({
       where: {
@@ -511,14 +519,21 @@ export class ChatService {
   }
 
   async isBlocked(me: number, userId: number) {
-    const blockedBy = await this.prisma.blocking.findUnique({
+    const blockedBy = await this.prisma.blocking.findFirst({
       where: {
-        user1Id_user2Id: {
-          user1Id: me,
-          user2Id: userId,
-        },
+        OR: [
+          {
+            user1Id: me,
+            user2Id: userId,
+          },
+          {
+            user1Id: userId,
+            user2Id: me,
+          },
+        ],
       },
     });
-    return blockedBy;
+    console.log(me, userId, blockedBy);
+    return blockedBy?.BlockedById;
   }
 }

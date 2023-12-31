@@ -114,8 +114,8 @@ model User {
   chats Chat[]
   owner Chat[]  @relation("owner")
   messages Message[]
-  friendship1 Blocking[] @relation("user1")
-  friendship2 Blocking[] @relation("user2")
+  blocking1 Blocking[] @relation("user1")
+  blocking2 Blocking[] @relation("user2")
   BlockedBy Blocking[] @relation("BlockedBy")
   chatUser UserChat[]
 }
