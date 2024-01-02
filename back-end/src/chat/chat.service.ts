@@ -84,11 +84,11 @@ export class ChatService {
   async getChatMessages(id, skip?: number) {
     const messages = await this.prisma.message.findMany({
       where: { chatId: id },
+      take: 20,
       orderBy: {
-        createdAt: 'asc',
+        createdAt: 'desc',
       },
       skip: skip || 0,
-      take: 10,
       include: {
         user: {
           select: {
@@ -98,21 +98,21 @@ export class ChatService {
         },
       },
     });
-    return messages;
+    return messages.reverse();
   }
 
   async getChatMembers(id) {
     const chat = await this.prisma.$queryRaw`
     SELECT
-	"UserChat"."userId", "UserChat"."chatId", "isAdmin", "isMuted", "User".username, "User".avatar, "displayName", CASE WHEN
-	"User".id = "Chat"."ownerId" THEN 'true'
-	ELSE 'false'
-	END as isOwner
-FROM
-	"UserChat"
-	INNER JOIN "User" ON "UserChat"."userId" = "User".id
-	INNER JOIN "Chat" ON "Chat".id = "UserChat"."chatId"
-WHERE
+      "UserChat"."userId", "UserChat"."chatId", "isAdmin", "isMuted", "User".username, "User".avatar, "displayName", CASE WHEN
+      "User".id = "Chat"."ownerId" THEN 'true'
+      ELSE 'false'
+      END as isOwner
+    FROM
+      "UserChat"
+      INNER JOIN "User" ON "UserChat"."userId" = "User".id
+      INNER JOIN "Chat" ON "Chat".id = "UserChat"."chatId"
+    WHERE
 	"UserChat"."chatId" = ${id};
     `;
     return chat;
