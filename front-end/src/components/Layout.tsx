@@ -11,6 +11,8 @@ import axios from '../utils/axios';
 import GameInvitePopup from './GameInvitePopup';
 import { AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../game/gameStore';
+import { useQuery } from 'react-query';
+import useChatStore from '../stores/chatStore';
 
 export function CommandDialogDemo() {
   const navigate = useNavigate();
@@ -114,6 +116,7 @@ function PrivateRoutes() {
   const { socket, setSocket, setAbelToPlay, abelToPlay } = useUserStore();
   const game = useGameStore();
   const navigate = useNavigate();
+  const chatStore = useChatStore();
   useEffect(() => {
     const gameSocket = io(`http://${import.meta.env.VITE_ADDRESS}:9696/game`, {
       withCredentials: true,
@@ -136,6 +139,24 @@ function PrivateRoutes() {
       if (socket?.chat) socket.chat.disconnect();
     };
   }, []);
+
+  useQuery('DmsPreview', chatStore.getDmsPreview, {
+    refetchOnWindowFocus: false,
+  });
+  useQuery('ChannelsPreview', chatStore.getChannelsPreview, {
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    socket?.chat?.on('message', (data: any) => {
+      console.log('new message', data);
+      chatStore.pushMessage(data, data.chatId);
+      chatStore.updateLastDM(data, data.chatId);
+    });
+    return () => {
+      socket?.chat?.off('message');
+    };
+  }, [socket?.chat, socket, chatStore, chatStore.selectedChatId, chatStore.messages?.get(chatStore.selectedChatId)?.length, chatStore.messages]);
 
   useEffect(() => {
     socket?.game?.on('gameIsReady', (data: any) => {

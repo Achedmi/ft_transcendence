@@ -11,6 +11,9 @@ export interface Member {
   username?: string;
   avatar?: string;
   displayName?: string;
+  isowner?: boolean;
+  isAdmin?: boolean;
+  isMuted?: boolean;
 }
 
 export interface Message {
@@ -31,6 +34,17 @@ export interface ChatPreview {
   isCached: boolean;
 }
 
+export interface ChatInfo {
+  id: number;
+  type: ChatType;
+  name?: string;
+  image?: string;
+  visibility?: string;
+  password?: string;
+  members: Member[];
+  ownerId?: number;
+}
+
 interface ChatState {
   DmsPreview: ChatPreview[];
   DmsLoading: boolean;
@@ -38,10 +52,15 @@ interface ChatState {
   ChannelsLoading: boolean;
   selectedChatId: number;
   messages?: Map<number, Message[]>;
+  chatInfo?: Map<number, ChatInfo>;
+  chatInfoLoading?: boolean;
   setSelectedChatId: (id: number) => void;
   getDmsPreview: () => void;
   getChannelsPreview: () => void;
   getMessages: ({ queryKey }: any) => void;
+  getChatInfo: ({ queryKey }: any) => void;
+  pushMessage: (message: any, chatId: number) => void;
+  updateLastDM: (message: any, chatId: number) => void;
 }
 
 const useChatStore = create<ChatState>()((set) => {
@@ -50,11 +69,13 @@ const useChatStore = create<ChatState>()((set) => {
     ChannelsPreview: [],
     DmsLoading: true,
     ChannelsLoading: true,
+    chatInfoLoading: true,
     selectedChatId: -1,
     setSelectedChatId: (id: number) => {
       set({ selectedChatId: id });
     },
     messages: new Map<number, Message[]>(),
+    chatInfo: new Map<number, ChatInfo>(),
     getDmsPreview: async () => {
       set({ DmsLoading: true });
       const Dms = await axios.get('/chat/getDms');
@@ -89,10 +110,10 @@ const useChatStore = create<ChatState>()((set) => {
           name: channel.name,
           image: channel.image,
           lastMessage: {
-            id: channel.messages[0].id,
-            content: channel.messages[0].message,
+            id: channel.messages[0]?.id,
+            content: channel.messages[0]?.message,
             sender: {
-              id: channel.messages[0].userId,
+              id: channel.messages[0]?.userId,
             },
             chatId: channel.id,
           },
@@ -102,11 +123,63 @@ const useChatStore = create<ChatState>()((set) => {
       });
     },
     getMessages: async ({ queryKey }: any) => {
-      const [_ , id] = queryKey;
+      const [_, id] = queryKey;
+      if (useChatStore.getState().messages?.has(id)) return;
       const messages = await axios.get(`/chat/getChatMessages/${id}`);
       set({
         messages: useChatStore.getState().messages?.set(id, messages.data),
       });
+    },
+    getChatInfo: async ({ queryKey }: any) => {
+      const [_, id] = queryKey;
+      if (useChatStore.getState().chatInfo?.has(id)) return;
+      set({ chatInfoLoading: true });
+      const chatInfo = await axios.get(`/chat/getChatInfos/${id}`);
+      set({ chatInfoLoading: false });
+      set({
+        chatInfo: useChatStore.getState().chatInfo?.set(id, {
+          id: chatInfo.data.id,
+          type: chatInfo.data.type,
+          name: chatInfo.data.name,
+          image: chatInfo.data.image,
+          visibility: chatInfo.data.visibility,
+          password: chatInfo.data.password,
+          members: chatInfo.data.members.map((member: any) => ({
+            id: member.userId,
+            username: member.username,
+            avatar: member.avatar,
+            displayName: member.displayName,
+            isowner: member.isowner,
+            isAdmin: member.isAdmin,
+            isMuted: member.isMuted,
+          })),
+          ownerId: chatInfo.data.ownerId,
+        }),
+      });
+    },
+    pushMessage: (message: any, chatId: number) => {
+      const messages = useChatStore.getState().messages?.get(chatId);
+      if (messages) {
+        set({
+          messages: useChatStore.getState().messages?.set(chatId, [...messages, message]),
+        });
+      }
+    },
+    updateLastDM: (message: any, chatId: number) => {
+      console.log('updateLastDM', message, chatId);
+      const DmsPreview = useChatStore.getState().DmsPreview;
+      const index = DmsPreview.findIndex((dm) => dm.id === chatId);
+      if (index !== -1) {
+        DmsPreview[index].lastMessage = {
+          id: message.id,
+          content: message.message,
+          sender: {
+            id: message.userId,
+          },
+          chatId: chatId,
+        };
+        set({ DmsPreview });
+      }
     },
   };
 });
