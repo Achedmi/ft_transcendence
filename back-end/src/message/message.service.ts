@@ -40,14 +40,16 @@ export class MessageService {
         message: sendMessageDto.message,
         userId: from,
       },
+      include: {
+        user: {
+          select: {
+            avatar: true,
+            id: true,
+          },
+        },
+      },
     });
-
-    this.socketService.toChat({
-      id: message.id,
-      chatId: chat.id,
-      message: sendMessageDto.message,
-      from: from,
-    });
+    this.socketService.toChat(message);
     return message;
   }
 
@@ -67,14 +69,17 @@ export class MessageService {
         message: sendDmDto.message,
         userId: from,
       },
+      include: {
+        user: {
+          select: {
+            avatar: true,
+            id: true,
+          },
+        },
+      },
     });
 
-    this.socketService.toChat({
-      id: message.id,
-      chatId: chat.id,
-      message: sendDmDto.message,
-      from: from,
-    });
+    this.socketService.toChat(message);
 
     return message;
   }
