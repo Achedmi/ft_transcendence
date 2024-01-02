@@ -81,6 +81,53 @@ export class ChatService {
     return chat;
   }
 
+  async getChatMessages(id, skip?: number) {
+    const messages = await this.prisma.message.findMany({
+      where: { chatId: id },
+      orderBy: {
+        createdAt: 'asc',
+      },
+      skip: skip || 0,
+      take: 10,
+      include: {
+        user: {
+          select: {
+            avatar: true,
+            id: true,
+          },
+        },
+      },
+    });
+    return messages;
+  }
+
+  async getChatMembers(id) {
+    const chat = await this.prisma.$queryRaw`
+    SELECT
+	"UserChat"."userId", "UserChat"."chatId", "isAdmin", "isMuted", "User".username, "User".avatar, "displayName", CASE WHEN
+	"User".id = "Chat"."ownerId" THEN 'true'
+	ELSE 'false'
+	END as isOwner
+FROM
+	"UserChat"
+	INNER JOIN "User" ON "UserChat"."userId" = "User".id
+	INNER JOIN "Chat" ON "Chat".id = "UserChat"."chatId"
+WHERE
+	"UserChat"."chatId" = ${id};
+    `;
+    return chat;
+  }
+
+  async getChatInfos(id) {
+    const chat = await this.prisma.chat.findUnique({
+      where: { id },
+    });
+    if (chat) {
+      chat['members'] = await this.getChatMembers(id);
+      return chat;
+    } else return {};
+  }
+
   async findDm(from: number, to: number) {
     return await this.prisma.chat.findFirst({
       where: {

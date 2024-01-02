@@ -111,6 +111,16 @@ export class ChatController {
     return this.chatService.unblock(me, blockDto);
   }
 
+  @Get('getChatMessages/:id')
+  getChatMessages(@Param('id') id: string, @Query('skip') skip: number) {
+    return this.chatService.getChatMessages(+id, skip);
+  }
+
+  @Get('getChatInfos/:id')
+  getChatInfos(@Param('id') id: string) {
+    return this.chatService.getChatInfos(+id);
+  }
+
   @Get(':id')
   findOne(@GetCurrent('id') me: number, @Param('id') id: string) {
     return this.chatService.GetChatById(me, +id);
