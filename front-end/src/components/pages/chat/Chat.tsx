@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { BlockIcon, Edit, Game, GroupMembersIcon, Profile, SendIcon } from '../../icons/icons';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { BlockIcon, Close, Edit, Game, GroupMembersIcon, Profile, SendIcon } from '../../icons/icons';
 import useChatStore, { ChatInterface, ChatType } from '../../../stores/chatStore';
 import { useUserStore } from '../../../stores/userStore';
 import { useQuery } from 'react-query';
 import axios from '../../../utils/axios';
+import { AnimatePresence, motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 
 function InfoButton({ text, Icon, onClick }: { text: string; Icon: any; onClick?: any }) {
   return (
-    <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2'>
+    <div className='flex justify-start items-center gap-1 cursor-pointer hover:bg-gray-cl rounded-full px-2' onClick={onClick}>
       <div className='h-10 w-10 flex bg-dark-cl/30 rounded-full justify-center items-center'>
         {Icon == Edit ? <Icon size='30' fillColor='#433650' /> : <Icon className='fill-dark-cl w-8 h-8' />}
       </div>
@@ -24,7 +26,10 @@ function DmColumn({ chat, CurrentUserId }: { chat: ChatInterface; CurrentUserId:
   }, [chat.id]);
 
   return (
-    <div className=' flex justify-start m-2  items-center gap-2 hover:bg-gray-cl hover:rounded-full cursor-pointer relative' onClick={handleSelectChat}>
+    <div
+      className={`flex justify-start m-2  items-center gap-2 hover:bg-gray-cl rounded-full cursor-pointer relative ${chat.id == chatStore.selectedChatId ? 'bg-gray-cl' : ''}`}
+      onClick={handleSelectChat}
+    >
       <img
         className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl object-cover
        '
@@ -142,14 +147,187 @@ function GroupMembers({ members }: { members: any }) {
   );
 }
 
+type updatedGroup = {
+  name: string;
+  visibility: string;
+  image: string;
+  password: string;
+};
+
+function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
+  const chatStore = useChatStore();
+  const [newImage, setNewImage] = useState<File | null>(null);
+
+  const [updatedGroup, setUpdatedGroup] = useState<updatedGroup>({
+    name: chatStore.selectedChat.name,
+    visibility: chatStore.selectedChat.visibility,
+    image: chatStore.selectedChat.image,
+    password: '',
+  });
+
+  console.log(updatedGroup);
+  const handleEditClick = useCallback(() => {
+    const fileInput = document.getElementById('imgInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }, []);
+
+  const handleOnSave = useCallback(async () => {
+    const formData = new FormData();
+    if (newImage) formData.append('image', newImage);
+    formData.append('name', updatedGroup.name);
+    formData.append('visibility', updatedGroup.visibility);
+    if (updatedGroup.password) formData.append('password', updatedGroup.password);
+    toast.promise(
+      async () => {
+        try {
+          const response = await axios.patch(`/chat/${chatStore.selectedChatId}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          console.log(response);
+
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      },
+      {
+        success: 'Group updated!',
+        error: 'Error updating group!',
+        pending: 'Updating group...',
+      },
+    );
+  }, [newImage, updatedGroup, chatStore.selectedChatId]);
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.5 }}
+          className='h-full  w-full   absolute backdrop-blur-sm z-40  flex justify-center items-center'
+        >
+          <div className='w-[400px] bg-gray-cl rounded-xl border-2 border-solid border-dak-cl flex flex-col '>
+            <div className='header flex justify-between items-center w-full h-12 gap-2 border-b-2 border-solid border-dark-cl'>
+              <div className='h-full   flex items-center'>
+                <Edit size='26' fillColor='#433650' />
+              </div>
+              <div className='h-full   flex justify-center items-center'>
+                <span className='text-lg text-dark-cl'>Edit Group</span>
+              </div>
+              <div className='h-full   flex justify-end items-center'>
+                <div
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                  className='button'
+                >
+                  <Close className='h-9 w-9 fill-dark-cl hover:fill-red-cl cursor-pointer mr-1' />
+                </div>
+              </div>
+            </div>
+            <form
+              className='FORM h-full w-full flex flex-col items-center '
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleOnSave();
+              }}
+            >
+              <div className='picture relative'>
+                <motion.div
+                  className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-gray-800 flex  items-center justify-center bg-opacity-75 
+		  hover:cursor-pointer hover:bg-opacity-100 hover:h-12 hover:w-12 transition-all'
+                  onClick={handleEditClick}
+                >
+                  <input
+                    type='file'
+                    className='hidden'
+                    id='imgInput'
+                    accept='image/*'
+                    onChange={(e) => {
+                      setNewImage(e.target.files![0]);
+                      setUpdatedGroup({
+                        ...updatedGroup,
+                        image: URL.createObjectURL(e.target.files![0]),
+                      });
+                    }}
+                  />
+
+                  <Edit size='28' fillColor='#ffffff' />
+                </motion.div>
+                <img
+                  src={updatedGroup.image || chatStore.selectedChat.image}
+                  alt='group icon'
+                  className='object-cover aspect-square w-36 f-36 rounded-full mt-4 border-2 border-solid border-dark-cl'
+                />
+              </div>
+              <div className=' flex flex-col text-dark-cl '>
+                <div className='flex  justify-center items-center gap-8 py-4 '>
+                  <div className='text-xl w-10 text-center'>Name:</div>
+                  <input
+                    className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64'
+                    type='text'
+                    placeholder={chatStore.selectedChat.name}
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                      setUpdatedGroup({
+                        ...updatedGroup,
+                        name: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+                {updatedGroup.visibility === 'PUBLIC' && (
+                  <div className='flex  justify-center items-center gap-8 py-4'>
+                    <div className='text-xl w-10 text-center'>code:</div>
+                    <input
+                      type='text'
+                      className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden'
+                      placeholder={'#459aBc'}
+                      onChange={(e) => {
+                        setUpdatedGroup({
+                          ...updatedGroup,
+                          password: e.target.value,
+                        });
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+              <button
+                className='border-t-2 border-solid border-dark-cl  bg-dark-cl text-white sm:text-2xl rounded-b-lg w-full h-10  ml-auto mr-auto hover:bg-blue-cl transition-all'
+                type='submit'
+              >
+                Save
+              </button>
+            </form>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 function Chat() {
-  const [chatType, setChatType] = useState<ChatType>(ChatType.DM);
+  const [chatType, setChatType] = useState<ChatType>(ChatType.CHANNEL);
+  const [editGroupOpen, setEditGroupOpen] = useState<boolean>(false);
+
+  function handleEditGroup() {
+    console.log('edit group');
+    setEditGroupOpen(true);
+  }
 
   const [message, setMessage] = useState<string>('');
   const { user } = useUserStore();
   const chatStore = useChatStore();
 
-  const { isLoading: chatsLoading, isRefetching: chatsRefreching } = useQuery(['chats', chatType], chatStore.getChats, { refetchOnWindowFocus: false });
+  const { isLoading: chatsLoading, isRefetching: chatsRefreching } = useQuery(['chats', chatType], chatStore.getChats, {
+    refetchOnWindowFocus: false,
+  });
   const { isLoading: selectedChatLoading, isRefetching: selectedChatRefetching } = useQuery(['chat', chatStore.selectedChatId], chatStore.getSelectedChat, {
     refetchOnWindowFocus: false,
   });
@@ -195,15 +373,16 @@ function Chat() {
   }, [message]);
 
   return (
-    <div className='h-full w-full bg-gray-cl border-solid border-[4px] border-dark-cl rounded-xl  flex justify-center items-center'>
-      <div className='text-dark-cl p-2 h-full w-full flex justify-center'>
-        <div className=' LEFT  md:flex flex-col gap-4  w-72 m-2 hidden'>
+    <div className='h-full w-full bg-gray-cl border-solid border-[4px] border-dark-cl rounded-xl  flex justify-center items-center relative'>
+      {!chatsLoading && !selectedChatLoading && <EditGroup open={editGroupOpen} setOpen={setEditGroupOpen} />}
+      <div className={`text-dark-cl p-2 h-full w-full flex justify-center ${selectedChatRefetching ? 'brightness-95 z-0 non-selectable pointer-events-none' : ''}`}>
+        <div className=' LEFT  md:flex flex-col gap-4  w-72 m-2 hidden '>
           <div className='buttons w-full h-14 flex gap-2 m-0'>
             <div
               onClick={() => {
                 setChatType(ChatType.DM);
               }}
-              className={`text-xl flex justify-center items-center rounded-3xl w-1/2 h-full cursor-pointer
+              className={`text-xl flex justify-center items-center rounded-3xl w-1/2 h-full cursor-pointer hover:bg-[#ECE8E8]
                ${chatType == ChatType.DM ? 'bg-[#ECE8E8]   border-2 border-solid border-dark-cl' : ''}`}
             >
               <span>Dms</span>
@@ -212,13 +391,13 @@ function Chat() {
               onClick={() => {
                 setChatType(ChatType.CHANNEL);
               }}
-              className={`text-xl flex justify-center items-center rounded-3xl w-1/2 h-full  cursor-pointer
+              className={`text-xl flex justify-center items-center rounded-3xl w-1/2 h-full  cursor-pointer hover:bg-[#ECE8E8]
               ${chatType == ChatType.CHANNEL ? 'bg-[#ECE8E8]  border-2 border-solid border-dark-cl' : ''}`}
             >
               <span>Groups</span>
             </div>
           </div>
-          <div className='bg-[#ECE8E8] w-full h-full rounded-3xl border-2 border-solid border-dark-cl flex flex-col'>
+          <div className='bg-[#ECE8E8] w-full h-full rounded-3xl border-2 border-solid border-dark-cl flex flex-col overflow-y-auto scrollbar-none'>
             {chatsLoading || chatsRefreching ? <div className='w-full h-[85%]  flex items-center justify-center  '>Loading...</div> : <Chats currentUserId={user.id} />}
           </div>
         </div>
@@ -259,8 +438,7 @@ function Chat() {
             </div>
           </div>
         </div>
-
-        <div className='RIGHT bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2  lg:flex-col hidden overflow-hidden overflow-y-auto scrollbar-none'>
+        <div className='RIGHT hidden bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2  lg:flex-col  overflow-hidden overflow-y-auto scrollbar-none'>
           <div className='flex justify-center mt-10'>
             <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl object-cover' src={chatStore.selectedChat.image} alt='pfp' />
           </div>
@@ -277,7 +455,7 @@ function Chat() {
               </>
             ) : (
               <>
-                <InfoButton text='Edit Group' Icon={Edit} />
+                <InfoButton text='Edit Group' Icon={Edit} onClick={handleEditGroup} />
                 <InfoButton text={`Group Members (${chatStore.selectedChat.users.length})`} Icon={GroupMembersIcon} />
               </>
             )}

@@ -47,7 +47,7 @@ const DropDown = ({ setShowDropDown }: any) => {
   };
   return (
     <motion.div
-      className='flex flex-col justify-center items-center text-2xl bg-[#D9D9D9]  w-44 absolute right-6 top-[5rem] z-20 border-solid border-dark-cl border-[4px] rounded-2xl '
+      className='flex flex-col justify-center items-center text-2xl bg-[#D9D9D9]  w-44 absolute right-6 top-[5rem] z-20 border-solid border-dark-cl border-[4px] rounded-2xl z-50'
       style={dropShadowStyle}
       initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}

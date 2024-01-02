@@ -56,6 +56,7 @@ const useChatStore = create<ChatStore>((set) => ({
     username: '',
     newMessages: 0,
     ownerId: 0,
+    visibility: '',
   },
 
   pushNewMessage: (message: any) => {
@@ -85,6 +86,7 @@ const useChatStore = create<ChatStore>((set) => ({
         lastMessageSender: chat.messages[0]?.userId,
         type: chat.type,
         newMessages: 0,
+        visibility: chat.visibility,
       }));
       set({ chats });
       set({ selectedChatId: chats[0].id });
@@ -100,15 +102,28 @@ const useChatStore = create<ChatStore>((set) => ({
       const { data } = await axios.get(`/chat/${id}`);
       console.log('dataaaaa', data);
 
-      set({ selectedChat: { id: data.id, users: data.chatUser, members: data.members, messages: data.messages, name: data.name, image: data.image, username: data.username, ownerId: data.ownerId } });
+      set({
+        selectedChat: {
+          id: data.id,
+          users: data.chatUser,
+          members: data.members,
+          messages: data.messages,
+          name: data.name,
+          image: data.image,
+          username: data.username,
+          ownerId: data.ownerId,
+          newMessages: 0,
+          visibility: data.visibility,
+        },
+      });
     } catch (error) {
       const err = error as AxiosError;
       console.log(err.response?.data);
     }
   },
   setSelectedChatId: (id: number) => {
-    set({ selectedChatId: id })
-    set ((state) => { 
+    set({ selectedChatId: id });
+    set((state) => {
       return {
         chats: state.chats.map((chat) => {
           if (chat.id === id) {
@@ -117,11 +132,9 @@ const useChatStore = create<ChatStore>((set) => ({
           }
           return chat;
         }),
-      }
-    } )
+      };
+    });
   },
-
-
 }));
 
 export default useChatStore;

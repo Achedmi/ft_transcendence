@@ -48,7 +48,7 @@ export const Logout = (icon: IconProps) => {
 
 export const Edit = (icon: IconProps) => {
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' width={icon.size} height={icon.size} fill='none'  viewBox='0 0 38 38'>
+    <svg  className={icon.className} xmlns='http://www.w3.org/2000/svg' width={icon.size} height={icon.size} fill='none'  viewBox='0 0 38 38'>
       <path
         stroke={icon.fillColor}
         strokeLinecap='round'
@@ -62,10 +62,9 @@ export const Edit = (icon: IconProps) => {
 
 export const Close = (icon: IconProps) => {
   return (
-    <svg width={icon.size} height={icon.size} viewBox='0 0 58 58' fill='none' xmlns='http://www.w3.org/2000/svg'>
+    <svg className={icon.className} viewBox='0 0 58 58'  xmlns='http://www.w3.org/2000/svg'>
       <path
         d='M28.9998 0.666504C13.3882 0.666504 0.666504 13.3882 0.666504 28.9998C0.666504 44.6115 13.3882 57.3332 28.9998 57.3332C44.6115 57.3332 57.3332 44.6115 57.3332 28.9998C57.3332 13.3882 44.6115 0.666504 28.9998 0.666504ZM38.5198 35.5165C39.3415 36.3382 39.3415 37.6982 38.5198 38.5198C38.0948 38.9448 37.5565 39.1432 37.0182 39.1432C36.4798 39.1432 35.9415 38.9448 35.5165 38.5198L28.9998 32.0032L22.4832 38.5198C22.0582 38.9448 21.5198 39.1432 20.9815 39.1432C20.4432 39.1432 19.9048 38.9448 19.4798 38.5198C18.6582 37.6982 18.6582 36.3382 19.4798 35.5165L25.9965 28.9998L19.4798 22.4832C18.6582 21.6615 18.6582 20.3015 19.4798 19.4798C20.3015 18.6582 21.6615 18.6582 22.4832 19.4798L28.9998 25.9965L35.5165 19.4798C36.3382 18.6582 37.6982 18.6582 38.5198 19.4798C39.3415 20.3015 39.3415 21.6615 38.5198 22.4832L32.0032 28.9998L38.5198 35.5165Z'
-        fill={icon.fillColor}
       />
     </svg>
   );

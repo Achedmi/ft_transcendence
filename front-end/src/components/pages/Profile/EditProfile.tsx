@@ -21,7 +21,6 @@ type newProfile = {
 
 function EditProfile(props: EditProfileProps) {
   const { user, setUserData } = useUserStore();
-  const [closeHovered, setCloseHovered] = useState(false);
   const [newImage, setNewImage] = useState<File>();
 
   const [newProfile, setNewProfile] = useState<newProfile>({
@@ -73,11 +72,9 @@ function EditProfile(props: EditProfileProps) {
         <h1 className='text-xl mt-2'>Edit Profile</h1>
         <motion.div
           className='hover:cursor-pointer'
-          onHoverStart={() => setCloseHovered(true)}
-          onHoverEnd={() => setCloseHovered(false)}
           onClick={() => props.setShowEditProfile(false)}
         >
-          <Close size='38' fillColor={!closeHovered ? '#433650' : '#C84D46'} />
+          <Close className='fill-dark-cl hover:fill-red-cl  h-10 w=10' />
         </motion.div>
       </div>
 
