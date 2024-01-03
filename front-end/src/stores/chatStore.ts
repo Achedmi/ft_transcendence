@@ -35,13 +35,13 @@ export interface ChatPreview {
 }
 
 export interface ChatInfo {
-  id: number;
-  type: ChatType;
+  id?: number;
+  type?: ChatType;
   name?: string;
   image?: string;
   visibility?: string;
   password?: string;
-  members: Member[];
+  members?: Member[];
   ownerId?: number;
 }
 
@@ -61,6 +61,8 @@ interface ChatState {
   getChatInfo: ({ queryKey }: any) => void;
   pushMessage: (message: any, chatId: number) => void;
   updateLastDM: (message: any, chatId: number) => void;
+  updateLastGroupMessage: (message: any, chatId: number) => void;
+  updateChatInfo: (chatId: number, chatInfo: ChatInfo) => void;
 }
 
 const useChatStore = create<ChatState>()((set) => {
@@ -179,6 +181,46 @@ const useChatStore = create<ChatState>()((set) => {
           chatId: chatId,
         };
         set({ DmsPreview });
+      }
+    },
+    updateLastGroupMessage: (message: any, chatId: number) => {
+      const ChannelsPreview = useChatStore.getState().ChannelsPreview;
+      const index = ChannelsPreview.findIndex((channel) => channel.id === chatId);
+      if (index !== -1) {
+        ChannelsPreview[index].lastMessage = {
+          id: message.id,
+          content: message.message,
+          sender: {
+            id: message.userId,
+          },
+          chatId: chatId,
+        };
+        set({ ChannelsPreview });
+      }
+    },
+    updateChatInfo: (chatId: number, chatInfo: ChatInfo) => {
+      const chatInfos = useChatStore.getState().chatInfo;
+      if (chatInfos) {
+        set({
+          chatInfo: useChatStore.getState().chatInfo?.set(chatId, {
+            id: chatInfo.id,
+            type: chatInfo.type,
+            name: chatInfo.name,
+            image: chatInfo.image,
+            visibility: chatInfo.visibility,
+            password: chatInfo.password,
+            members: chatInfo.members?.map((member) => ({
+              id: member.id,
+              username: member.username,
+              avatar: member.avatar,
+              displayName: member.displayName,
+              isowner: member.isowner,
+              isAdmin: member.isAdmin,
+              isMuted: member.isMuted,
+            })),
+            ownerId: chatInfo.ownerId,
+          }),
+        });
       }
     },
   };

@@ -7,6 +7,7 @@ import axios from '../../../utils/axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { SyncLoader } from 'react-spinners';
+import EditGroup from './EditGroup';
 
 function InfoButton({ text, Icon, onClick }: { text: string; Icon: any; onClick?: any }) {
   return (
@@ -26,7 +27,10 @@ function ChatPreviewColumn({ chat, CurrentUserId }: { chat: ChatPreview; Current
   }, [chatStore, chat.id]);
 
   return (
-    <div className={`flex justify-start m-2  items-center gap-2 hover:bg-gray-cl rounded-full cursor-pointer relative`} onClick={handleChatClick}>
+    <div className={`flex justify-start m-2  items-center gap-2 hover:bg-gray-cl rounded-full cursor-pointer relative
+    ${chatStore.selectedChatId == chat.id ? 'bg-gray-cl' : ''}
+    
+    `} onClick={handleChatClick}>
       <img
         className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl object-cover
        '
@@ -77,19 +81,6 @@ function Messages({ CurrentUserId }: { CurrentUserId: number | undefined }) {
     refetchOnWindowFocus: false,
   });
 
-  // useEffect(() => {
-  //   socket?.chat?.on('message', (data: any) => {
-  //     if (data.chatId == chatStore.selectedChatId) {
-  //       chatStore.pushNewMessage(data);
-  //     }
-  //     chatStore.updateChat(data.chatId, { lastMessage: data.message, lastMessageSender: data.from });
-  //   });
-
-  //   return () => {
-  //     socket?.chat?.off('message');
-  //   };
-  // }, [socket?.chat, socket]);
-
   useEffect(() => {
     scrollToBottom();
   }, [chatStore.messages?.get(chatStore.selectedChatId)?.length]);
@@ -123,6 +114,9 @@ function Messages({ CurrentUserId }: { CurrentUserId: number | undefined }) {
 }
 
 function GroupMembers({ members }: { members: Member[] | undefined }) {
+  useEffect(() => {
+    console.log('members', members);
+  } , [members])
   return (
     <div className='h-full m-3 ml-2 flex flex-col gap-2'>
       {members?.map((member: any) => {
@@ -132,7 +126,7 @@ function GroupMembers({ members }: { members: Member[] | undefined }) {
               <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl object-cover' src={member.avatar} />
               <div className='flex flex-col  ml-2'>
                 <span>{member.displayName}</span>
-                {member.isowner ? <span className='text-sm text-red-cl'>Owner</span> : <span className='text-sm text-blue-cl'>{member.isAdmin ? 'Admin' : ''} </span>}
+                {member.isowner == 'true' ? <span className='text-sm text-red-cl'>Owner</span> : <span className='text-sm text-blue-cl'>{member.isAdmin ? 'Admin' : ''} </span>}
               </div>
             </div>
             <span className='text-4xl cursor-pointer absolute right-1 top-0'>...</span>
@@ -142,171 +136,6 @@ function GroupMembers({ members }: { members: Member[] | undefined }) {
     </div>
   );
 }
-
-// type updatedGroup = {
-//   name: string;
-//   visibility: string;
-//   image: string;
-//   password: string;
-// };
-
-// function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
-//   const chatStore = useChatStore();
-//   const [newImage, setNewImage] = useState<File | null>(null);
-
-//   const [updatedGroup, setUpdatedGroup] = useState<updatedGroup>({
-//     name: chatStore.selectedChat.name,
-//     visibility: chatStore.selectedChat.visibility,
-//     image: chatStore.selectedChat.image,
-//     password: '',
-//   });
-
-//   console.log(updatedGroup);
-//   const handleEditClick = useCallback(() => {
-//     const fileInput = document.getElementById('imgInput') as HTMLInputElement;
-//     if (fileInput) {
-//       fileInput.click();
-//     }
-//   }, []);
-
-//   const handleOnSave = useCallback(async () => {
-//     const formData = new FormData();
-//     if (newImage) formData.append('image', newImage);
-//     formData.append('name', updatedGroup.name);
-//     formData.append('visibility', updatedGroup.visibility);
-//     if (updatedGroup.password) formData.append('password', updatedGroup.password);
-//     toast.promise(
-//       async () => {
-//         try {
-//           const response = await axios.patch(`/chat/${chatStore.selectedChatId}`, formData, {
-//             headers: {
-//               'Content-Type': 'multipart/form-data',
-//             },
-//           });
-//           console.log(response);
-
-//           return response;
-//         } catch (error) {
-//           throw error;
-//         }
-//       },
-//       {
-//         success: 'Group updated!',
-//         error: 'Error updating group!',
-//         pending: 'Updating group...',
-//       },
-//     );
-//   }, [newImage, updatedGroup, chatStore.selectedChatId]);
-
-//   return (
-//     <AnimatePresence>
-//       {open && (
-//         <motion.div
-//           initial={{ opacity: 0, scale: 0.5 }}
-//           animate={{ opacity: 1, scale: 1 }}
-//           exit={{ opacity: 0, scale: 0.5 }}
-//           className='h-full  w-full   absolute backdrop-blur-sm z-40  flex justify-center items-center'
-//         >
-//           <div className='w-[400px] bg-gray-cl rounded-xl border-2 border-solid border-dak-cl flex flex-col '>
-//             <div className='header flex justify-between items-center w-full h-12 gap-2 border-b-2 border-solid border-dark-cl'>
-//               <div className='h-full   flex items-center'>
-//                 <Edit size='26' fillColor='#433650' />
-//               </div>
-//               <div className='h-full   flex justify-center items-center'>
-//                 <span className='text-lg text-dark-cl'>Edit Group</span>
-//               </div>
-//               <div className='h-full   flex justify-end items-center'>
-//                 <div
-//                   onClick={() => {
-//                     setOpen(false);
-//                   }}
-//                   className='button'
-//                 >
-//                   <Close className='h-9 w-9 fill-dark-cl hover:fill-red-cl cursor-pointer mr-1' />
-//                 </div>
-//               </div>
-//             </div>
-//             <form
-//               className='FORM h-full w-full flex flex-col items-center '
-//               onSubmit={(e) => {
-//                 e.preventDefault();
-//                 handleOnSave();
-//               }}
-//             >
-//               <div className='picture relative'>
-//                 <motion.div
-//                   className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-gray-800 flex  items-center justify-center bg-opacity-75
-// 		  hover:cursor-pointer hover:bg-opacity-100 hover:h-12 hover:w-12 transition-all'
-//                   onClick={handleEditClick}
-//                 >
-//                   <input
-//                     type='file'
-//                     className='hidden'
-//                     id='imgInput'
-//                     accept='image/*'
-//                     onChange={(e) => {
-//                       setNewImage(e.target.files![0]);
-//                       setUpdatedGroup({
-//                         ...updatedGroup,
-//                         image: URL.createObjectURL(e.target.files![0]),
-//                       });
-//                     }}
-//                   />
-
-//                   <Edit size='28' fillColor='#ffffff' />
-//                 </motion.div>
-//                 <img
-//                   src={updatedGroup.image || chatStore.selectedChat.image}
-//                   alt='group icon'
-//                   className='object-cover aspect-square w-36 f-36 rounded-full mt-4 border-2 border-solid border-dark-cl'
-//                 />
-//               </div>
-//               <div className=' flex flex-col text-dark-cl '>
-//                 <div className='flex  justify-center items-center gap-8 py-4 '>
-//                   <div className='text-xl w-10 text-center'>Name:</div>
-//                   <input
-//                     className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64'
-//                     type='text'
-//                     placeholder={chatStore.selectedChat.name}
-//                     onChange={(e) => {
-//                       console.log(e.target.value);
-//                       setUpdatedGroup({
-//                         ...updatedGroup,
-//                         name: e.target.value,
-//                       });
-//                     }}
-//                   />
-//                 </div>
-//                 {updatedGroup.visibility === 'PUBLIC' && (
-//                   <div className='flex  justify-center items-center gap-8 py-4'>
-//                     <div className='text-xl w-10 text-center'>code:</div>
-//                     <input
-//                       type='text'
-//                       className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden'
-//                       placeholder={'#459aBc'}
-//                       onChange={(e) => {
-//                         setUpdatedGroup({
-//                           ...updatedGroup,
-//                           password: e.target.value,
-//                         });
-//                       }}
-//                     />
-//                   </div>
-//                 )}
-//               </div>
-//               <button
-//                 className='border-t-2 border-solid border-dark-cl  bg-dark-cl text-white sm:text-2xl rounded-b-lg w-full h-10  ml-auto mr-auto hover:bg-blue-cl transition-all'
-//                 type='submit'
-//               >
-//                 Save
-//               </button>
-//             </form>
-//           </div>
-//         </motion.div>
-//       )}
-//     </AnimatePresence>
-//   );
-// }
 
 function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   const chatStore = useChatStore();
@@ -349,7 +178,7 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
           <>
             <InfoButton text='Edit Group' Icon={Edit} onClick={handleEditGroup} />
             {chatStore.chatInfo?.get(chatStore.selectedChatId)?.type == ChatType.CHANNEL && (
-              <InfoButton text={`Group Members (${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members.length})`} Icon={GroupMembersIcon} />
+              <InfoButton text={`Group Members (${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.length})`} Icon={GroupMembersIcon} />
             )}
           </>
         )}
@@ -409,7 +238,7 @@ function Chat() {
 
   return (
     <div className='h-full w-full bg-gray-cl border-solid border-[4px] border-dark-cl rounded-xl  flex justify-center items-center relative'>
-      {/* <EditGroup open={editGroupOpen} setOpen={setEditGroupOpen} /> */}
+      <EditGroup open={editGroupOpen} setOpen={setEditGroupOpen} />
       <div className={`text-dark-cl p-2 h-full w-full flex justify-center`}>
         <div className=' LEFT  md:flex flex-col gap-4  w-72 m-2 hidden '>
           <div className='buttons w-full h-14 flex gap-2 m-0'>
@@ -446,7 +275,7 @@ function Chat() {
             <>
               <div className='header h-14 m-0 w-full bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-3xl flex items-center justify-center flex-none'>
                 <div className='h-2 w-2 rounded-full bg-blue-cl '></div>
-                <span className='text-2xl mx-2'>Chat Name</span>
+                <span className='text-2xl mx-2'>{chatStore.chatInfo?.get(chatStore.selectedChatId)?.name}</span>
               </div>
 
               <div

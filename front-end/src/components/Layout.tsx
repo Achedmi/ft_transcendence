@@ -152,6 +152,7 @@ function PrivateRoutes() {
       console.log('new message', data);
       chatStore.pushMessage(data, data.chatId);
       chatStore.updateLastDM(data, data.chatId);
+      chatStore.updateLastGroupMessage(data, data.chatId);
     });
     return () => {
       socket?.chat?.off('message');
