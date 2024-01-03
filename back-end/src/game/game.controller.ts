@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
@@ -18,17 +18,17 @@ export class GameController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', new ParseIntPipe({ optional: false })) id: string) {
     return this.gameService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
-    return this.gameService.update(+id, updateGameDto);
+  update(@Param('id', new ParseIntPipe({ optional: false })) id: number, @Body() updateGameDto: UpdateGameDto) {
+    return this.gameService.update(id, updateGameDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.gameService.remove(+id);
+  remove(@Param('id', new ParseIntPipe({ optional: false })) id: number) {
+    return this.gameService.remove(id);
   }
 }

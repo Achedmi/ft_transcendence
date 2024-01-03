@@ -13,13 +13,13 @@ import {
   ParseFilePipe,
   FileTypeValidator,
   MaxFileSizeValidator,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetCurrent } from 'src/auth/decorator/current.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { TFAGuard } from 'src/auth/guards/TFAGuard.guard';
-import { AddFriendDto } from './dto/addFriend.dto';
 
 @Controller('user')
 @UseGuards(TFAGuard)
@@ -63,8 +63,8 @@ export class UserController {
   }
 
   @Post('addFriend/:friendId')
-  async addFriend(@GetCurrent('id') id: number, @Param() addFriendDto: AddFriendDto) {
-    return await this.userService.addFriend(id, addFriendDto.friendId);
+  async addFriend(@GetCurrent('id') id: number, @Param('friendId', new ParseIntPipe({ optional: false })) friendId: number) {
+    return await this.userService.addFriend(id, friendId);
   }
 
   @Get('friendsOf/:username')
@@ -73,7 +73,7 @@ export class UserController {
   }
 
   @Delete('unfriend/:id')
-  async unfriend(@GetCurrent('id') id, @Param('id') friendId: number) {
+  async unfriend(@GetCurrent('id') id, @Param('id', new ParseIntPipe({ optional: false })) friendId: number) {
     return await this.userService.unfriend(id, friendId);
   }
 
@@ -95,33 +95,3 @@ export class UserController {
     return this.userService.setMeOnline(id);
   }
 }
-//
-/*
-{
-    "id": 1,
-    "username": "achedmi",
-    "displayName": "achedmi",
-    "avatar": "http://res.cloudinary.com/dwrysd8sm/image/upload/v1702374192/wp8ylrz4ejczvz8gthwr.png",
-    "level": 0,
-    "status": "ONLINE",
-    "isTFAenabled": false,
-    "TFAsecret": "OM3A24TEC5HVYELX",
-    "bio": "big fan of sohaib",
-    "createdAt": "2023-12-09T10:33:40.668Z"
-}*/
-/*
-{
-    "id": 1,
-    "username": "achedmi",
-    "displayName": "achedmi",
-    "avatar": "http://res.cloudinary.com/dwrysd8sm/image/upload/v1702374192/wp8ylrz4ejczvz8gthwr.png",
-    "level": 0,
-    "status": "ONLINE",
-    "isTFAenabled": false,
-    "TFAsecret": "OM3A24TEC5HVYELX",
-    "bio": "big fan of sohaib",
-    "createdAt": "2023-12-09T10:33:40.668Z",
-    "isTFAVerified": false,
-    "userAT": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhY2hlZG1pIiwiaXNURkFWZXJpZmllZCI6ZmFsc2UsImlhdCI6MTcwMzMzNjYzNSwiZXhwIjoxNzAzNDIzMDM1fQ.fHIOuEcLTocPIRxovXnW-9xgLAiN7UCKPJcMkae78lQ",
-    "userRT": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhY2hlZG1pIiwiaXNURkFWZXJpZmllZCI6ZmFsc2UsImlhdCI6MTcwMzMzNjYzNSwiZXhwIjoxNzAzOTQxNDM1fQ.9rnxUQi9ouE8TmNbWIbQReTsTAZMA6g_YXxZ2O7vZEY"
-}*/

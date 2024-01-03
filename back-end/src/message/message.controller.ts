@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { SendMessageDto } from './dto/create-message.dto';
 import { TFAGuard } from 'src/auth/guards/TFAGuard.guard';
@@ -27,7 +27,7 @@ export class MessageController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.messageService.findOne(+id);
+  findOne(@Param('id', new ParseIntPipe({ optional: false })) id: number) {
+    return this.messageService.findOne(id);
   }
 }

@@ -83,6 +83,7 @@ model Friendship {
   user2 User? @relation("user2", fields: [user2Id], references: [id])
   
   createdAt DateTime @default(now())
+  @@unique([user1Id, user2Id])
 }
 
 model Blocking {

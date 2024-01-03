@@ -29,6 +29,7 @@ import { AddMemberDto } from './dto/addMember.dto';
 import { KickMemberDto } from './dto/kickMember.dto';
 import { MuteDto } from './dto/mute.dto';
 import { BlockeDto } from './dto/block.dto';
+import { GetChatMessagesDto } from './dto/getChatMessages.dto';
 
 @Controller('chat')
 @UseGuards(TFAGuard)
@@ -72,8 +73,8 @@ export class ChatController {
   }
 
   @Get('getDm')
-  getDm(@Query('from', new ParseIntPipe()) from: number, @Query('to', new ParseIntPipe()) to: number) {
-    return this.chatService.findDm(from, to);
+  getDm(@GetCurrent('id') me: number, @Query('to', new ParseIntPipe()) to: number) {
+    return this.chatService.findDm(me, to);
   }
 
   @Get('getDms')
@@ -112,25 +113,25 @@ export class ChatController {
   }
 
   @Get('getChatMessages/:id')
-  getChatMessages(@Param('id') id: string, @Query('skip') skip: number) {
-    return this.chatService.getChatMessages(+id, skip);
+  getChatMessages(@Param('id', new ParseIntPipe({ optional: false })) id: number, @Query() { skip }: GetChatMessagesDto) {
+    return this.chatService.getChatMessages(id, skip);
   }
 
   @Get('getChatInfos/:id')
-  getChatInfos(@GetCurrent('id') me, @Param('id') id: string) {
+  getChatInfos(@GetCurrent('id') me, @Param('id', new ParseIntPipe({ optional: false })) id: number) {
     return this.chatService.getChatInfos(me, +id);
   }
 
   @Get(':id')
-  findOne(@GetCurrent('id') me: number, @Param('id') id: string) {
-    return this.chatService.GetChatById(me, +id);
+  findOne(@GetCurrent('id') me: number, @Param('id', new ParseIntPipe({ optional: false })) id: number) {
+    return this.chatService.GetChatById(me, id);
   }
 
   @UseInterceptors(FileInterceptor('image'))
   @Patch('/:id')
   update(
     @GetCurrent('id') me: number,
-    @Param('id') id: number,
+    @Param('id', new ParseIntPipe({ optional: false })) id: number,
     @Body() updateChatDto: UpdateChatDto,
     @UploadedFile(
       new ParseFilePipe({
@@ -144,7 +145,7 @@ export class ChatController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chatService.remove(+id);
+  remove(@Param('id', new ParseIntPipe({ optional: false })) id: number) {
+    return this.chatService.remove(id);
   }
 }
