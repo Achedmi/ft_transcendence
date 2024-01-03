@@ -56,7 +56,6 @@ export class ChatGateway {
 
       this.server.to('11').emit('message', { message: 'hello' });
       console.log('Client connected to Game socket: ', user.username);
-
     } catch (err) {
       console.log(err);
       client.disconnect();
@@ -86,3 +85,5 @@ export class ChatGateway {
     this.server.to(String(data.chatId)).emit('message', data);
   }
 }
+
+//!!! if a user logged out, disconnect him from the socket

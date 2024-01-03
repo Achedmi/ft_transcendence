@@ -295,13 +295,15 @@ export class ChatService {
     }
 
     updateChatDto.password = await this.helpersService.hashPassword(updateChatDto.password);
-    return await this.prisma.chat.update({
+    await this.prisma.chat.update({
       where: { id },
       data: {
         ...updateChatDto,
         image: imageUrl,
       },
     });
+
+    return this.getChatInfos(me, id);
   }
 
   async createDm(me: number, friendId: number) {
