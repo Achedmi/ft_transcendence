@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useChatStore from '../../../stores/chatStore';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../utils/axios';
@@ -23,13 +23,19 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
     password: '',
   });
 
-  //   console.log(updatedGroup);
   const handleEditClick = useCallback(() => {
     const fileInput = document.getElementById('imgInput') as HTMLInputElement;
     if (fileInput) {
       fileInput.click();
     }
   }, []);
+
+  const visibilitySelected = (newVisibility: string, currentVisibility: string | undefined, tobeCompared: string) => {
+    console.log(newVisibility, currentVisibility, tobeCompared);
+    if (newVisibility == tobeCompared) return 'bg-dark-cl text-white';
+    if (!newVisibility && currentVisibility == tobeCompared) return 'bg-dark-cl text-white';
+    return 'hover:bg-dark-cl/25';
+  };
 
   const handleOnSave = useCallback(async () => {
     const formData = new FormData();
@@ -46,10 +52,11 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
             },
           });
           console.log('response', response);
-		  chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
+          chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
           return response;
         } catch (error) {
-          console.log(error);
+          setUpdatedGroup({ ...updatedGroup, image: '' });
+          setNewImage(null);
           throw error;
         }
       },
@@ -73,7 +80,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
           <div className='w-[400px] bg-gray-cl rounded-xl border-2 border-solid border-dak-cl flex flex-col '>
             <div className='header flex justify-between items-center w-full h-12 gap-2 border-b-2 border-solid border-dark-cl'>
               <div className='h-full   flex items-center'>
-                <Edit size='26' fillColor='#433650' />
+                <Edit size='35' fillColor='#433650' />
               </div>
               <div className='h-full   flex justify-center items-center'>
                 <span className='text-lg text-dark-cl'>Edit Group</span>
@@ -125,8 +132,8 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                 />
               </div>
               <div className=' flex flex-col text-dark-cl '>
-                <div className='flex  justify-center items-center gap-8 py-4 '>
-                  <div className='text-xl w-10 text-center'>Name:</div>
+                <div className='flex  justify-center items-center gap-8 pt-4 '>
+                  <div className='text-md w-10 text-center'>Name:</div>
                   <input
                     className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64'
                     type='text'
@@ -140,9 +147,52 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                     }}
                   />
                 </div>
-                {updatedGroup.visibility === 'PUBLIC' && (
+
+                <div className='flex  justify-center items-center gap-8 pt-4 '>
+                  <div className='text-md w-10 text-center'>Visibility:</div>
+                  <div className=' h-8 py-1 w-64 flex justify-around items-center gap-2 '>
+                    <div
+                      className={` h-full w-full rounded-lg  text-sm flex justify-center items-center   cursor-pointer
+                       ${visibilitySelected(updatedGroup.visibility, chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility, 'PUBLIC')}`}
+                      onClick={() => {
+                        setUpdatedGroup({
+                          ...updatedGroup,
+                          visibility: 'PUBLIC',
+                        });
+                      }}
+                    >
+                      Public
+                    </div>
+                    <div
+                      className={` h-full w-full rounded-lg  text-sm flex justify-center items-center   cursor-pointer 
+                       ${visibilitySelected(updatedGroup.visibility, chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility, 'PRIVATE')}`}
+                      onClick={() => {
+                        setUpdatedGroup({
+                          ...updatedGroup,
+                          visibility: 'PRIVATE',
+                        });
+                      }}
+                    >
+                      Private
+                    </div>
+                    <div
+                      className={` h-full w-full rounded-lg  text-sm flex justify-center items-center   cursor-pointer 
+                       ${visibilitySelected(updatedGroup.visibility, chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility, 'PROTECTED')}`}
+                      onClick={() => {
+                        setUpdatedGroup({
+                          ...updatedGroup,
+                          visibility: 'PROTECTED',
+                        });
+                      }}
+                    >
+                      Protected
+                    </div>
+                  </div>
+                </div>
+
+                {updatedGroup.visibility === 'PROTECTED' || (!updatedGroup.visibility && chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility == 'PROTECTED' )  && (
                   <div className='flex  justify-center items-center gap-8 py-4'>
-                    <div className='text-xl w-10 text-center'>code:</div>
+                    <div className='text-md w-10 text-center'>code:</div>
                     <input
                       type='text'
                       className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden'

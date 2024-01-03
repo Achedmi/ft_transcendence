@@ -27,10 +27,13 @@ function ChatPreviewColumn({ chat, CurrentUserId }: { chat: ChatPreview; Current
   }, [chatStore, chat.id]);
 
   return (
-    <div className={`flex justify-start m-2  items-center gap-2 hover:bg-gray-cl rounded-full cursor-pointer relative
+    <div
+      className={`flex justify-start m-2  items-center gap-2 hover:bg-gray-cl rounded-full cursor-pointer relative
     ${chatStore.selectedChatId == chat.id ? 'bg-gray-cl' : ''}
     
-    `} onClick={handleChatClick}>
+    `}
+      onClick={handleChatClick}
+    >
       <img
         className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl object-cover
        '
@@ -72,9 +75,8 @@ function ChatPreviews({ currentUserId, chatType }: { currentUserId: number; chat
 
 function Messages({ CurrentUserId }: { CurrentUserId: number | undefined }) {
   const lastMessageRef = useRef<HTMLDivElement>(null);
-  // const { socket } = useUserStore();
   const scrollToBottom = () => {
-    lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
+    lastMessageRef.current?.scrollIntoView({ behavior: 'instant', block: 'end' });
   };
   const chatStore = useChatStore();
   useQuery(['Messages', chatStore.selectedChatId], chatStore.getMessages, {
@@ -83,7 +85,7 @@ function Messages({ CurrentUserId }: { CurrentUserId: number | undefined }) {
 
   useEffect(() => {
     scrollToBottom();
-  }, [chatStore.messages?.get(chatStore.selectedChatId)?.length]);
+  }, [chatStore.messages?.get(chatStore.selectedChatId)?.length, chatStore.selectedChatId, chatStore.messages]);
 
   return (
     <div className='flex flex-col space-y-2'>
@@ -116,7 +118,7 @@ function Messages({ CurrentUserId }: { CurrentUserId: number | undefined }) {
 function GroupMembers({ members }: { members: Member[] | undefined }) {
   useEffect(() => {
     console.log('members', members);
-  } , [members])
+  }, [members]);
   return (
     <div className='h-full m-3 ml-2 flex flex-col gap-2'>
       {members?.map((member: any) => {
@@ -159,13 +161,12 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   }
 
   return (
-    <div className='RIGHT hidden bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2  lg:flex-col  overflow-hidden overflow-y-auto scrollbar-none'>
+    <div className='RIGHT  bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2  lg:flex-col  overflow-hidden overflow-y-auto scrollbar-none'>
       <div className='flex justify-center mt-10'>
         <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl object-cover' src={chatStore.chatInfo?.get(chatStore.selectedChatId)?.image} alt='pfp' />
       </div>
       <div className='flex flex-col items-center justify-center'>
         <span className='mt-4 text-2xl'>{chatStore.chatInfo?.get(chatStore.selectedChatId)?.name}</span>
-        {/* {chatType == ChatType.DM && <span className='text-sm  text-dark-cl/75'>{`@${chatStore.selectedChat.username}`}</span>} */}
       </div>
       <div className='flex flex-wrap gap-3 mt-4'>
         {chatStore.chatInfo?.get(chatStore.selectedChatId)?.type == ChatType.DM ? (
@@ -191,7 +192,6 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
 function Chat() {
   const [chatType, setChatType] = useState<ChatType>(ChatType.DM);
   const [editGroupOpen, setEditGroupOpen] = useState<boolean>(false);
-  const { socket } = useUserStore();
   const [message, setMessage] = useState<string>('');
   const { user } = useUserStore();
   const chatStore = useChatStore();
@@ -240,7 +240,7 @@ function Chat() {
     <div className='h-full w-full bg-gray-cl border-solid border-[4px] border-dark-cl rounded-xl  flex justify-center items-center relative'>
       <EditGroup open={editGroupOpen} setOpen={setEditGroupOpen} />
       <div className={`text-dark-cl p-2 h-full w-full flex justify-center`}>
-        <div className=' LEFT  md:flex flex-col gap-4  w-72 m-2 hidden '>
+        <div className=' LEFT  md:flex flex-col gap-4  w-72 m-2  '>
           <div className='buttons w-full h-14 flex gap-2 m-0'>
             <div
               onClick={() => {
@@ -266,7 +266,7 @@ function Chat() {
           </div>
         </div>
 
-        <div className='MIDDLE flex flex-col gap-4  border-2   w-[40rem] m-2 relative overflow-hidden'>
+        {/* <div className='MIDDLE flex flex-col gap-4  border-2   w-[40rem] m-2 relative overflow-hidden'>
           {chatStore.selectedChatId < 0 ? (
             <div className=' w-full h-full bg-[#ECE8E8] flex justify-center items-center bg-da  border-2 border-solid border-dark-cl rounded-3xl'>
               <span className='text-2xl text-dark-cl'>No Chat Selected</span>
@@ -310,7 +310,7 @@ function Chat() {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
         {chatStore.selectedChatId > 0 && <ChatInfo setEditGroupOpen={setEditGroupOpen} />}
       </div>
     </div>
