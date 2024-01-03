@@ -117,8 +117,8 @@ export class ChatController {
   }
 
   @Get('getChatInfos/:id')
-  getChatInfos(@Param('id') id: string) {
-    return this.chatService.getChatInfos(+id);
+  getChatInfos(@GetCurrent('id') me, @Param('id') id: string) {
+    return this.chatService.getChatInfos(me, +id);
   }
 
   @Get(':id')

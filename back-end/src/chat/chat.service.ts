@@ -118,12 +118,18 @@ export class ChatService {
     return chat;
   }
 
-  async getChatInfos(id) {
+  async getChatInfos(me, id) {
     const chat = await this.prisma.chat.findUnique({
       where: { id },
     });
     if (chat) {
       chat['members'] = await this.getChatMembers(id);
+      if (chat.type === ChatType.DM) {
+        const otherUser = chat['members'].find((member) => member.userId !== me);
+        chat.name = otherUser?.displayName;
+        chat['username'] = otherUser?.username;
+        chat.image = otherUser?.avatar;
+      }
       return chat;
     } else return {};
   }
