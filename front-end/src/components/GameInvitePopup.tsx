@@ -16,15 +16,15 @@ function GameInvitePopup() {
     setOpen(false);
   };
 
-  // useEffect(() => {
-  //   let timer = setTimeout(() => {
-  //     setOpen(false);
-  //   }, 9000);
+  useEffect(() => {
+    let timer = setTimeout(() => {
+      setOpen(false);
+    }, 9000);
 
-  //   return () => {
-  //     clearTimeout(timer);
-  //   };
-  // }, [open]);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [open]);
 
   useEffect(() => {
     game?.on('invite', (data: any) => {
