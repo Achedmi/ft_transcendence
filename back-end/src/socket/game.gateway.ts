@@ -235,7 +235,8 @@ export class GameGateway {
     const token = this.jwtService.sign({ id: client.user.id, username: client.user.username }, { secret: 'secret', expiresIn: '1m' });
     if (!this.invites[client.user.id]) this.invites[client.user.id] = [];
     this.invites[client.user.id].push(token);
-    if (data.userId) this.server.to(this.connectedUsers[data.userId].id).emit('invite', { token, from: client.user.id });
+    if (data.userId)
+      this.server.to(this.connectedUsers[data.userId].id).emit('invite', { token, from: client.user.id, avatar: client.user.avatar, username: client.user.username });
   }
 
   @SubscribeMessage('acceptInvite')
