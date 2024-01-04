@@ -148,9 +148,9 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                   />
                 </div>
 
-                <div className='flex  justify-center items-center gap-8 pt-4 '>
+                <div className='flex  justify-center items-center gap-8 py-4 '>
                   <div className='text-md w-10 text-center'>Visibility:</div>
-                  <div className=' h-8 py-1 w-64 flex justify-around items-center gap-2 '>
+                  <div className=' h-10 py-1 w-64 flex justify-around items-center gap-2 '>
                     <div
                       className={` h-full w-full rounded-lg  text-sm flex justify-center items-center   cursor-pointer
                        ${visibilitySelected(updatedGroup.visibility, chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility, 'PUBLIC')}`}
@@ -190,8 +190,8 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                   </div>
                 </div>
 
-                {updatedGroup.visibility === 'PROTECTED' || (!updatedGroup.visibility && chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility == 'PROTECTED' )  && (
-                  <div className='flex  justify-center items-center gap-8 py-4'>
+                {(updatedGroup.visibility == 'PROTECTED' || (!updatedGroup.visibility && chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility == 'PROTECTED' ) ) && (
+                  <div className='flex  justify-center items-center gap-8 pb-4'>
                     <div className='text-md w-10 text-center'>code:</div>
                     <input
                       type='text'

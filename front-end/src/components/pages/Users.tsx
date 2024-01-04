@@ -18,12 +18,12 @@ function Users() {
   const { username } = useParams<{ username: string }>();
   const { user } = useUserStore();
   const navigate = useNavigate();
-  const { data, refetch, isLoading } = useQuery('users', () => friendsStore.fetchUserAndFriends(username || ''));
+  const { data, refetch, isLoading, isFetching } = useQuery('users', () => friendsStore.fetchUserAndFriends(username || ''));
   const game = useUserStore((state) => state.socket?.game);
   const handleLoaded = useCallback(() => {
     setIsLoaded(true);
     console.log('loaded');
-  }, [isLoaded]);
+  }, [isLoaded, setIsLoaded, data?.avatar, data?.username, data?.displayName, data?.bio, data?.wins, data?.losses]);
 
   useEffect(() => {
     refetch();
@@ -59,8 +59,8 @@ function Users() {
 
   return (
     <>
-      {isLoading && (
-        <div className='h-full w-full flex justify-center items-center'>
+      {(isLoading || isFetching) && (
+        <div className='flex justify-center items-center  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full overflow-y-scroll no-scrollbar'>
           <SyncLoader color='#433650' />
         </div>
       )}
