@@ -6,7 +6,7 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 
-@WebSocketGateway({ namespace: '/game', cors: true, origins: 'http://localhost:6969' })
+@WebSocketGateway({ namespace: '/game', cors: true, origins: '*' })
 export class GameGateway {
   constructor(private readonly gameService: GameService, private readonly userService: UserService, private readonly jwtService: JwtService) {}
 
@@ -182,7 +182,6 @@ export class GameGateway {
           player2Socket.leave(uniqueRoom);
 
           const game = await this.createGame(player1Socket, player2Socket);
-          
 
           this.startGame(game, player1Socket, player2Socket);
 
@@ -268,7 +267,7 @@ export class GameGateway {
       const player2Socket = this.connectedUsers[client.user.id];
 
       const game = await this.createGame(player1Socket, player2Socket);
-      console.log("newwww game", game)
+      console.log('newwww game', game);
 
       this.startGame(game, player1Socket, player2Socket);
     } catch (error) {

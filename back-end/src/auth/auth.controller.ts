@@ -59,13 +59,13 @@ export class AuthController {
         isTFAVerified: false,
       });
       this.helpersService.setTokenCookies(response, accessToken, refreshToken);
-      response.redirect('http://localhost:6969/');
+      response.redirect(process.env.FRONT_END_URL);
       return;
     }
     const { accessToken, refreshToken } = await this.authService.signUp(req.user.profile.username, req.user.profile._json.image.link);
 
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
-    response.redirect('http://localhost:6969/');
+    response.redirect(process.env.FRONT_END_URL);
   }
 
   //===================================TFA=====================================
