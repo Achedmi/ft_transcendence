@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useUserStore } from '../stores/userStore';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
-const img = 'https://res.cloudinary.com/dwrysd8sm/image/upload/v1702374192/wp8ylrz4ejczvz8gthwr.png';
 
 function GameInvitePopup() {
   const game = useUserStore((state) => state.socket?.game);
@@ -12,36 +9,32 @@ function GameInvitePopup() {
   const [inviteOwner, setInviteOwner] = useState(0);
   const [token, setToken] = useState('');
   const { user } = useUserStore();
+  const [inviter, setInviter] = useState({} as any);
 
   const handleAccept = () => {
-    console.log('token:', token);
-    console.log('user:', user);
-    console.log('inviteOwner:', inviteOwner);
     game?.emit('acceptInvite', { token: token, from: user.id, inviteOwner });
     setOpen(false);
   };
 
-  useEffect(() => {
-    let timer = setTimeout(() => {
-      setOpen(false);
-    }, 9000);
+  // useEffect(() => {
+  //   let timer = setTimeout(() => {
+  //     setOpen(false);
+  //   }, 9000);
 
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [open]);
+  //   return () => {
+  //     clearTimeout(timer);
+  //   };
+  // }, [open]);
 
   useEffect(() => {
     game?.on('invite', (data: any) => {
-      console.log(data);
       setToken(data.token);
       setInviteOwner(data.from);
+      setInviter({ username: data.username, avatar: data.avatar });
       setOpen(true);
     });
 
-    game?.on('invalidInvite', (data: any) => {
-      console.log('invalid invite');
-      console.log(data);
+    game?.on('invalidInvite', () => {
       toast.error('Invalid invite');
     });
 
@@ -61,20 +54,23 @@ function GameInvitePopup() {
           className='absolute z-50
 	  text-dark-cl font-bold
 		flex justify-center items-center gap-2 
-		 w-56 h-14
-		left-10 top-28 bg-light-gray-cl border-solid border-2 border-dark-cl rounded-l-full rounded-r-xl'
+		 w-50 h-14
+		left-10 top-28 bg-white  rounded-xl shadow-xl '
         >
           <img
-            src={img}
+            src={inviter.avatar}
             alt='Achedmi'
             className='
 	 absolute 
-	  w-14 h-14 rounded-full left-[-2px] border-2 border-solid border-dark-cl'
+	  w-14 h-14 rounded-full left-[-14px] border- border-solid border-dark-cl'
           />
 
-          <p className='w-28 ml-16 h-12  '>Achedmi invited you</p>
-          <div className='flex flex-col h-full text-light-gray w-full'>
-            <button className='bg-blue-cl  h-full' onClick={handleAccept}>
+          <p className='w-28 ml-16 h-12  mr-2 text-sm'>
+            {' '}
+            <span className='text-blue-cl text-xl'>{inviter.username}</span> invited you
+          </p>
+          <div className='flex flex-col h-full text-light-gray w-full rounded-r-xl'>
+            <button className='bg-blue-cl  h-full rounded-r-xl' onClick={handleAccept}>
               Play
             </button>
           </div>

@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import useChatStore, { ChatType, Member } from '../../../stores/chatStore';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { BlockIcon, Edit, Game, GroupMembersIcon, Profile } from '../../icons/icons';
 import { useQuery } from 'react-query';
 import { SyncLoader } from 'react-spinners';
+import { useUserStore } from '../../../stores/userStore';
 
 // function ActionDropDown({ member, currentUser }: { member: Member; currentUser: Member }) {
 //   return <div className='h-20 w-36 bg-blue-cl border-2 border-solid border-dark-cl rounded-lg absolute right-1 top-8 z-50'></div>;
@@ -53,6 +54,7 @@ function InfoButton({ text, Icon, onClick }: { text: string; Icon: any; onClick?
 
 function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   const chatStore = useChatStore();
+  const { socket, user } = useUserStore();
   function handleEditGroup() {
     console.log('edit group');
     setEditGroupOpen(true);
@@ -60,6 +62,18 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   useQuery(['ChatInfo', chatStore.selectedChatId], chatStore.getChatInfo, {
     refetchOnWindowFocus: false,
   });
+  const navigate = useNavigate();
+
+  const handleGotToProfile = useCallback(() => {
+    navigate(`/user/${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id != chatStore.currentUserId)?.username}`);
+  }, [chatStore.chatInfo?.get(chatStore.selectedChatId)?.members, navigate]);
+
+  const sendGameInvite = useCallback(
+    (usertoInviteId: any) => {
+      socket.game?.emit('createInvite', { userId: usertoInviteId });
+    },
+    [socket.game],
+  );
 
   if (chatStore.chatInfoLoading) {
     return (
@@ -83,9 +97,15 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
       <div className='flex flex-wrap gap-3 mt-4'>
         {chatStore.chatInfo?.get(chatStore.selectedChatId)?.type == ChatType.DM ? (
           <>
-            <InfoButton text='Profile' Icon={Profile} />
+            <InfoButton text='Profile' Icon={Profile} onClick={handleGotToProfile} />
             <InfoButton text='Block' Icon={BlockIcon} />
-            <InfoButton text='Invite to play' Icon={Game} />
+            <InfoButton
+              text='Invite to play'
+              Icon={Game}
+              onClick={() => {
+                sendGameInvite(chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id != user.id)?.id);
+              }}
+            />
           </>
         ) : (
           <>
