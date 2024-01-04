@@ -80,4 +80,3 @@ export class ChatGateway {
 }
 
 //!!! if a user logged out, disconnect him from the socket
-//
