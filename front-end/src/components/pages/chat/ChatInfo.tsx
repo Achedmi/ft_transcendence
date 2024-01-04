@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import useChatStore, { ChatType, Member } from '../../../stores/chatStore';
 import { useEffect } from 'react';
-import { BlockIcon, Edit, Game, GroupMembersIcon } from '../../icons/icons';
+import { BlockIcon, Edit, Game, GroupMembersIcon, Profile } from '../../icons/icons';
 import { useQuery } from 'react-query';
 import { SyncLoader } from 'react-spinners';
-import Profile from '../Profile/Profile';
 
 // function ActionDropDown({ member, currentUser }: { member: Member; currentUser: Member }) {
 //   return <div className='h-20 w-36 bg-blue-cl border-2 border-solid border-dark-cl rounded-lg absolute right-1 top-8 z-50'></div>;
@@ -33,8 +32,8 @@ function GroupMembers({ members }: { members: Member[] | undefined }) {
                 {member.isowner == 'true' ? <span className='text-sm text-red-cl'>Owner</span> : <span className='text-sm text-blue-cl'>{member.isAdmin ? 'Admin' : ''} </span>}
               </div>
             </div>
-            <span className='text-4xl cursor-pointer absolute right-1 top-0'>⌄</span>
-            {/* <ActionDropDown member={member} currentUser={members[0]} /> */}
+            <span className='text-4xl cursor-pointer absolute right-1 top-0'>...</span>
+            {/* <ActionDropDown member={member} currentUser={members[0]}  ⌄ /> */}
           </div>
         );
       })}
@@ -74,7 +73,7 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   }
 
   return (
-    <div className='RIGHT  bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2  lg:flex-col  overflow-hidden overflow-y-auto scrollbar-none'>
+    <div className='RIGHT hidden bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2  lg:flex-col  overflow-hidden overflow-y-auto scrollbar-none'>
       <div className='flex justify-center mt-10'>
         <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl object-cover' src={chatStore.chatInfo?.get(chatStore.selectedChatId)?.image} alt='pfp' />
       </div>

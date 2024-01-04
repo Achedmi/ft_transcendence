@@ -154,7 +154,7 @@ function Chat() {
     <div className='h-full w-full bg-gray-cl border-solid border-[4px] border-dark-cl rounded-xl  flex justify-center items-center relative'>
       <EditGroup open={editGroupOpen} setOpen={setEditGroupOpen} />
       <div className={`text-dark-cl p-2 h-full w-full flex justify-center`}>
-        <div className=' LEFT  md:flex flex-col gap-4  w-72 m-2  '>
+        <div className=' LEFT hidden md:flex flex-col gap-4  w-72 m-2  '>
           <div className='buttons w-full h-14 flex gap-2 m-0'>
             <div
               onClick={() => {
