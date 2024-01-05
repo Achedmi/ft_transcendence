@@ -12,6 +12,8 @@ type Player = {
   score: number;
   x: number;
   y: number;
+  width: number;
+  height: number;
 };
 
 type Ball = {
@@ -19,6 +21,8 @@ type Ball = {
   y: number;
   dx: number;
   dy: number;
+  size: number;
+  speed: number;
 };
 @WebSocketGateway({ namespace: '/game', cors: true, origins: '*' })
 export class GameGateway {
@@ -139,23 +143,29 @@ export class GameGateway {
         userId: player1Socket['user'].id,
         socketId: player1Socket.id,
         score: 0,
-        x: 90,
-        y: 200,
+        x: 0,
+        y:  720 / 2 - 60,
+        width: 20,
+        height: 120,
       },
       player2: {
         userId: player2Socket['user'].id,
         socketId: player2Socket.id,
         score: 0,
-        x: 690,
-        y: 200,
+        x: 1280 - 20,
+        y: 720 / 2 - 60,
+        width: 20,
+        height: 120,
       },
       gameId: game.id,
       status: GameStatus.ONGOING,
       ball: {
-        x: 395,
-        y: 245,
+        x: 1280 / 2 - 10,
+        y: 720 / 2 - 10,
         dx: Math.random() < 0.5 ? 1 : -1,
         dy: 0,
+        size: 20,
+        speed: 5,
       },
     };
 
@@ -235,11 +245,11 @@ export class GameGateway {
       game.ball.y += game.ball.dy * 5;
 
       //check if ball hits player 1
-      if (game.ball.x < 100 && game.ball.y >= game.players[0].y && game.ball.y <= game.players[0].y + 100) {
+      if (game.ball.x < game.player1.width && game.ball.y >= game.player1.y && game.ball.y <= game.player1.y + 100) {
         game.ball.dx = 1;
 
         //change ball direction
-        if (game.ball.y < game.players[0].y + 50) {
+        if (game.ball.y < game.player1.y + 60) {
           game.ball.dy = -1;
         } else {
           game.ball.dy = 1;
@@ -247,11 +257,11 @@ export class GameGateway {
       }
 
       //check if ball hits player 2
-      if (game.ball.x > 700 && game.ball.y >= game.players[1].y && game.ball.y <= game.players[1].y + 100) {
+      if (game.ball.x > 1280 - game.player1.width && game.ball.y >= game.player2.y && game.ball.y <= game.player2.y + 100) {
         game.ball.dx = -1;
 
         //change ball direction
-        if (game.ball.y < game.players[1].y + 50) {
+        if (game.ball.y < game.player2.y + 60) {
           game.ball.dy = -1;
         } else {
           game.ball.dy = 1;
@@ -259,27 +269,25 @@ export class GameGateway {
       }
 
       //check if ball hits top or bottom wall
-      if (game.ball.y < 0 || game.ball.y > 490) {
+      if (game.ball.y < 0 || game.ball.y > 720 - game.ball.size) {
         game.ball.dy *= -1;
       }
 
       // check if ball hits left or right wall and reset it if it does
-      if (game.ball.x < 0) {
-        game.players[1].score++;
-        game.ball = {
-          x: 395,
-          y: 245,
-          dx: 1,
-          dy: 0,
-        };
-      } else if (game.ball.x > 800) {
-        game.players[0].score++;
-        game.ball = {
-          x: 395,
-          y: 245,
-          dx: -1,
-          dy: 0,
-        };
+      if (game.ball.x < -20) {
+        game.player2.score++;
+        game.ball.x = 1280 / 2 - 10;
+        game.ball.y = 720 / 2 - 10;
+        game.ball.dx = 1;
+        game.ball.dy = 1;
+
+        
+      } else if (game.ball.x > 1280) {
+        game.player1.score++;
+        game.ball.x = 1280 / 2 - 10;
+        game.ball.y = 720 / 2 - 10;
+        game.ball.dx = -1;
+        game.ball.dy = 1;
       }
 
       if (game.player1.score > 2 || game.player2.score > 2) {
@@ -290,29 +298,29 @@ export class GameGateway {
     }, 1000 / 60);
   }
 
-  @SubscribeMessage('incrementScore')
-  incrementScore(client: Socket, data: { userId: number; gameId: number; direction: string }) {
-    console.log('incrementScore', data);
+  @SubscribeMessage('move')
+  move(client: Socket, data: { userId: number; gameId: number; direction: string }) {
+    // console.log('move', data);
     if (this.games[data.gameId].player1.userId === data.userId && data.direction === 'up') {
-      this.games[data.gameId].player1.y -= 10;
+      this.games[data.gameId].player1.y -= 20;
       if (this.games[data.gameId].player1.y < 0) {
         this.games[data.gameId].player1.y = 0;
       }
     } else if (this.games[data.gameId].player1.userId === data.userId && data.direction === 'down') {
-      this.games[data.gameId].player1.y += 10;
-      if (this.games[data.gameId].player1.y > 440) {
-        this.games[data.gameId].player1.y = 440;
+      this.games[data.gameId].player1.y += 20;
+      if (this.games[data.gameId].player1.y > 720 - this.games[data.gameId].player1.height) {
+        this.games[data.gameId].player1.y = 720 - this.games[data.gameId].player1.height;
       }
     } else if (this.games[data.gameId].player2.userId === data.userId && data.direction === 'up') {
-      this.games[data.gameId].player2.y -= 10;
+      this.games[data.gameId].player2.y -= 20;
       if (this.games[data.gameId].player2.y < 0) {
         this.games[data.gameId].player2.y = 0;
       }
     }
     if (this.games[data.gameId].player2.userId === data.userId && data.direction === 'down') {
-      this.games[data.gameId].player2.y += 10;
-      if (this.games[data.gameId].player2.y > 440) {
-        this.games[data.gameId].player2.y = 440;
+      this.games[data.gameId].player2.y += 20;
+      if (this.games[data.gameId].player2.y > 720 - this.games[data.gameId].player2.height) {
+        this.games[data.gameId].player2.y =  720 - this.games[data.gameId].player2.height;
       }
     }
   }

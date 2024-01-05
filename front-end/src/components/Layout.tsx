@@ -10,7 +10,7 @@ import { useUserStore } from '../stores/userStore';
 import axios from '../utils/axios';
 import GameInvitePopup from './GameInvitePopup';
 import { AnimatePresence } from 'framer-motion';
-import { useGameStore } from '../game/gameStore';
+import useGameStore from '../game/gameStore';
 import { useQuery } from 'react-query';
 import useChatStore from '../stores/chatStore';
 

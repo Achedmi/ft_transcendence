@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
-import { useUserStore } from '../../stores/userStore';
+import { useUserStore } from '../../../stores/userStore';
 import { PropagateLoader } from 'react-spinners';
 import { useCallback, useEffect, useState } from 'react';
-import { useGameStore } from '../../game/gameStore';
-import axios from '../../utils/axios';
+import useGameStore from '../../../game/gameStore';
+import axios from '../../../utils/axios';
 import { toast } from 'react-toastify';
-import toastConfig from '../../utils/toastConf';
+import toastConfig from '../../../utils/toastConf';
+import Game from './Game';
 
 const Play = () => {
   const [gameEnded, setGameEnded] = useState(false);
@@ -35,11 +36,6 @@ const Play = () => {
     }
   }, [abelToPlay, socket?.game]);
 
-  const handleIncrement = () => {
-    socket?.game?.emit('incrementScore', { userId: user.id, gameId: game.id });
-    console.log('increment sent');
-  };
-
   useEffect(() => {
     socket?.game?.on('updateStatus', (status: string) => {
       console.log('updateStatus', status);
@@ -55,12 +51,8 @@ const Play = () => {
       console.log('countdown', count);
     });
 
-    socket?.game?.on('gameUpdates', (data: any) => {
-      game.setMyScore(data.player1.userId === user.id ? data.player1.score : data.player2.score);
-      game.setOpponentScore(data.player1.userId === user.id ? data.player2.score : data.player1.score);
-    });
 
-    socket?.game?.on('gameEnded', (data) => {
+    socket?.game?.on('gameEnded', (data: any) => {
       if (data?.winner) setWinner(data.winner);
       else setWinner('');
       setGameEnded(true);
@@ -71,11 +63,11 @@ const Play = () => {
     return () => {
       socket?.game?.off('updateStatus');
       socket?.game?.off('countdown');
-      socket?.game?.off('gameUpdates');
-      // socket?.game?.off('gameIsReady');
       socket?.game?.off('gameEnded');
     };
   }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore, gameEnded, winner, game.counter]);
+
+  useEffect(() => {}, []);
 
   if (gameEnded)
     return (
@@ -99,6 +91,20 @@ const Play = () => {
         </div>
       </div>
     );
+
+  // return (
+  //   <div className='h-full w-full flex gap-4'>
+  //     <div className='bg-[rgb(217,217,217)] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'>
+  //       <div className='flex flex-col justify-center items-center h-full w-full'>
+  //         <div className='flex gap-10 pt-10'>
+  //           <span>{`${user.displayName}: ${game.myScore} `}</span>
+  //           <span>{`Opponent: ${game.opponentScore} `}</span>
+  //         </div>
+  //         <Game />
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 
   return (
     <div className='h-full w-full flex gap-4'>
@@ -162,9 +168,7 @@ const Play = () => {
               <span>{`${user.displayName}: ${game.myScore} `}</span>
               <span>{`Opponent: ${game.opponentScore} `}</span>
             </div>
-            <div className='bg-dark-cl aspect-video w-[90%] max-w-6xl flex justify-center items-center'>
-              <button onClick={handleIncrement}>add score</button>
-            </div>
+            <Game></Game>
           </div>
         )}
       </div>

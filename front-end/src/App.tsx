@@ -3,7 +3,7 @@ import Login from './components/pages/login/Login.tsx';
 import Layout from './components/Layout.tsx';
 import Home from './components/pages/Home.tsx';
 import Profile from './components/pages/Profile/Profile.tsx';
-import { Play } from './components/pages/Play.tsx';
+import { Play } from './components/pages/Play/Play.tsx';
 import VerifyTfa from './components/2fa/VerifyTfa.tsx';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClientProvider, QueryClient, useQuery } from 'react-query';
