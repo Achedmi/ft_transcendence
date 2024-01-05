@@ -6,9 +6,8 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 
-
 type Player = {
-  socketID: string;
+  socketId: string;
   userId: number;
   score: number;
   x: number;
@@ -16,14 +15,13 @@ type Player = {
 };
 
 type Ball = {
-	  x: number;
+  x: number;
   y: number;
   dx: number;
   dy: number;
 };
 @WebSocketGateway({ namespace: '/game', cors: true, origins: '*' })
 export class GameGateway {
-  
   constructor(private readonly gameService: GameService, private readonly userService: UserService, private readonly jwtService: JwtService) {}
 
   @WebSocketServer()
@@ -40,13 +38,6 @@ export class GameGateway {
       ball: Ball;
     };
   } = {};
-  
-
-
-
-
-
-
 
   private connectedUsers = {};
 
@@ -148,14 +139,24 @@ export class GameGateway {
         userId: player1Socket['user'].id,
         socketId: player1Socket.id,
         score: 0,
+        x: 90,
+        y: 200,
       },
       player2: {
         userId: player2Socket['user'].id,
         socketId: player2Socket.id,
         score: 0,
+        x: 690,
+        y: 200,
       },
       gameId: game.id,
       status: GameStatus.ONGOING,
+      ball: {
+        x: 395,
+        y: 245,
+        dx: Math.random() < 0.5 ? 1 : -1,
+        dy: 0,
+      },
     };
 
     player1Socket.join(String(game.id));
@@ -229,6 +230,58 @@ export class GameGateway {
         await this.handlGameEndOnDisconnect(game.gameId, player1Socket, player2Socket, interval);
         return;
       }
+
+      game.ball.x += game.ball.dx * 5;
+      game.ball.y += game.ball.dy * 5;
+
+      //check if ball hits player 1
+      if (game.ball.x < 100 && game.ball.y >= game.players[0].y && game.ball.y <= game.players[0].y + 100) {
+        game.ball.dx = 1;
+
+        //change ball direction
+        if (game.ball.y < game.players[0].y + 50) {
+          game.ball.dy = -1;
+        } else {
+          game.ball.dy = 1;
+        }
+      }
+
+      //check if ball hits player 2
+      if (game.ball.x > 700 && game.ball.y >= game.players[1].y && game.ball.y <= game.players[1].y + 100) {
+        game.ball.dx = -1;
+
+        //change ball direction
+        if (game.ball.y < game.players[1].y + 50) {
+          game.ball.dy = -1;
+        } else {
+          game.ball.dy = 1;
+        }
+      }
+
+      //check if ball hits top or bottom wall
+      if (game.ball.y < 0 || game.ball.y > 490) {
+        game.ball.dy *= -1;
+      }
+
+      // check if ball hits left or right wall and reset it if it does
+      if (game.ball.x < 0) {
+        game.players[1].score++;
+        game.ball = {
+          x: 395,
+          y: 245,
+          dx: 1,
+          dy: 0,
+        };
+      } else if (game.ball.x > 800) {
+        game.players[0].score++;
+        game.ball = {
+          x: 395,
+          y: 245,
+          dx: -1,
+          dy: 0,
+        };
+      }
+
       if (game.player1.score > 2 || game.player2.score > 2) {
         await this.handlEndGame(game, player1Socket, player2Socket, interval);
         return;
@@ -238,10 +291,30 @@ export class GameGateway {
   }
 
   @SubscribeMessage('incrementScore')
-  incrementScore(client: Socket, data: { userId: number; gameId: number }) {
+  incrementScore(client: Socket, data: { userId: number; gameId: number; direction: string }) {
     console.log('incrementScore', data);
-    if (this.games[data.gameId].player1.userId === data.userId) this.games[data.gameId].player1.score++;
-    else this.games[data.gameId].player2.score++;
+    if (this.games[data.gameId].player1.userId === data.userId && data.direction === 'up') {
+      this.games[data.gameId].player1.y -= 10;
+      if (this.games[data.gameId].player1.y < 0) {
+        this.games[data.gameId].player1.y = 0;
+      }
+    } else if (this.games[data.gameId].player1.userId === data.userId && data.direction === 'down') {
+      this.games[data.gameId].player1.y += 10;
+      if (this.games[data.gameId].player1.y > 440) {
+        this.games[data.gameId].player1.y = 440;
+      }
+    } else if (this.games[data.gameId].player2.userId === data.userId && data.direction === 'up') {
+      this.games[data.gameId].player2.y -= 10;
+      if (this.games[data.gameId].player2.y < 0) {
+        this.games[data.gameId].player2.y = 0;
+      }
+    }
+    if (this.games[data.gameId].player2.userId === data.userId && data.direction === 'down') {
+      this.games[data.gameId].player2.y += 10;
+      if (this.games[data.gameId].player2.y > 440) {
+        this.games[data.gameId].player2.y = 440;
+      }
+    }
   }
 
   //=================================================================================INVITES=================================================================================
