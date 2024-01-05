@@ -6,8 +6,24 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 
+
+type Player = {
+  socketID: string;
+  userId: number;
+  score: number;
+  x: number;
+  y: number;
+};
+
+type Ball = {
+	  x: number;
+  y: number;
+  dx: number;
+  dy: number;
+};
 @WebSocketGateway({ namespace: '/game', cors: true, origins: '*' })
 export class GameGateway {
+  
   constructor(private readonly gameService: GameService, private readonly userService: UserService, private readonly jwtService: JwtService) {}
 
   @WebSocketServer()
@@ -17,20 +33,20 @@ export class GameGateway {
 
   private games: {
     [gameId: number]: {
-      player1: {
-        userId: number;
-        socketId: string;
-        score: number;
-      };
-      player2: {
-        userId: number;
-        socketId: string;
-        score: number;
-      };
+      player1: Player;
+      player2: Player;
       gameId: number;
       status: GameStatus;
+      ball: Ball;
     };
   } = {};
+  
+
+
+
+
+
+
 
   private connectedUsers = {};
 
