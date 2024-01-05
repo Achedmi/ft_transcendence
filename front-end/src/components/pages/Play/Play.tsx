@@ -51,7 +51,6 @@ const Play = () => {
       console.log('countdown', count);
     });
 
-
     socket?.game?.on('gameEnded', (data: any) => {
       if (data?.winner) setWinner(data.winner);
       else setWinner('');
@@ -165,8 +164,8 @@ const Play = () => {
           <div className='flex flex-col justify-center items-center h-full w-full'>
             playing
             <div className='flex gap-10'>
-              <span>{`${user.displayName}: ${game.myScore} `}</span>
-              <span>{`Opponent: ${game.opponentScore} `}</span>
+              <span>{`${user.displayName}: ${game.player1.userId === user.id ? game.player1.score : game.player2.score} `}</span>
+              <span>{`Opponent: ${game.player1.userId === user.id ? game.player2.score : game.player1.score} `}</span>
             </div>
             <Game></Game>
           </div>
