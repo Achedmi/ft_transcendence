@@ -165,36 +165,38 @@ const Play = () => {
         )}
         {user.status?.startsWith('INGAME') && abelToPlay && (
           <div className='flex flex-col justify-center items-center h-full w-full'>
-            <div className='flex mt-1  w-[90%] max-w-6xl justify-between gap-10'>
-              <div
-                className='flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white
-              '
-              >
+            <div className='h-20 w-[90%] max-w-6xl flex justify-center items-center'>
+              <div className='flex   w-full   justify-between gap-10'>
                 <div
-                  className='flex gap-2 items-center 
+                  className='flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white
                 '
                 >
-                  <img className='h-10 w-10 rounded-full' src={game.player1.userId === user.id ? game.player1.avatar : game.player2.avatar} alt='user avatar' />
-                  <span>{game.player1.userId === user.id ? game.player1.displayName : game.player2.displayName}</span>
+                  <div
+                    className='flex gap-2 items-center 
+                  '
+                  >
+                    <img className='h-10 w-10 rounded-full' src={game.player1.userId === user.id ? game.player1.avatar : game.player2.avatar} alt='user avatar' />
+                    <span>{game.player1.userId === user.id ? game.player1.displayName : game.player2.displayName}</span>
+                  </div>
+                  <div className='flex  items-center'>
+                    <span>{`${game.player1.userId === user.id ? game.player1.score : game.player2.score} `}</span>
+                  </div>
                 </div>
-                <div className='flex  items-center'>
-                  <span>{`${game.player1.userId === user.id ? game.player1.score : game.player2.score} `}</span>
-                </div>
-              </div>
 
-              <div
-                className='flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white
-              '
-              >
-                <div className='flex  items-center'>
-                  <span>{`${game.player2.userId === user.id ? game.player1.score : game.player2.score} `}</span>
-                </div>
                 <div
-                  className='flex gap-2 items-center 
+                  className='flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white
                 '
                 >
-                  <span>{`${game.player2.userId === user.id ? game.player1.displayName : game.player2.displayName}`}</span>
-                  <img className='h-10 w-10 rounded-full' src={`${game.player2.userId === user.id ? game.player1.avatar : game.player2.avatar}`} alt='user avatar' />
+                  <div className='flex  items-center'>
+                    <span>{`${game.player2.userId === user.id ? game.player1.score : game.player2.score} `}</span>
+                  </div>
+                  <div
+                    className='flex gap-2 items-center 
+                  '
+                  >
+                    <span>{`${game.player2.userId === user.id ? game.player1.displayName : game.player2.displayName}`}</span>
+                    <img className='h-10 w-10 rounded-full' src={`${game.player2.userId === user.id ? game.player1.avatar : game.player2.avatar}`} alt='user avatar' />
+                  </div>
                 </div>
               </div>
             </div>

@@ -64,7 +64,7 @@ export class GameGateway {
       const token = client.handshake.headers.cookie?.split('userAT=')[1]?.split('; ')[0];
       const isValidToken = this.jwtService.verify(token, { publicKey: process.env.JWT_ACCESS_SECRET });
       if (!isValidToken || this.connectedUsers[isValidToken.id]) {
-        console.log('----------', isValidToken?.usernae);
+        console.log('stuck in connected Users', this.connectedUsers[isValidToken.id]?.user || isValidToken?.usernae);
         client.disconnect();
         return;
       }
@@ -375,7 +375,6 @@ export class GameGateway {
     }
   }
 }
-//
 //
 //
 //
