@@ -7,6 +7,7 @@ import { SyncLoader } from 'react-spinners';
 import EditGroup from './EditGroup';
 import ChatInfo from './ChatInfo';
 import { SendIcon } from '../../icons/icons';
+import CreateGroup from './CreateGroup';
 
 function ChatPreviewColumn({ chat, CurrentUserId }: { chat: ChatPreview; CurrentUserId: number }) {
   const chatStore = useChatStore();
@@ -106,6 +107,7 @@ function Messages({ CurrentUserId }: { CurrentUserId: number | undefined }) {
 function Chat() {
   const [chatType, setChatType] = useState<ChatType>(ChatType.DM);
   const [editGroupOpen, setEditGroupOpen] = useState<boolean>(false);
+  const [createGroupOpen, setCreateGroupOpen] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
   const { user } = useUserStore();
   const chatStore = useChatStore();
@@ -153,8 +155,20 @@ function Chat() {
   return (
     <div className='h-full w-full bg-gray-cl border-solid border-[4px] border-dark-cl rounded-xl  flex justify-center items-center relative'>
       <EditGroup open={editGroupOpen} setOpen={setEditGroupOpen} />
+
+      <CreateGroup open={createGroupOpen} setOpen={setCreateGroupOpen} />
       <div className={`text-dark-cl p-2 h-full w-full flex justify-center`}>
-        <div className=' LEFT hidden md:flex flex-col gap-4  w-72 m-2  '>
+        <div className=' LEFT hidden md:flex flex-col gap-4  w-72 m-2 relative '>
+          {chatType == ChatType.CHANNEL && (
+            <button
+              onClick={() => {
+                setCreateGroupOpen(true);
+              }}
+              className='absolute z-10 bottom-0 h-12 w-full bg-dark-cl text-white hover:bg-blue-cl hover:text-dark-cl border-2 border-solid border-dark-cl rounded-b-3xl '
+            >
+              create a Group
+            </button>
+          )}
           <div className='buttons w-full h-14 flex gap-2 m-0'>
             <div
               onClick={() => {
@@ -175,7 +189,7 @@ function Chat() {
               <span>Groups</span>
             </div>
           </div>
-          <div className='bg-[#ECE8E8] w-full h-full rounded-3xl border-2 border-solid border-dark-cl flex flex-col overflow-y-auto scrollbar-none'>
+          <div className='bg-[#ECE8E8] w-full h-full rounded-3xl border-2 border-solid border-dark-cl flex flex-col overflow-y-auto scrollbar-none '>
             <ChatPreviews currentUserId={user.id} chatType={chatType} />
           </div>
         </div>
@@ -219,7 +233,7 @@ function Chat() {
                   value={message}
                 ></input>
                 <button className=' flex justify-center items-center' onClick={handleNewMessage}>
-                  <SendIcon className='fill-dark-cl w-10 h-10 mt-2 ' />
+                  <SendIcon className='fill-dark-cl w-10 h-10 mt-2 hover:fill-blue-cl' />
                 </button>
               </div>
             </div>

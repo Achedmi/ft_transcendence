@@ -79,7 +79,7 @@ export class MessageService {
       },
     });
 
-    this.socketService.toChat(message);
+    this.socketService.toChat(message, sendDmDto.to);
 
     return message;
   }

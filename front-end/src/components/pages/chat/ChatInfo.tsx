@@ -65,7 +65,7 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   const navigate = useNavigate();
 
   const handleGotToProfile = useCallback(() => {
-    navigate(`/user/${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id != chatStore.currentUserId)?.username}`);
+    navigate(`/user/${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id != user.id)?.username}`);
   }, [chatStore.chatInfo?.get(chatStore.selectedChatId)?.members, navigate]);
 
   const sendGameInvite = useCallback(
@@ -109,10 +109,10 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
           </>
         ) : (
           <>
+            {/* {chatStore.chatInfo?.get(chatStore.selectedChatId)?.ownerId === user.id &&  */}
             <InfoButton text='Edit Group' Icon={Edit} onClick={handleEditGroup} />
-            {chatStore.chatInfo?.get(chatStore.selectedChatId)?.type == ChatType.CHANNEL && (
-              <InfoButton text={`Group Members (${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.length})`} Icon={GroupMembersIcon} />
-            )}
+            {/* } */}
+            <InfoButton text={`Group Members (${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.length})`} Icon={GroupMembersIcon} />
           </>
         )}
       </div>

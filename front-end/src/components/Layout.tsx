@@ -140,16 +140,25 @@ function PrivateRoutes() {
     };
   }, []);
 
-  useQuery('DmsPreview', chatStore.getDmsPreview, {
+  const { refetch: refetchDms } = useQuery('DmsPreview', chatStore.getDmsPreview, {
     refetchOnWindowFocus: false,
   });
-  useQuery('ChannelsPreview', chatStore.getChannelsPreview, {
+  const { refetch: refetchChannels } = useQuery('ChannelsPreview', chatStore.getChannelsPreview, {
     refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
     socket?.chat?.on('message', (data: any) => {
       console.log('new message', data);
+
+      if (!chatStore.DmsPreview.find((chat: any) => chat.id == data.chatId)) {
+        console.log('refetching dms');
+        chatStore.getDmsPreview();
+      }
+      if (!chatStore.ChannelsPreview.find((chat: any) => chat.id == data.chatId)) {
+        console.log('refetching channels');
+        chatStore.getChannelsPreview();
+      }
       chatStore.pushMessage(data, data.chatId);
       chatStore.updateLastDM(data, data.chatId);
       chatStore.updateLastGroupMessage(data, data.chatId);
@@ -157,7 +166,16 @@ function PrivateRoutes() {
     return () => {
       socket?.chat?.off('message');
     };
-  }, [socket?.chat, socket, chatStore, chatStore.selectedChatId, chatStore.messages?.get(chatStore.selectedChatId)?.length, chatStore.messages]);
+  }, [
+    socket?.chat,
+    socket,
+    chatStore,
+    chatStore.selectedChatId,
+    chatStore.messages?.get(chatStore.selectedChatId)?.length,
+    chatStore.messages,
+    chatStore.DmsPreview,
+    chatStore.ChannelsPreview,
+  ]);
 
   useEffect(() => {
     socket?.game?.on('gameIsReady', (data: any) => {
@@ -171,7 +189,8 @@ function PrivateRoutes() {
     return () => {
       socket?.game?.off('gameIsReady');
     };
-  }, [socket?.game, game.id, abelToPlay, socket?.chat]);
+  });
+  // }, [socket?.game, game.id, abelToPlay, socket?.chat, socket, navigate, setAbelToPlay]);
 
   return (
     <>

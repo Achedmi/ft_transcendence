@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { QueryClientProvider, QueryClient, useQuery } from 'react-query';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Users from './components/pages/Users.tsx';
+import Users from './components/pages/Users/Users.tsx';
 import Friends from './components/pages/Profile/Friends.tsx';
 import NotFound404 from './components/pages/errorPages/NotFound404.tsx';
 import MatchHistory from './components/pages/Profile/MatchHistory.tsx';

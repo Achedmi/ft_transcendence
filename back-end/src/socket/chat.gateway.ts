@@ -73,8 +73,13 @@ export class ChatGateway {
     client.leave(data.chatId);
   }
 
-  toChat(data) {
+  toChat(data, to?) {
     console.log('toChat', data);
+    console.log(this.connectedUsers[data.userId].rooms.has(String(data.chatId)))
+    if (!this.connectedUsers[data.userId].rooms.has(String(data.chatId))) {
+      this.connectedUsers[data.userId].join(String(data.chatId));
+      this.connectedUsers[String(to)]?.join(String(data.chatId));
+    }
     this.server.to(String(data.chatId)).emit('message', data);
   }
 }
