@@ -53,6 +53,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
           });
           console.log('response', response);
           chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
+          chatStore.getChannelsPreview();
           return response;
         } catch (error) {
           setUpdatedGroup({ ...updatedGroup, image: '' });
@@ -67,6 +68,17 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
       },
     );
   }, [newImage, updatedGroup, chatStore.selectedChatId]);
+
+  const close = useCallback(() => {
+    setOpen(false);
+    setUpdatedGroup({
+      name: chatStore.chatInfo?.get(chatStore.selectedChatId)?.name || '',
+      visibility: chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility || '',
+      image: chatStore.chatInfo?.get(chatStore.selectedChatId)?.image || '',
+      password: '',
+    });
+    setNewImage(null);
+  }, [setOpen]);
 
   return (
     <AnimatePresence>
@@ -86,12 +98,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                 <span className='text-lg text-dark-cl'>Edit Group</span>
               </div>
               <div className='h-full   flex justify-end items-center'>
-                <div
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                  className='button'
-                >
+                <div onClick={close} className='button'>
                   <Close className='h-9 w-9 fill-dark-cl hover:fill-red-cl cursor-pointer mr-1' />
                 </div>
               </div>

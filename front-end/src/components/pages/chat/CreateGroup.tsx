@@ -65,6 +65,16 @@ function CreateGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
     );
   }, [newImage, newGroup, chatStore.selectedChatId]);
 
+  const close = useCallback(() => {
+    setOpen(false);
+    setNewGroup({
+      name: '',
+      visibility: 'PUBLIC',
+      image: defaultGroupImage,
+      password: '',
+    });
+  }, [setOpen]);
+
   return (
     <AnimatePresence>
       {open && (
@@ -83,12 +93,7 @@ function CreateGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                 <span className='text-lg text-dark-cl'>Create Group</span>
               </div>
               <div className='h-full   flex justify-end items-center'>
-                <div
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                  className='button'
-                >
+                <div onClick={close} className='button'>
                   <Close className='h-9 w-9 fill-dark-cl hover:fill-red-cl cursor-pointer mr-1' />
                 </div>
               </div>
@@ -198,8 +203,8 @@ function CreateGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                           password: e.target.value,
                         });
                       }}
-					  value={newGroup.password}
-					  required
+                      value={newGroup.password}
+                      required
                     />
                   </div>
                 )}

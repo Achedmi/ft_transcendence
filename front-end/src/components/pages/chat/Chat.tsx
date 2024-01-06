@@ -31,7 +31,7 @@ function ChatPreviewColumn({ chat, CurrentUserId }: { chat: ChatPreview; Current
       <div className='name and message flex flex-col max-w-sm'>
         <span className='name text-xl'>{chat.name}</span>
         <span className='message opacity-75 text-sm overflow-hidden truncate w-36'>{`${CurrentUserId == chat.lastMessage.sender.id ? 'You: ' : ''} ${
-          chat.lastMessage.content
+          chat.lastMessage.content ? chat.lastMessage.content : ''
         }`}</span>
       </div>
     </div>
