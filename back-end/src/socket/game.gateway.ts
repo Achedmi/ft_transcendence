@@ -268,6 +268,7 @@ export class GameGateway {
       //check if ball hits player 1
       if (game.ball.x <= game.player1.width && game.ball.y >= game.player1.y && game.ball.y <= game.player1.y + game.player1.height - game.ball.size) {
         game.ball.dx = 1;
+      
 
         //change ball direction
         if (game.ball.y < game.player1.y + game.player1.height / 2) {
@@ -278,7 +279,8 @@ export class GameGateway {
       }
 
       //check if ball hits player 2
-      if (game.ball.x >= (1280 - game.player1.width) && game.ball.y >= game.player2.y && game.ball.y <= game.player2.y + game.player2.height - game.ball.size) {
+      //
+      if (game.ball.x >= (1280 - game.player1.width - game.ball.size) && game.ball.y >= game.player2.y && game.ball.y <= game.player2.y + game.player2.height - game.ball.size) {
         game.ball.dx = -1;
 
         //change ball direction
