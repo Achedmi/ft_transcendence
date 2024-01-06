@@ -68,7 +68,7 @@ export class GameGateway {
         client.disconnect();
         return;
       }
-      const user = await this.userService.findUnique({ id: isValidToken.id });
+      const user = await this.userService.findUniqueWithoutSensitiveData({ id: isValidToken.id });
       console.log('############################################################online', user.username);
       await this.updateUserStatus(user.id, Status.ONLINE, client.id);
       client['user'] = user;
@@ -144,7 +144,7 @@ export class GameGateway {
         socketId: player1Socket.id,
         score: 0,
         x: 0,
-        y:  720 / 2 - 60,
+        y: 720 / 2 - 60,
         width: 20,
         height: 120,
       },
@@ -233,7 +233,7 @@ export class GameGateway {
 
   //
   async startGame(game, player1Socket, player2Socket) {
-    this.server.to(String(game.gameId)).emit('gameIsReady', game);
+    this.server.to(String(game.gameId)).emit('gameIsReady', { game, player1: player1Socket.user, player2: player2Socket.user });
 
     const interval = setInterval(async () => {
       if (player1Socket.disconnected || player2Socket.disconnected) {
@@ -280,8 +280,6 @@ export class GameGateway {
         game.ball.y = 720 / 2 - 10;
         game.ball.dx = 1;
         game.ball.dy = 1;
-
-        
       } else if (game.ball.x > 1280) {
         game.player1.score++;
         game.ball.x = 1280 / 2 - 10;
@@ -320,7 +318,7 @@ export class GameGateway {
     if (this.games[data.gameId].player2.userId === data.userId && data.direction === 'down') {
       this.games[data.gameId].player2.y += 20;
       if (this.games[data.gameId].player2.y > 720 - this.games[data.gameId].player2.height) {
-        this.games[data.gameId].player2.y =  720 - this.games[data.gameId].player2.height;
+        this.games[data.gameId].player2.y = 720 - this.games[data.gameId].player2.height;
       }
     }
   }
