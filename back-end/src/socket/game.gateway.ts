@@ -14,6 +14,8 @@ type Player = {
   y: number;
   width: number;
   height: number;
+  baseHeight: number;
+  baseWidth: number;
 };
 
 type Ball = {
@@ -150,6 +152,8 @@ export class GameGateway {
         y: 720 / 2 - 60,
         width: 20,
         height: 120,
+        baseHeight: 120,
+        baseWidth: 20,
       },
       player2: {
         userId: player2Socket['user'].id,
@@ -159,6 +163,8 @@ export class GameGateway {
         y: 720 / 2 - 60,
         width: 20,
         height: 120,
+        baseHeight: 120,
+        baseWidth: 20,
       },
       gameId: game.id,
       status: GameStatus.ONGOING,
@@ -256,15 +262,15 @@ export class GameGateway {
         return;
       }
 
-      game.ball.x += game.ball.dx * 5;
-      game.ball.y += game.ball.dy * 5;
+      game.ball.x += game.ball.dx * game.ball.speed;
+      game.ball.y += game.ball.dy * game.ball.speed;
 
       //check if ball hits player 1
-      if (game.ball.x < game.player1.width && game.ball.y >= game.player1.y && game.ball.y <= game.player1.y + 100) {
+      if (game.ball.x <= game.player1.width && game.ball.y >= game.player1.y && game.ball.y <= game.player1.y + game.player1.height - game.ball.size) {
         game.ball.dx = 1;
 
         //change ball direction
-        if (game.ball.y < game.player1.y + 60) {
+        if (game.ball.y < game.player1.y + game.player1.height / 2) {
           game.ball.dy = -1;
         } else {
           game.ball.dy = 1;
@@ -272,11 +278,11 @@ export class GameGateway {
       }
 
       //check if ball hits player 2
-      if (game.ball.x > 1280 - game.player1.width && game.ball.y >= game.player2.y && game.ball.y <= game.player2.y + 100) {
+      if (game.ball.x >= (1280 - game.player1.width) && game.ball.y >= game.player2.y && game.ball.y <= game.player2.y + game.player2.height - game.ball.size) {
         game.ball.dx = -1;
 
         //change ball direction
-        if (game.ball.y < game.player2.y + 60) {
+        if (game.ball.y < game.player2.y + game.player2.height / 2) {
           game.ball.dy = -1;
         } else {
           game.ball.dy = 1;
@@ -289,21 +295,35 @@ export class GameGateway {
       }
 
       // check if ball hits left or right wall and reset it if it does
+      if (game.ball.x < -20 || game.ball.x > 1280) {
       if (game.ball.x < -20) {
+        if (game.type === 'power'){
+          game.player1.height = game.player1.height + 50;
+          game.player2.height = game.player2.baseHeight;
+        }
         game.player2.score++;
-        game.ball.x = 1280 / 2 - 10;
-        game.ball.y = 720 / 2 - 10;
         game.ball.dx = 1;
-        game.ball.dy = 1;
       } else if (game.ball.x > 1280) {
+        if (game.type === 'power'){
+          game.player2.height = game.player2.height + 50;
+          game.player1.height = game.player1.baseHeight;
+        }
         game.player1.score++;
-        game.ball.x = 1280 / 2 - 10;
-        game.ball.y = 720 / 2 - 10;
         game.ball.dx = -1;
-        game.ball.dy = 1;
       }
+      game.ball.dy = Math.random() < 0.5 ? 1 : -1;
+      game.ball.x = 1280 / 2 - 10;
+      game.ball.y = 720 / 2 - 10;
+      game.player1.x = 0;
+      game.player1.y = 720 / 2 - 60;
+      game.player2.x = 1280 - 20;
+      game.player2.y = 720 / 2 - 60;
+    }
 
-      if (game.player1.score > 2 || game.player2.score > 2) {
+      if (game.type === "classic" && (game.player1.score > 2 || game.player2.score > 2)) {
+        await this.handlEndGame(game, player1Socket, player2Socket, interval);
+        return;
+      } else if (game.type === "power" && (game.player1.score > 4 || game.player2.score > 4)) {
         await this.handlEndGame(game, player1Socket, player2Socket, interval);
         return;
       }
