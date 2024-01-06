@@ -161,9 +161,7 @@ function PrivateRoutes() {
 
   useEffect(() => {
     socket?.game?.on('gameIsReady', (data: any) => {
-      console.log(data);
       game.setId(data.gameId);
-      game.setPlayersData(data.player1,  data.player2)
       console.log('gameIsReady');
       navigate('/play');
       setAbelToPlay(true);

@@ -231,9 +231,8 @@ export class GameGateway {
     }
   }
 
-  //
   async startGame(game, player1Socket, player2Socket) {
-    this.server.to(String(game.gameId)).emit('gameIsReady', { game, player1: player1Socket.user, player2: player2Socket.user });
+    this.server.to(String(game.gameId)).emit('gameIsReady', { game, player1: player1Socket.user, player2: player2Socket.user, gameId: game.gameId });
 
     const interval = setInterval(async () => {
       if (player1Socket.disconnected || player2Socket.disconnected) {
@@ -288,17 +287,16 @@ export class GameGateway {
         game.ball.dy = 1;
       }
 
-      // if (game.player1.score > 2 || game.player2.score > 2) {
-      //   await this.handlEndGame(game, player1Socket, player2Socket, interval);
-      //   return;
-      // }
+      if (game.player1.score > 2 || game.player2.score > 2) {
+        await this.handlEndGame(game, player1Socket, player2Socket, interval);
+        return;
+      }
       this.server.to(String(game.gameId)).emit('gameUpdates', game);
     }, 1000 / 60);
   }
 
   @SubscribeMessage('move')
   move(client: Socket, data: { userId: number; gameId: number; direction: string }) {
-    // console.log('move', data);
     if (this.games[data.gameId].player1.userId === data.userId && data.direction === 'up') {
       this.games[data.gameId].player1.y -= 20;
       if (this.games[data.gameId].player1.y < 0) {

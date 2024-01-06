@@ -19,34 +19,34 @@ function Game() {
     ctx.fillRect(ball.x, ball.y, ball.size, ball.size);
   }, []);
 
-  const renderGame = useCallback(
-    (ctx: CanvasRenderingContext2D) => {
+  const renderGame = useCallback(() => {
+    if (ctx) {
       ctx.clearRect(0, 0, 1280, 720);
       renderPlayer(ctx, game.player1, '#C84D46');
       renderPlayer(ctx, game.player2, '#67B9D3');
       renderBall(ctx, game.ball, 'white');
-    },
-    [game.player1, game.player2, game.ball],
-  );
-
-  const gameloop = useCallback(() => {
-    if (ctx) {
-      renderGame(ctx);
     }
-    requestAnimationFrame(gameloop);
-  }, [ctx, renderGame, game]);
+  }, [game.player1, ctx, game.player2, game.ball]);
 
   useEffect(() => {
-    if (canvas) {
-      gameloop();
+    let frameId: number;
+    if (ctx) {
+      renderGame();
+      frameId = requestAnimationFrame(renderGame);
+      return () => {
+        cancelAnimationFrame(frameId);
+      };
     }
+  }, [ctx, renderGame]);
+
+  useEffect(() => {
     socket?.game.on('gameUpdates', (gameData: GameData) => {
       game.updateGame(gameData);
     });
     return () => {
       socket?.game.off('gameUpdates');
     };
-  }, [socket?.game, game, gameloop, canvas]);
+  }, [socket?.game, game, canvas]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
