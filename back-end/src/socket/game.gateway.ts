@@ -233,7 +233,7 @@ export class GameGateway {
 
   //
   async startGame(game, player1Socket, player2Socket) {
-    this.server.to(String(game.gameId)).emit('gameIsReady', { game, player1: player1Socket.user, player2: player2Socket.user, gameId: game.gameId });
+    this.server.to(String(game.gameId)).emit('gameIsReady', { game, player1: player1Socket.user, player2: player2Socket.user });
 
     const interval = setInterval(async () => {
       if (player1Socket.disconnected || player2Socket.disconnected) {
@@ -241,8 +241,8 @@ export class GameGateway {
         return;
       }
 
-      // game.ball.x += game.ball.dx * 5;
-      // game.ball.y += game.ball.dy * 5;
+      game.ball.x += game.ball.dx * 5;
+      game.ball.y += game.ball.dy * 5;
 
       //check if ball hits player 1
       if (game.ball.x < game.player1.width && game.ball.y >= game.player1.y && game.ball.y <= game.player1.y + 100) {
@@ -288,10 +288,10 @@ export class GameGateway {
         game.ball.dy = 1;
       }
 
-      if (game.player1.score > 2 || game.player2.score > 2) {
-        await this.handlEndGame(game, player1Socket, player2Socket, interval);
-        return;
-      }
+      // if (game.player1.score > 2 || game.player2.score > 2) {
+      //   await this.handlEndGame(game, player1Socket, player2Socket, interval);
+      //   return;
+      // }
       this.server.to(String(game.gameId)).emit('gameUpdates', game);
     }, 1000 / 60);
   }

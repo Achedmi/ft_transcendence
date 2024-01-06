@@ -43,7 +43,6 @@ export interface GameStore {
   setId: (gameId: number) => void;
   updateGame: (gameData: GameData) => void;
   setPlayersData: (player1: Player, player2: Player) => void;
-  
 }
 
 const useGameStore: any = create<GameStore>((set) => ({
@@ -88,16 +87,16 @@ const useGameStore: any = create<GameStore>((set) => ({
   setPlayersData: (player1, player2) =>
     set((state) => ({
       ...state,
-      player1:{
+      player1: {
         ...state.player1,
         avatar: player1.avatar,
         displayName: player1.displayName,
       },
-      player2:{
+      player2: {
         ...state.player2,
         avatar: player2.avatar,
         displayName: player2.displayName,
-      }
+      },
     })),
   updateGame: (gameData: GameData) =>
     set((state) => ({
@@ -108,10 +107,12 @@ const useGameStore: any = create<GameStore>((set) => ({
       },
       player2: {
         ...state.player2,
-         ...gameData.player2,
+        ...gameData.player2,
       },
-      ball: gameData.ball,
-      id: gameData.gameId,
+      ball: {
+        ...state.ball,
+        ...gameData.ball,
+      },
     })),
 }));
 
