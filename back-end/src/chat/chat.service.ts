@@ -244,9 +244,14 @@ export class ChatService {
   async createChannel(owner: number, createChatDto: CreateChanneltDto, image: File) {
     if (createChatDto.visibility === Visibility.PROTECTED && !createChatDto.password) throw new BadRequestException('Password is required for protected chats');
     else if (createChatDto.visibility !== Visibility.PROTECTED && createChatDto.password) throw new BadRequestException('You can not set a password for this chat');
-    const { url } = await this.cloudinaryService.uploadImage(image).catch(() => {
-      throw new BadRequestException('Something went wrong.');
-    });
+    let url;
+    if (image) {
+      url = (
+        await this.cloudinaryService.uploadImage(image).catch(() => {
+          throw new BadRequestException('Something went wrong.');
+        })
+      ).url;
+    } else url = 'https://res.cloudinary.com/dwrysd8sm/image/upload/v1704553895/group_atuz74.png';
     createChatDto.password = await this.helpersService.hashPassword(createChatDto.password);
     return await this.prisma.chat.create({
       data: {
