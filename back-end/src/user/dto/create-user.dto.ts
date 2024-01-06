@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -6,5 +6,6 @@ export class CreateUserDto {
   @IsString()
   avatar: string;
   @IsString()
+  @MaxLength(12)
   displayName: string;
 }

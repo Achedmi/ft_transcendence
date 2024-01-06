@@ -70,10 +70,7 @@ function EditProfile(props: EditProfileProps) {
       <div className='flex justify-between items-center px-1 pb-2 border-b-2 border-solid border-dark-cl'>
         <Edit size='38' fillColor='#433650' />
         <h1 className='text-xl mt-2'>Edit Profile</h1>
-        <motion.div
-          className='hover:cursor-pointer'
-          onClick={() => props.setShowEditProfile(false)}
-        >
+        <motion.div className='hover:cursor-pointer' onClick={() => props.setShowEditProfile(false)}>
           <Close className='fill-dark-cl hover:fill-red-cl  h-10 w=10' />
         </motion.div>
       </div>
