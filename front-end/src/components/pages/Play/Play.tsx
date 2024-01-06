@@ -13,28 +13,31 @@ const Play = () => {
   const { socket, user, setUserData, abelToPlay, setAbelToPlay } = useUserStore();
   const [winner, setWinner] = useState<string>('');
   const game = useGameStore();
-  const handleClassicMode = useCallback(async () => {
-    const fetchedAbleToPlay = (await axios.get('/user/isAbleToPlay'))?.data;
-    if (fetchedAbleToPlay == abelToPlay) return;
-    console.log('isAbleToPlay', fetchedAbleToPlay);
-    setAbelToPlay(fetchedAbleToPlay);
-    if (!fetchedAbleToPlay) {
-      toast.promise(
-        async () => {
-          throw new Error();
-        },
-        toastConfig({
-          success: '',
-          pending: '',
-          error: "you're already playing or in queue.",
-        }),
-      );
-      return;
-    } else {
-      socket?.game?.emit('readyToPlay', { userId: user.id });
-      console.log('readyToPlay sent');
-    }
-  }, [abelToPlay, socket?.game]);
+  const handleGameMode = useCallback(
+    async (type: string) => {
+      const fetchedAbleToPlay = (await axios.get('/user/isAbleToPlay'))?.data;
+      if (fetchedAbleToPlay == abelToPlay) return;
+      console.log('isAbleToPlay', fetchedAbleToPlay);
+      setAbelToPlay(fetchedAbleToPlay);
+      if (!fetchedAbleToPlay) {
+        toast.promise(
+          async () => {
+            throw new Error();
+          },
+          toastConfig({
+            success: '',
+            pending: '',
+            error: "you're already playing or in queue.",
+          }),
+        );
+        return;
+      } else {
+        socket?.game?.emit('readyToPlay', { userId: user.id, type });
+        console.log('readyToPlay sent');
+      }
+    },
+    [abelToPlay, socket?.game],
+  );
 
   useEffect(() => {
     socket?.game?.on('updateStatus', (status: string) => {
@@ -124,7 +127,9 @@ const Play = () => {
               }}
               transition={{ type: 'spring', stiffness: 300, damping: 15 }}
               whileTap={{ scale: 1.1 }}
-              onClick={handleClassicMode}
+              onClick={() => {
+                handleGameMode('classic');
+              }}
             >
               <div className='bg-[#CACACA] rounded-full border-solid border-dark-cl border-[2px] md:border-[3px] absolute aspect-[1] h-[8%] top-[-5%] left-[50%]'>
                 <div className='bg-white rounded-full border-[2px] absolute aspect-[1] h-[30%] top-[5%] left-[15%]'></div>
@@ -143,6 +148,9 @@ const Play = () => {
                 transition: { type: 'spring', stiffness: 300, damping: 15 },
               }}
               transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              onClick={() => {
+                handleGameMode('power');
+              }}
             >
               <div className='bg-[#CACACA] rounded-full border-solid border-dark-cl border-[2px] md:border-[3px] absolute aspect-[1] h-[8%] top-[-5%] left-[30%]'>
                 <div className='bg-white rounded-full border-[2px] absolute aspect-[1] h-[30%] top-[5%] left-[15%]'></div>

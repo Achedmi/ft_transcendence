@@ -31,7 +31,8 @@ export class GameGateway {
   @WebSocketServer()
   server: Server;
 
-  private readyToPlayQueue = {};
+  private readyToPlayClassicQueue = {};
+  private readyToPlayPowerQueue = {};
 
   private games: {
     [gameId: number]: {
@@ -40,6 +41,7 @@ export class GameGateway {
       gameId: number;
       status: GameStatus;
       ball: Ball;
+      type: 'power' | 'classic';
     };
   } = {};
 
@@ -87,7 +89,8 @@ export class GameGateway {
     if (!client.user) return;
     console.log('Client disconnected from Game socket: ', client.user.username);
     delete this.connectedUsers[client.user.id];
-    delete this.readyToPlayQueue[client.user.id];
+    delete this.readyToPlayClassicQueue[client.user.id];
+    delete this.readyToPlayPowerQueue[client.user.id];
     await this.updateUserStatus(client.user.id, Status.OFFLINE, client.id);
   }
 
@@ -129,7 +132,7 @@ export class GameGateway {
     this.server.to(String(game.gameId)).emit('gameEnded', { winner: game.player1.score > game.player2.score ? player1Socket.user.username : player2Socket.user.username });
   }
 
-  async createGame(player1Socket, player2Socket) {
+  async createGame(player1Socket, player2Socket, type: 'power' | 'classic') {
     const game = await this.gameService.create({
       players: [player1Socket['user'].id, player2Socket['user'].id],
     });
@@ -167,6 +170,7 @@ export class GameGateway {
         size: 20,
         speed: 5,
       },
+      type,
     };
 
     player1Socket.join(String(game.id));
@@ -183,15 +187,27 @@ export class GameGateway {
   }
 
   @SubscribeMessage('readyToPlay')
-  async readyToPlay(client, data: { userId: number }) {
-    this.readyToPlayQueue[data.userId] = client;
+  async readyToPlay(client, data: { userId: number; type: string }) {
+    if (data.type === 'power') this.readyToPlayPowerQueue[data.userId] = client;
+    else this.readyToPlayClassicQueue[data.userId] = client;
 
     await this.updateUserStatus(data.userId, Status.INQUEUE, client.id);
 
-    if (Object.keys(this.readyToPlayQueue).length >= 2) {
-      const player1Socket = this.readyToPlayQueue[Object.keys(this.readyToPlayQueue)[0]];
-      const player2Socket = this.readyToPlayQueue[Object.keys(this.readyToPlayQueue)[1]];
-      this.readyToPlayQueue = {};
+    if (Object.keys(this.readyToPlayClassicQueue).length >= 2 || Object.keys(this.readyToPlayPowerQueue).length >= 2) {
+      let player1Socket;
+      let player2Socket;
+      let gameType;
+      if (Object.keys(this.readyToPlayClassicQueue).length >= 2) {
+        gameType = 'classic';
+        player1Socket = this.readyToPlayClassicQueue[Object.keys(this.readyToPlayClassicQueue)[0]];
+        player2Socket = this.readyToPlayClassicQueue[Object.keys(this.readyToPlayClassicQueue)[1]];
+        this.readyToPlayClassicQueue = {};
+      } else {
+        gameType = 'power';
+        player1Socket = this.readyToPlayPowerQueue[Object.keys(this.readyToPlayPowerQueue)[0]];
+        player2Socket = this.readyToPlayPowerQueue[Object.keys(this.readyToPlayPowerQueue)[1]];
+        this.readyToPlayPowerQueue = {};
+      }
 
       let count = 4;
       const uniqueRoom = String(uuidv4());
@@ -208,7 +224,7 @@ export class GameGateway {
           player1Socket.leave(uniqueRoom);
           player2Socket.leave(uniqueRoom);
 
-          const game = await this.createGame(player1Socket, player2Socket);
+          const game = await this.createGame(player1Socket, player2Socket, gameType);
 
           this.startGame(game, player1Socket, player2Socket);
 
@@ -360,7 +376,7 @@ export class GameGateway {
       const player1Socket = this.connectedUsers[data.inviteOwner];
       const player2Socket = this.connectedUsers[client.user.id];
 
-      const game = await this.createGame(player1Socket, player2Socket);
+      const game = await this.createGame(player1Socket, player2Socket, 'classic');
       console.log('newwww game', game);
 
       this.startGame(game, player1Socket, player2Socket);
