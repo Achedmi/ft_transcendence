@@ -163,6 +163,7 @@ function PrivateRoutes() {
     socket?.game?.on('gameIsReady', (data: any) => {
       game.setId(data.gameId);
       console.log('gameIsReady');
+      game.setPlayersData(data.player1, data.player2);
       navigate('/play');
       setAbelToPlay(true);
     });

@@ -20,19 +20,22 @@ function Game() {
   }, []);
 
   const renderGame = useCallback(() => {
-    if (ctx) {
+if (ctx) {
       ctx.clearRect(0, 0, 1280, 720);
+      ctx.fillStyle = "#695d71";
+      // draw the net
+      ctx.fillRect(640 - 5, 0, 10, 720);
       renderPlayer(ctx, game.player1, '#C84D46');
       renderPlayer(ctx, game.player2, '#67B9D3');
       renderBall(ctx, game.ball, 'white');
-    }
-  }, [game.player1, ctx, game.player2, game.ball]);
+}
+    }, [game.player1, ctx, game.player2, game.ball]);
 
   useEffect(() => {
-    let frameId: number;
+let frameId: number;
     if (ctx) {
       renderGame();
-      frameId = requestAnimationFrame(renderGame);
+    frameId = requestAnimationFrame(renderGame);
       return () => {
         cancelAnimationFrame(frameId);
       };
@@ -40,7 +43,7 @@ function Game() {
   }, [ctx, renderGame]);
 
   useEffect(() => {
-    socket?.game.on('gameUpdates', (gameData: GameData) => {
+        socket?.game.on('gameUpdates', (gameData: GameData) => {
       game.updateGame(gameData);
     });
     return () => {
@@ -68,9 +71,11 @@ function Game() {
 
   return (
     <div className='h-full w-full flex justify-center items-center '>
-      <canvas className='w-[85%] aspect-video  relative z-50 border-4 border-solid border-gray-cl/25' width={1280} height={720} ref={canvasRef}></canvas>
-      <div className='absolute w-[90%] aspect-video flex justify-center bg-dark-cl rounded-xl'>
-        <div className='w-[1%] h-[full] bg-gray-cl/25'></div>
+      <div className='w-[80%]  aspect-video flex  justify-center bg-dark-cl p-4 rounded-xl '>
+        <canvas className=' aspect-video  relative z-50 border-4 border-solid border-gray-cl/25 ' width={1280} height={720} ref={canvasRef}>
+        </canvas>
+          {/* <div className='w-[1%] h-[full] bg-gray-cl/25'></div> */}
+        
       </div>
     </div>
   );

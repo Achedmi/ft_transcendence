@@ -43,7 +43,10 @@ const Play = () => {
     });
 
     // socket?.game?.on('gameIsReady', (data: any) => {
+    //   console.log('gameIsReady', data);
     //   game.setId(data.gameId);
+
+    //   game.setPlayerData(data.player1, data.player2);
     // });
 
     socket?.game?.on('countdown', (count: number) => {
