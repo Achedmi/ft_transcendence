@@ -2,6 +2,8 @@ import { create } from 'zustand';
 
 export type Player = {
   socketId: string;
+  displayName: string;
+  avatar: string;
   userId: number;
   score: number;
   x: number;
@@ -40,6 +42,8 @@ export interface GameStore {
   setOpponentScore: (opponentScore: number) => void;
   setId: (gameId: number) => void;
   updateGame: (gameData: GameData) => void;
+  setPlayersData: (player1: Player, player2: Player) => void;
+  
 }
 
 const useGameStore: any = create<GameStore>((set) => ({
@@ -48,6 +52,8 @@ const useGameStore: any = create<GameStore>((set) => ({
   myScore: 0,
   opponentScore: 0,
   player1: {
+    avatar: '',
+    displayName: '',
     socketId: '',
     userId: 0,
     score: 0,
@@ -57,6 +63,8 @@ const useGameStore: any = create<GameStore>((set) => ({
     height: 120,
   },
   player2: {
+    avatar: '',
+    displayName: '',
     socketId: '',
     userId: 0,
     score: 0,
@@ -77,11 +85,31 @@ const useGameStore: any = create<GameStore>((set) => ({
   setOpponentScore: (opponentScore: number) => set((state) => ({ ...state, opponentScore })),
   setCounter: (counter: number) => set((state) => ({ ...state, counter })),
   setId: (id: number) => set((state) => ({ ...state, id })),
+  setPlayersData: (player1, player2) =>
+    set((state) => ({
+      ...state,
+      player1:{
+        ...state.player1,
+        avatar: player1.avatar,
+        displayName: player1.displayName,
+      },
+      player2:{
+        ...state.player2,
+        avatar: player2.avatar,
+        displayName: player2.displayName,
+      }
+    })),
   updateGame: (gameData: GameData) =>
     set((state) => ({
       ...state,
-      player1: gameData.player1,
-      player2: gameData.player2,
+      player1: {
+        ...state.player1,
+        ...gameData.player1,
+      },
+      player2: {
+        ...state.player2,
+         ...gameData.player2,
+      },
       ball: gameData.ball,
       id: gameData.gameId,
     })),
