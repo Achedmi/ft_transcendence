@@ -109,7 +109,9 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
           </>
         ) : (
           <>
-            {chatStore.chatInfo?.get(chatStore.selectedChatId)?.ownerId === user.id && <InfoButton text='Edit Group' Icon={Edit} onClick={handleEditGroup} />}
+            {/* {chatStore.chatInfo?.get(chatStore.selectedChatId)?.ownerId === user.id &&  */}
+            <InfoButton text='Edit Group' Icon={Edit} onClick={handleEditGroup} />
+            {/* } */}
             <InfoButton text={`Group Members (${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.length})`} Icon={GroupMembersIcon} />
           </>
         )}

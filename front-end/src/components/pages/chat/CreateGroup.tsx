@@ -1,72 +1,69 @@
-import { useCallback, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import useChatStore from '../../../stores/chatStore';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../utils/axios';
-import { AnimatePresence, motion } from 'framer-motion';
 import { Close, Edit } from '../../icons/icons';
 
-type updatedGroup = {
+type newGroup = {
   name: string;
   visibility: string;
   image: string;
   password: string;
 };
 
-function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
+const defaultGroupImage = 'https://i.imgur.com/IcOBgKC.png';
+
+function CreateGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
   const chatStore = useChatStore();
   const [newImage, setNewImage] = useState<File | null>(null);
 
-  const [updatedGroup, setUpdatedGroup] = useState<updatedGroup>({
-    name: chatStore.chatInfo?.get(chatStore.selectedChatId)?.name || '',
-    visibility: chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility || '',
-    image: chatStore.chatInfo?.get(chatStore.selectedChatId)?.image || '',
+  const [newGroup, setNewGroup] = useState<newGroup>({
+    name: '',
+    visibility: 'PUBLIC',
+    image: defaultGroupImage,
     password: '',
   });
 
-  const handleEditClick = useCallback(() => {
+  const uploadImage = useCallback(() => {
     const fileInput = document.getElementById('imgInput') as HTMLInputElement;
     if (fileInput) {
       fileInput.click();
     }
   }, []);
 
-  const visibilitySelected = (newVisibility: string, currentVisibility: string | undefined, tobeCompared: string) => {
-    console.log(newVisibility, currentVisibility, tobeCompared);
-    if (newVisibility == tobeCompared) return 'bg-dark-cl text-white';
-    if (!newVisibility && currentVisibility == tobeCompared) return 'bg-dark-cl text-white';
-    return 'hover:bg-dark-cl/25';
-  };
-
   const handleOnSave = useCallback(async () => {
+    console.log('newGroup', newGroup);
+    console.log('newImage', newImage);
     const formData = new FormData();
     if (newImage) formData.append('image', newImage);
-    if (updatedGroup.name) formData.append('name', updatedGroup.name);
-    if (updatedGroup.visibility) formData.append('visibility', updatedGroup.visibility);
-    if (updatedGroup.password) formData.append('password', updatedGroup.password);
+    if (newGroup.name) formData.append('name', newGroup.name);
+    if (newGroup.visibility) formData.append('visibility', newGroup.visibility);
+    if (newGroup.password) formData.append('password', newGroup.password);
     toast.promise(
       async () => {
         try {
-          const response = await axiosInstance.patch(`/chat/${chatStore.selectedChatId}`, formData, {
+          const response = await axiosInstance.post(`chat/create`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
           });
           console.log('response', response);
-          chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
+          chatStore.getChannelsPreview();
           return response;
         } catch (error) {
-          setUpdatedGroup({ ...updatedGroup, image: '' });
+          setNewGroup({ ...newGroup, image: defaultGroupImage });
           setNewImage(null);
           throw error;
         }
       },
       {
-        success: 'Group updated!',
-        error: 'Error updating group!',
-        pending: 'Updating group...',
+        success: 'Group created!',
+        error: 'Error creating group!',
+        pending: 'Creating group...',
       },
     );
-  }, [newImage, updatedGroup, chatStore.selectedChatId]);
+  }, [newImage, newGroup, chatStore.selectedChatId]);
 
   return (
     <AnimatePresence>
@@ -83,7 +80,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                 <Edit size='35' fillColor='#433650' />
               </div>
               <div className='h-full   flex justify-center items-center'>
-                <span className='text-lg text-dark-cl'>Edit Group</span>
+                <span className='text-lg text-dark-cl'>Create Group</span>
               </div>
               <div className='h-full   flex justify-end items-center'>
                 <div
@@ -107,7 +104,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                 <motion.div
                   className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-gray-800 flex  items-center justify-center bg-opacity-75
 		  hover:cursor-pointer hover:bg-opacity-100 hover:h-12 hover:w-12 transition-all'
-                  onClick={handleEditClick}
+                  onClick={uploadImage}
                 >
                   <input
                     type='file'
@@ -116,8 +113,8 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                     accept='image/*'
                     onChange={(e) => {
                       setNewImage(e.target.files![0]);
-                      setUpdatedGroup({
-                        ...updatedGroup,
+                      setNewGroup({
+                        ...newGroup,
                         image: URL.createObjectURL(e.target.files![0]),
                       });
                     }}
@@ -125,11 +122,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
 
                   <Edit size='28' fillColor='#ffffff' />
                 </motion.div>
-                <img
-                  src={updatedGroup.image || chatStore.chatInfo?.get(chatStore.selectedChatId)?.image}
-                  alt='group icon'
-                  className='object-cover aspect-square w-36 f-36 rounded-full mt-4 border-2 border-solid border-dark-cl'
-                />
+                <img src={newGroup.image} alt='group icon' className='object-cover aspect-square w-36 f-36 rounded-full mt-4 border-2 border-solid border-dark-cl' />
               </div>
               <div className=' flex flex-col text-dark-cl '>
                 <div className='flex  justify-center items-center gap-8 pt-4 '>
@@ -137,14 +130,16 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                   <input
                     className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64'
                     type='text'
-                    placeholder={chatStore.chatInfo?.get(chatStore.selectedChatId)?.name}
+                    placeholder={'Group Name'}
                     onChange={(e) => {
                       console.log(e.target.value);
-                      setUpdatedGroup({
-                        ...updatedGroup,
+                      setNewGroup({
+                        ...newGroup,
                         name: e.target.value,
                       });
                     }}
+                    value={newGroup.name}
+                    required
                   />
                 </div>
 
@@ -153,10 +148,10 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                   <div className=' h-10 py-1 w-64 flex justify-around items-center gap-2 '>
                     <div
                       className={` h-full w-full rounded-lg  text-sm flex justify-center items-center   cursor-pointer
-                       ${visibilitySelected(updatedGroup.visibility, chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility, 'PUBLIC')}`}
+                       ${newGroup.visibility == 'PUBLIC' ? 'bg-dark-cl text-white' : 'hover:bg-dark-cl/25'}`}
                       onClick={() => {
-                        setUpdatedGroup({
-                          ...updatedGroup,
+                        setNewGroup({
+                          ...newGroup,
                           visibility: 'PUBLIC',
                         });
                       }}
@@ -165,10 +160,10 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                     </div>
                     <div
                       className={` h-full w-full rounded-lg  text-sm flex justify-center items-center   cursor-pointer 
-                       ${visibilitySelected(updatedGroup.visibility, chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility, 'PRIVATE')}`}
+					   ${newGroup.visibility == 'PRIVATE' ? 'bg-dark-cl text-white' : 'hover:bg-dark-cl/25'}`}
                       onClick={() => {
-                        setUpdatedGroup({
-                          ...updatedGroup,
+                        setNewGroup({
+                          ...newGroup,
                           visibility: 'PRIVATE',
                         });
                       }}
@@ -176,11 +171,11 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                       Private
                     </div>
                     <div
-                      className={` h-full w-full rounded-lg  text-sm flex justify-center items-center   cursor-pointer 
-                       ${visibilitySelected(updatedGroup.visibility, chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility, 'PROTECTED')}`}
+                      className={` h-full w-full rounded-lg  text-sm flex justify-center items-center   cursor-pointer
+					   ${newGroup.visibility == 'PROTECTED' ? 'bg-dark-cl text-white' : 'hover:bg-dark-cl/25'}`}
                       onClick={() => {
-                        setUpdatedGroup({
-                          ...updatedGroup,
+                        setNewGroup({
+                          ...newGroup,
                           visibility: 'PROTECTED',
                         });
                       }}
@@ -190,7 +185,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                   </div>
                 </div>
 
-                {(updatedGroup.visibility == 'PROTECTED' || (!updatedGroup.visibility && chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility == 'PROTECTED')) && (
+                {newGroup.visibility == 'PROTECTED' && (
                   <div className='flex  justify-center items-center gap-8 pb-4'>
                     <div className='text-md w-10 text-center'>code:</div>
                     <input
@@ -198,11 +193,13 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                       className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden'
                       placeholder={'#459aBc'}
                       onChange={(e) => {
-                        setUpdatedGroup({
-                          ...updatedGroup,
+                        setNewGroup({
+                          ...newGroup,
                           password: e.target.value,
                         });
                       }}
+					  value={newGroup.password}
+					  required
                     />
                   </div>
                 )}
@@ -211,7 +208,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                 className='border-t-2 border-solid border-dark-cl  bg-dark-cl text-white sm:text-2xl rounded-b-lg w-full h-10  ml-auto mr-auto hover:bg-blue-cl transition-all'
                 type='submit'
               >
-                Save
+                Create
               </button>
             </form>
           </div>
@@ -221,4 +218,4 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
   );
 }
 
-export default EditGroup;
+export default CreateGroup;
