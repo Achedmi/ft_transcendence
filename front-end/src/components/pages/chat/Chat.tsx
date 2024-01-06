@@ -219,7 +219,7 @@ function Chat() {
                   value={message}
                 ></input>
                 <button className=' flex justify-center items-center' onClick={handleNewMessage}>
-                  <SendIcon className='fill-dark-cl w-10 h-10 mt-2 ' />
+                  <SendIcon className='fill-dark-cl w-10 h-10 mt-2 hover:fill-blue-cl' />
                 </button>
               </div>
             </div>

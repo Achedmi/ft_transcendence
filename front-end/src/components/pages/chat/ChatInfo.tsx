@@ -65,7 +65,7 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   const navigate = useNavigate();
 
   const handleGotToProfile = useCallback(() => {
-    navigate(`/user/${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id != chatStore.currentUserId)?.username}`);
+    navigate(`/user/${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id != user.id)?.username}`);
   }, [chatStore.chatInfo?.get(chatStore.selectedChatId)?.members, navigate]);
 
   const sendGameInvite = useCallback(
