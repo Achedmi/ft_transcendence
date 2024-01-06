@@ -50,6 +50,8 @@ function CreateGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
           });
           console.log('response', response);
           chatStore.getChannelsPreview();
+          setOpen(false);
+          chatStore.setSelectedChatId(response.data.id);
           return response;
         } catch (error) {
           setNewGroup({ ...newGroup, image: defaultGroupImage });

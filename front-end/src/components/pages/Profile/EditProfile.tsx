@@ -51,6 +51,7 @@ function EditProfile(props: EditProfileProps) {
           });
           console.log(response);
           setUserData(response.data);
+          props.setShowEditProfile(false);
           return response;
         } catch (error) {
           setNewProfile({ ...newProfile, ...user });

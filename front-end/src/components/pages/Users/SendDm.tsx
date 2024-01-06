@@ -44,6 +44,11 @@ function SendDm({ open, setOpen, id }: { open: boolean; setOpen: any; id: number
     }
   }, [message, id, chatStore.DmsPreview, chatStore.selectedChatId, chatStore, setMessage, setOpen]);
 
+  const close = useCallback(() => {
+    setOpen(false);
+    setMessage('');
+  }, [setOpen, setMessage]);
+
   return (
     <AnimatePresence>
       {open && (
@@ -62,12 +67,7 @@ function SendDm({ open, setOpen, id }: { open: boolean; setOpen: any; id: number
                 <span className='text-lg text-dark-cl'>Send DM</span>
               </div>
               <div className='h-full   flex justify-end items-center'>
-                <div
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                  className='button'
-                >
+                <div onClick={close} className='button'>
                   <Close className='h-9 w-9 fill-dark-cl hover:fill-red-cl cursor-pointer mr-1' />
                 </div>
               </div>
@@ -90,6 +90,7 @@ function SendDm({ open, setOpen, id }: { open: boolean; setOpen: any; id: number
                         setMessage(e.target.value);
                       }}
                       value={message}
+                      autoFocus
                     />
                     <button type='submit'>
                       <SendIcon className='fill-dark-cl w-10 h-10 mt-2 hover:fill-blue-cl' />

@@ -126,11 +126,13 @@ const useChatStore = create<ChatState>()((set) => {
     },
     getMessages: async ({ queryKey }: any) => {
       const [_, id] = queryKey;
-      if (useChatStore.getState().messages?.has(id)) return;
-      const messages = await axios.get(`/chat/getChatMessages/${id}`);
-      set({
-        messages: useChatStore.getState().messages?.set(id, messages.data),
-      });
+      if (id) {
+        if (useChatStore.getState().messages?.has(id)) return;
+        const messages = await axios.get(`/chat/getChatMessages/${id}`);
+        set({
+          messages: useChatStore.getState().messages?.set(id, messages.data),
+        });
+      }
     },
     getChatInfo: async ({ queryKey }: any) => {
       const [_, id] = queryKey;

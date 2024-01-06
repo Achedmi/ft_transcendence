@@ -88,35 +88,41 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
 
   return (
     <div className='RIGHT hidden bg-[#ECE8E8] border-2 border-solid border-dark-cl rounded-2xl lg:flex w-72 m-2  lg:flex-col  overflow-hidden overflow-y-auto scrollbar-none'>
-      <div className='flex justify-center mt-10'>
-        <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl object-cover' src={chatStore.chatInfo?.get(chatStore.selectedChatId)?.image} alt='pfp' />
-      </div>
-      <div className='flex flex-col items-center justify-center'>
-        <span className='mt-4 text-2xl'>{chatStore.chatInfo?.get(chatStore.selectedChatId)?.name}</span>
-      </div>
-      <div className='flex flex-wrap gap-3 mt-4'>
-        {chatStore.chatInfo?.get(chatStore.selectedChatId)?.type == ChatType.DM ? (
-          <>
-            <InfoButton text='Profile' Icon={Profile} onClick={handleGotToProfile} />
-            <InfoButton text='Block' Icon={BlockIcon} />
-            <InfoButton
-              text='Invite to play'
-              Icon={Game}
-              onClick={() => {
-                sendGameInvite(chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id != user.id)?.id);
-              }}
-            />
-          </>
-        ) : (
-          <>
-            {/* {chatStore.chatInfo?.get(chatStore.selectedChatId)?.ownerId === user.id &&  */}
-            <InfoButton text='Edit Group' Icon={Edit} onClick={handleEditGroup} />
-            {/* } */}
-            <InfoButton text={`Group Members (${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.length})`} Icon={GroupMembersIcon} />
-          </>
-        )}
-      </div>
-      {chatStore.chatInfo?.get(chatStore.selectedChatId)?.type == ChatType.CHANNEL && <GroupMembers members={chatStore.chatInfo?.get(chatStore.selectedChatId)?.members} />}
+      {chatStore.chatInfoLoading ? (
+        <div className='h-full w-full bg-red-cl flex justify-center items-center'>
+          <SyncLoader color='#433650' />
+        </div>
+      ) : (
+        <>
+          <div className='flex justify-center mt-10'>
+            <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl object-cover' src={chatStore.chatInfo?.get(chatStore.selectedChatId)?.image} alt='pfp' />
+          </div>
+          <div className='flex flex-col items-center justify-center'>
+            <span className='mt-4 text-2xl'>{chatStore.chatInfo?.get(chatStore.selectedChatId)?.name}</span>
+          </div>
+          <div className='flex flex-wrap gap-3 mt-4'>
+            {chatStore.chatInfo?.get(chatStore.selectedChatId)?.type == ChatType.DM ? (
+              <>
+                <InfoButton text='Profile' Icon={Profile} onClick={handleGotToProfile} />
+                <InfoButton text='Block' Icon={BlockIcon} />
+                <InfoButton
+                  text='Invite to play'
+                  Icon={Game}
+                  onClick={() => {
+                    sendGameInvite(chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id != user.id)?.id);
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                {chatStore.chatInfo?.get(chatStore.selectedChatId)?.ownerId === user.id && <InfoButton text='Edit Group' Icon={Edit} onClick={handleEditGroup} />}
+                <InfoButton text={`Group Members (${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.length})`} Icon={GroupMembersIcon} />
+              </>
+            )}
+          </div>
+          {chatStore.chatInfo?.get(chatStore.selectedChatId)?.type == ChatType.CHANNEL && <GroupMembers members={chatStore.chatInfo?.get(chatStore.selectedChatId)?.members} />}
+        </>
+      )}
     </div>
   );
 }

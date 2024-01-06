@@ -9,10 +9,11 @@ import ChatInfo from './ChatInfo';
 import { SendIcon } from '../../icons/icons';
 import CreateGroup from './CreateGroup';
 
-function ChatPreviewColumn({ chat, CurrentUserId }: { chat: ChatPreview; CurrentUserId: number }) {
+function ChatPreviewColumn({ chat, CurrentUserId, clearMessage }: { chat: ChatPreview; CurrentUserId: number; clearMessage: any }) {
   const chatStore = useChatStore();
   const handleChatClick = useCallback(() => {
     chatStore.setSelectedChatId(chat.id);
+    clearMessage();
   }, [chatStore, chat.id]);
 
   return (
@@ -38,7 +39,7 @@ function ChatPreviewColumn({ chat, CurrentUserId }: { chat: ChatPreview; Current
   );
 }
 
-function ChatPreviews({ currentUserId, chatType }: { currentUserId: number; chatType: ChatType } | any) {
+function ChatPreviews({ currentUserId, chatType, clearMessage }: { currentUserId: number; chatType: ChatType; clearMessage: any } | any) {
   const chatStore = useChatStore();
 
   return (
@@ -51,10 +52,10 @@ function ChatPreviews({ currentUserId, chatType }: { currentUserId: number; chat
         <div className='flex flex-col gap-2'>
           {chatType == ChatType.DM
             ? chatStore.DmsPreview.map((chat: ChatPreview) => {
-                return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} />;
+                return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} clearMessage={clearMessage} />;
               })
             : chatStore.ChannelsPreview.map((chat: ChatPreview) => {
-                return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} />;
+                return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} clearMessage={clearMessage} />;
               })}
         </div>
       )}
@@ -151,6 +152,9 @@ function Chat() {
       setMessage('');
     }
   }, [message]);
+  const clearMessage = useCallback(() => {
+    setMessage('');
+  }, [setMessage]);
 
   return (
     <div className='h-full w-full bg-gray-cl border-solid border-[4px] border-dark-cl rounded-xl  flex justify-center items-center relative'>
@@ -190,7 +194,7 @@ function Chat() {
             </div>
           </div>
           <div className='bg-[#ECE8E8] w-full h-full rounded-3xl border-2 border-solid border-dark-cl flex flex-col overflow-y-auto scrollbar-none '>
-            <ChatPreviews currentUserId={user.id} chatType={chatType} />
+            <ChatPreviews currentUserId={user.id} chatType={chatType} clearMessage={clearMessage} />
           </div>
         </div>
 
@@ -231,6 +235,7 @@ function Chat() {
                   className='px-7 w-full h-full rounded-3xl bg-[#ECE8E8] focus:outline-none'
                   placeholder='Write a reply...'
                   value={message}
+                  autoFocus
                 ></input>
                 <button className=' flex justify-center items-center' onClick={handleNewMessage}>
                   <SendIcon className='fill-dark-cl w-10 h-10 mt-2 hover:fill-blue-cl' />
