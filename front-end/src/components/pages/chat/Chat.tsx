@@ -57,6 +57,7 @@ function ChatPreviews({ currentUserId, chatType, clearMessage }: { currentUserId
             : chatStore.ChannelsPreview.map((chat: ChatPreview) => {
                 return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} clearMessage={clearMessage} />;
               })}
+          <div className='fillspace h-10'></div>
         </div>
       )}
     </>

@@ -1,42 +1,90 @@
 import { useNavigate } from 'react-router-dom';
 import useChatStore, { ChatType, Member } from '../../../stores/chatStore';
-import { useCallback, useEffect } from 'react';
-import { BlockIcon, Edit, Game, GroupMembersIcon, Profile } from '../../icons/icons';
+import { useCallback, useEffect, useState } from 'react';
+import { AdminIcon, BlockIcon, CrownIcon, Edit, Game, GroupMembersIcon, KickIcon, MuteIcon, Profile } from '../../icons/icons';
 import { useQuery } from 'react-query';
 import { SyncLoader } from 'react-spinners';
 import { useUserStore } from '../../../stores/userStore';
+import { AnimatePresence, motion } from 'framer-motion';
 
-// function ActionDropDown({ member, currentUser }: { member: Member; currentUser: Member }) {
-//   return <div className='h-20 w-36 bg-blue-cl border-2 border-solid border-dark-cl rounded-lg absolute right-1 top-8 z-50'></div>;
-// }
+function ActionDropDown({ member }: { member: Member }) {
+  return (
+    <motion.div
+      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: -20 }}
+      exit={{ opacity: 0, y: -20 }}
+      className=' bg-gray-cl border-2 border-solid border-dark-cl rounded-lg absolute right-2 top-11 z-50 rounded-tr-none'
+    >
+      <ul>
+        <li className='flex gap-2  p-1 justify-around items-center border-b-2 border-solid border-dark-cl group hover:bg-dark-cl cursor-pointer'>
+          <Game className='h-6 w-6  fill-dark-cl group-hover:fill-white' />
+          <span className='text-sm text-dark-cl group-hover:text-white'>Invite to game</span>
+        </li>
+        <li className='flex gap-2  p-1 justify-around items-center border-b-2 border-solid border-dark-cl group hover:bg-dark-cl cursor-pointer'>
+          <CrownIcon className='ml-1 h-5 w-5  fill-dark-cl group-hover:fill-white' />
+          <span className='text-sm text-dark-cl group-hover:text-white'>Give Ownership</span>
+        </li>
+        <li className='flex gap-2  p-1 justify-around items-center border-b-2 border-solid border-dark-cl group hover:bg-dark-cl cursor-pointer'>
+          <AdminIcon className='h-6 w-6  fill-dark-cl group-hover:fill-white' />
+          <span className='text-sm text-dark-cl group-hover:text-white mr-2'>Make Admin</span>
+        </li>
+        <li className='flex gap-2  p-1 justify-start items-center border-b-2 border-solid border-dark-cl group hover:bg-dark-cl cursor-pointer'>
+          <KickIcon className='h-5 w-5  ml-1 fill-dark-cl group-hover:fill-white' />
+          <span className='text-sm text-dark-cl group-hover:text-white ml-6'>Kick</span>
+        </li>
+        <li className='flex gap-2  p-1 justify-start items-center border-b-2 border-solid border-dark-cl group hover:bg-dark-cl cursor-pointer'>
+          <BlockIcon className='h-6 w-6  ml-1 fill-dark-cl group-hover:fill-white' />
+          <span className='text-sm text-dark-cl group-hover:text-white ml-6'>Ban</span>
+        </li>
+        <li className='flex gap-2  p-1 justify-start items-center  group hover:bg-dark-cl cursor-pointer'>
+          <MuteIcon className='h-6 w-6  ml-1 fill-dark-cl group-hover:fill-white' />
+          <span className='text-sm text-dark-cl group-hover:text-white ml-6'>Mute</span>
+        </li>
+      </ul>
+    </motion.div>
+  );
+}
+
+function GroupMemberCol({ member, activeDropDown, setActiveDropDown }: { member: Member; activeDropDown: number; setActiveDropDown: any }) {
+  const navigate = useNavigate();
+  const [openActionsDropDown, setOpenActionsDropDown] = useState(false);
+  return (
+    <div key={member.id} className='hover:bg-gray-cl h-12 w-full flex justify-between items-center relative rounded-xl'>
+      <div
+        className='flex justify-center items-center cursor-pointer '
+        onClick={() => {
+          navigate(`/user/${member.username}`);
+        }}
+      >
+        <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl object-cover' src={member.avatar} />
+        <div className='flex flex-col  ml-2'>
+          <span>{member.displayName}</span>
+          {member.isowner == 'true' ? <span className='text-sm text-red-cl'>Owner</span> : <span className='text-sm text-blue-cl'>{member.isAdmin ? 'Admin' : ''} </span>}
+        </div>
+      </div>
+      <span
+        onClick={() => {
+          setActiveDropDown(member.id);
+          setOpenActionsDropDown(activeDropDown == member.id ? false : true);
+        }}
+        className='text-3xl cursor-pointer absolute right-1  select-none '
+      >
+        {openActionsDropDown && activeDropDown == member.id ? '⌅' : '⌄'}
+      </span>
+      <AnimatePresence>{openActionsDropDown && activeDropDown == member.id && <ActionDropDown member={member} />}</AnimatePresence>
+    </div>
+  );
+}
 
 function GroupMembers({ members }: { members: Member[] | undefined }) {
-  const navigate = useNavigate();
-
+  const [activeDropDown, setActiveDropDown] = useState(0);
   useEffect(() => {
     console.log('members', members);
   }, [members]);
   return (
     <div className='h-full m-3 ml-2 flex flex-col gap-2'>
       {members?.map((member: any) => {
-        return (
-          <div key={member.id} className='hover:bg-gray-cl h-12 w-full flex justify-between items-center relative rounded-xl'>
-            <div
-              className='flex justify-center items-center cursor-pointer '
-              onClick={() => {
-                navigate(`/user/${member.username}`);
-              }}
-            >
-              <img className='h-10 w-10 rounded-full border-2 border-solid border-dark-cl object-cover' src={member.avatar} />
-              <div className='flex flex-col  ml-2'>
-                <span>{member.displayName}</span>
-                {member.isowner == 'true' ? <span className='text-sm text-red-cl'>Owner</span> : <span className='text-sm text-blue-cl'>{member.isAdmin ? 'Admin' : ''} </span>}
-              </div>
-            </div>
-            <span className='text-4xl cursor-pointer absolute right-1 top-0'>...</span>
-            {/* <ActionDropDown member={member} currentUser={members[0]}  ⌄ /> */}
-          </div>
-        );
+        return <GroupMemberCol member={member} activeDropDown={activeDropDown} setActiveDropDown={setActiveDropDown} />;
       })}
     </div>
   );

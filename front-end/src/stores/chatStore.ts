@@ -11,7 +11,7 @@ export interface Member {
   username?: string;
   avatar?: string;
   displayName?: string;
-  isowner?: boolean;
+  isowner?: string;
   isAdmin?: boolean;
   isMuted?: boolean;
 }
