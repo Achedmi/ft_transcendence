@@ -12,6 +12,7 @@ import { AddMemberDto } from './dto/addMember.dto';
 import { KickMemberDto } from './dto/kickMember.dto';
 import { MuteDto } from './dto/mute.dto';
 import { BlockeDto } from './dto/block.dto';
+import { BanMemberDto } from './dto/banMember.dto';
 
 @Injectable()
 export class ChatService {
@@ -127,6 +128,7 @@ export class ChatService {
       where: { id },
     });
     if (chat) {
+      // console.log(await this.prisma.chat.findUnique({ where: { id }, select: { members: true } }));
       chat['members'] = await this.getChatMembers(id);
       if (chat.type === ChatType.DM) {
         const otherUser = chat['members'].find((member) => member.userId !== me);
@@ -283,8 +285,8 @@ export class ChatService {
   }
 
   async updateChannel(me: number, id: number, updateChatDto: UpdateChatDto, image?: File) {
-    const isAbleToUpdate = await this.isAdminOrOwner(me, id);
-    if (!isAbleToUpdate) throw new BadRequestException('You are not the owner or the Admin of this chat');
+    const isAbleToUpdate = await this.isOwner(me, id);
+    if (!isAbleToUpdate) throw new BadRequestException('You are not the owner of this chat');
     if (updateChatDto.visibility === Visibility.PROTECTED && !updateChatDto.password) throw new BadRequestException('Password is required for protected chats');
 
     const chat = await this.prisma.chat.findFirst({
@@ -391,8 +393,8 @@ export class ChatService {
 
   async addAdmin(me: number, addAdminDto: AddAdmindDto) {
     if (me === addAdminDto.userId) throw new BadRequestException('You can not add yourself');
-    const isAbleto = await this.isAdminOrOwner(me, addAdminDto.chatId);
-    if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
+    const isAbleto = await this.isOwner(me, addAdminDto.chatId);
+    if (!isAbleto) throw new BadRequestException('You are not the owner of this chat');
     const isUserInChat = await this.isUserInChat(addAdminDto.userId, addAdminDto.chatId);
     if (!isUserInChat) throw new BadRequestException('User is not in this chat');
     return await this.prisma.userChat.update({
@@ -432,6 +434,13 @@ export class ChatService {
     if (me === addMemberDto.userId) throw new BadRequestException('You can not add yourself');
     const isAbleto = await this.isAdminOrOwner(me, addMemberDto.chatId);
     if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
+
+    const isUserInChat = await this.isUserInChat(addMemberDto.userId, addMemberDto.chatId);
+    if (isUserInChat) throw new BadRequestException('User is already in this chat');
+
+    const isBanned = await this.isBanned(addMemberDto.userId, addMemberDto.chatId);
+    if (isBanned) throw new BadRequestException('User is banned from this chat');
+
     await this.prisma.userChat.create({
       data: {
         userId: addMemberDto.userId,
@@ -471,12 +480,93 @@ export class ChatService {
         },
       },
     });
+
     await this.prisma.chat.update({
       where: { id: kickMemberDto.chatId },
       data: {
         members: {
           disconnect: {
             id: kickMemberDto.userId,
+          },
+        },
+      },
+    });
+
+    return chat;
+  }
+
+  async banMember(me: number, banMemberDto: BanMemberDto) {
+    if (me === banMemberDto.userId) throw new BadRequestException('You can not ban yourself');
+
+    const isAbleto = await this.isAdminOrOwner(me, banMemberDto.chatId);
+    if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
+
+    const isOwner = await this.isOwner(banMemberDto.userId, banMemberDto.chatId);
+    if (isOwner) throw new BadRequestException('You can not ban the owner of this chat');
+
+    const isUserInChat = await this.isUserInChat(banMemberDto.userId, banMemberDto.chatId);
+    if (!isUserInChat) throw new BadRequestException('User is not in this chat');
+
+    console.log('+++++++++++++++++++++++++');
+    const chat = await this.prisma.chat.update({
+      where: { id: banMemberDto.chatId },
+      data: {
+        bannedUsers: {
+          connect: {
+            id: banMemberDto.userId,
+          },
+        },
+        members: {
+          disconnect: {
+            id: banMemberDto.userId,
+          },
+        },
+      },
+    });
+
+    await this.prisma.userChat.delete({
+      where: {
+        userId_chatId: {
+          userId: banMemberDto.userId,
+          chatId: banMemberDto.chatId,
+        },
+      },
+    });
+
+    return chat;
+  }
+
+  async unbanMember(me: number, unbanMemberDto: BanMemberDto) {
+    if (me === unbanMemberDto.userId) throw new BadRequestException('You can not unban yourself');
+
+    const isAbleto = await this.isAdminOrOwner(me, unbanMemberDto.chatId);
+    if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
+
+    // const isUserInChat = await this.isUserInChat(unbanMemberDto.userId, unbanMemberDto.chatId);
+    // if (!isUserInChat) throw new BadRequestException('User is not in this chat');
+
+    const chat = await this.prisma.chat.update({
+      where: { id: unbanMemberDto.chatId },
+      data: {
+        bannedUsers: {
+          disconnect: {
+            id: unbanMemberDto.userId,
+          },
+        },
+      },
+    });
+
+    return chat;
+  }
+  //
+
+  async isBanned(me: number, chatId: number) {
+    const chat = await this.prisma.chat.findUnique({
+      where: {
+        id: chatId,
+        bannedUsers: {
+          some: {
+            id: me,
           },
         },
       },

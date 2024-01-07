@@ -54,6 +54,7 @@ model Chat {
   image String?
   password String?
   createdAt DateTime @default(now())
+  bannedUsers User[] @relation("bannedUsers")
   owner User? @relation("owner", fields: [ownerId], references: [id])
   members User[]
   messages Message[]
@@ -113,6 +114,9 @@ model User {
   
   bio String? @default("Nothing to see here...")
   createdAt DateTime @default(now())
+  
+  bannedFrom Chat[] @relation("bannedUsers")
+  
   player1 Game[] @relation("player1")
   player2 Game[] @relation("player2")
   winnerPlayer Game[] @relation("winnerPlayer")
@@ -127,6 +131,7 @@ model User {
   blocking2 Blocking[] @relation("user2")
   BlockedBy Blocking[] @relation("BlockedBy")
   chatUser UserChat[]
+  
 }
 
 model Game {

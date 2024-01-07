@@ -30,6 +30,7 @@ import { KickMemberDto } from './dto/kickMember.dto';
 import { MuteDto } from './dto/mute.dto';
 import { BlockeDto } from './dto/block.dto';
 import { GetChatMessagesDto } from './dto/getChatMessages.dto';
+import { BanMemberDto } from './dto/banMember.dto';
 
 @Controller('chat')
 @UseGuards(TFAGuard)
@@ -54,6 +55,16 @@ export class ChatController {
   @Post('kickMember')
   async kickMember(@GetCurrent('id') me, @Body() kickMemberDto: KickMemberDto) {
     return await this.chatService.kickMember(me, kickMemberDto);
+  }
+
+  @Post('banMember')
+  async banMember(@GetCurrent('id') me, @Body() banMemberDto: BanMemberDto) {
+    return await this.chatService.banMember(me, banMemberDto);
+  }
+
+  @Post('unbanMember')
+  async unbanMember(@GetCurrent('id') me, @Body() unbanMemberDto: KickMemberDto) {
+    return await this.chatService.unbanMember(me, unbanMemberDto);
   }
 
   @UseInterceptors(FileInterceptor('image'))
