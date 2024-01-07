@@ -49,7 +49,7 @@ function ChatPreviews({ currentUserId, chatType, clearMessage }: { currentUserId
           <SyncLoader color='#433650' />
         </div>
       ) : (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 pb-10'>
           {chatType == ChatType.DM
             ? chatStore.DmsPreview.map((chat: ChatPreview) => {
                 return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} clearMessage={clearMessage} />;
@@ -57,7 +57,7 @@ function ChatPreviews({ currentUserId, chatType, clearMessage }: { currentUserId
             : chatStore.ChannelsPreview.map((chat: ChatPreview) => {
                 return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} clearMessage={clearMessage} />;
               })}
-          <div className='fillspace h-10'></div>
+          {/* <div className='fillspace h-10'></div> */}
         </div>
       )}
     </>

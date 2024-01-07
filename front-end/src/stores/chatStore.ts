@@ -201,6 +201,7 @@ const useChatStore = create<ChatState>()((set) => {
       }
     },
     updateChatInfo: (chatId: number, chatInfo: ChatInfo) => {
+      set({ chatInfoLoading: true });
       const chatInfos = useChatStore.getState().chatInfo;
       if (chatInfos) {
         set({
@@ -211,8 +212,8 @@ const useChatStore = create<ChatState>()((set) => {
             image: chatInfo.image,
             visibility: chatInfo.visibility,
             password: chatInfo.password,
-            members: chatInfo.members?.map((member) => ({
-              id: member.id,
+            members: chatInfo.members?.map((member: any) => ({
+              id: member.userId,
               username: member.username,
               avatar: member.avatar,
               displayName: member.displayName,
@@ -224,6 +225,7 @@ const useChatStore = create<ChatState>()((set) => {
           }),
         });
       }
+      set({ chatInfoLoading: false });
     },
   };
 });

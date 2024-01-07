@@ -24,7 +24,7 @@ export class MessageService {
     });
 
     const isMuted = await this.chatService.isMuted(from, chat.id);
-    if (isMuted) throw new BadRequestException(`You are muted in this chat until ${isMuted}`);
+    if (isMuted) throw new BadRequestException(`muted until ${isMuted}`);
 
     if (chat.type === ChatType.DM) {
       const blockedBy = await this.chatService.isBlocked(from, chat.members[0].id);
