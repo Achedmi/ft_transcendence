@@ -6,6 +6,26 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 
+type Player = {
+  socketId: string;
+  userId: number;
+  score: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  baseHeight: number;
+  baseWidth: number;
+};
+
+type Ball = {
+  x: number;
+  y: number;
+  dx: number;
+  dy: number;
+  size: number;
+  speed: number;
+};
 @WebSocketGateway({ namespace: '/game', cors: true, origins: '*' })
 export class GameGateway {
   constructor(private readonly gameService: GameService, private readonly userService: UserService, private readonly jwtService: JwtService) {}
@@ -13,22 +33,17 @@ export class GameGateway {
   @WebSocketServer()
   server: Server;
 
-  private readyToPlayQueue = {};
+  private readyToPlayClassicQueue = {};
+  private readyToPlayPowerQueue = {};
 
   private games: {
     [gameId: number]: {
-      player1: {
-        userId: number;
-        socketId: string;
-        score: number;
-      };
-      player2: {
-        userId: number;
-        socketId: string;
-        score: number;
-      };
+      player1: Player;
+      player2: Player;
       gameId: number;
       status: GameStatus;
+      ball: Ball;
+      type: 'power' | 'classic';
     };
   } = {};
 
@@ -53,11 +68,11 @@ export class GameGateway {
       const token = client.handshake.headers.cookie?.split('userAT=')[1]?.split('; ')[0];
       const isValidToken = this.jwtService.verify(token, { publicKey: process.env.JWT_ACCESS_SECRET });
       if (!isValidToken || this.connectedUsers[isValidToken.id]) {
-        console.log('----------', isValidToken?.usernae);
+        console.log('stuck in connected Users', this.connectedUsers[isValidToken.id]?.user || isValidToken?.usernae);
         client.disconnect();
         return;
       }
-      const user = await this.userService.findUnique({ id: isValidToken.id });
+      const user = await this.userService.findUniqueWithoutSensitiveData({ id: isValidToken.id });
       console.log('############################################################online', user.username);
       await this.updateUserStatus(user.id, Status.ONLINE, client.id);
       client['user'] = user;
@@ -76,7 +91,8 @@ export class GameGateway {
     if (!client.user) return;
     console.log('Client disconnected from Game socket: ', client.user.username);
     delete this.connectedUsers[client.user.id];
-    delete this.readyToPlayQueue[client.user.id];
+    delete this.readyToPlayClassicQueue[client.user.id];
+    delete this.readyToPlayPowerQueue[client.user.id];
     await this.updateUserStatus(client.user.id, Status.OFFLINE, client.id);
   }
 
@@ -118,7 +134,7 @@ export class GameGateway {
     this.server.to(String(game.gameId)).emit('gameEnded', { winner: game.player1.score > game.player2.score ? player1Socket.user.username : player2Socket.user.username });
   }
 
-  async createGame(player1Socket, player2Socket) {
+  async createGame(player1Socket, player2Socket, type: 'power' | 'classic') {
     const game = await this.gameService.create({
       players: [player1Socket['user'].id, player2Socket['user'].id],
     });
@@ -132,14 +148,35 @@ export class GameGateway {
         userId: player1Socket['user'].id,
         socketId: player1Socket.id,
         score: 0,
+        x: 0,
+        y: 720 / 2 - 60,
+        width: 20,
+        height: 120,
+        baseHeight: 120,
+        baseWidth: 20,
       },
       player2: {
         userId: player2Socket['user'].id,
         socketId: player2Socket.id,
         score: 0,
+        x: 1280 - 20,
+        y: 720 / 2 - 60,
+        width: 20,
+        height: 120,
+        baseHeight: 120,
+        baseWidth: 20,
       },
       gameId: game.id,
       status: GameStatus.ONGOING,
+      ball: {
+        x: 1280 / 2 - 10,
+        y: 720 / 2 - 10,
+        dx: Math.random() < 0.5 ? 1 : -1,
+        dy: 0,
+        size: 20,
+        speed: 5,
+      },
+      type,
     };
 
     player1Socket.join(String(game.id));
@@ -156,15 +193,27 @@ export class GameGateway {
   }
 
   @SubscribeMessage('readyToPlay')
-  async readyToPlay(client, data: { userId: number }) {
-    this.readyToPlayQueue[data.userId] = client;
+  async readyToPlay(client, data: { userId: number; type: string }) {
+    if (data.type === 'power') this.readyToPlayPowerQueue[data.userId] = client;
+    else this.readyToPlayClassicQueue[data.userId] = client;
 
     await this.updateUserStatus(data.userId, Status.INQUEUE, client.id);
 
-    if (Object.keys(this.readyToPlayQueue).length >= 2) {
-      const player1Socket = this.readyToPlayQueue[Object.keys(this.readyToPlayQueue)[0]];
-      const player2Socket = this.readyToPlayQueue[Object.keys(this.readyToPlayQueue)[1]];
-      this.readyToPlayQueue = {};
+    if (Object.keys(this.readyToPlayClassicQueue).length >= 2 || Object.keys(this.readyToPlayPowerQueue).length >= 2) {
+      let player1Socket;
+      let player2Socket;
+      let gameType;
+      if (Object.keys(this.readyToPlayClassicQueue).length >= 2) {
+        gameType = 'classic';
+        player1Socket = this.readyToPlayClassicQueue[Object.keys(this.readyToPlayClassicQueue)[0]];
+        player2Socket = this.readyToPlayClassicQueue[Object.keys(this.readyToPlayClassicQueue)[1]];
+        this.readyToPlayClassicQueue = {};
+      } else {
+        gameType = 'power';
+        player1Socket = this.readyToPlayPowerQueue[Object.keys(this.readyToPlayPowerQueue)[0]];
+        player2Socket = this.readyToPlayPowerQueue[Object.keys(this.readyToPlayPowerQueue)[1]];
+        this.readyToPlayPowerQueue = {};
+      }
 
       let count = 4;
       const uniqueRoom = String(uuidv4());
@@ -181,7 +230,7 @@ export class GameGateway {
           player1Socket.leave(uniqueRoom);
           player2Socket.leave(uniqueRoom);
 
-          const game = await this.createGame(player1Socket, player2Socket);
+          const game = await this.createGame(player1Socket, player2Socket, gameType);
 
           this.startGame(game, player1Socket, player2Socket);
 
@@ -204,16 +253,79 @@ export class GameGateway {
     }
   }
 
-  //
   async startGame(game, player1Socket, player2Socket) {
-    this.server.to(String(game.gameId)).emit('gameIsReady', game);
+    this.server.to(String(game.gameId)).emit('gameIsReady', { game, player1: player1Socket.user, player2: player2Socket.user, gameId: game.gameId });
 
     const interval = setInterval(async () => {
       if (player1Socket.disconnected || player2Socket.disconnected) {
         await this.handlGameEndOnDisconnect(game.gameId, player1Socket, player2Socket, interval);
         return;
       }
-      if (game.player1.score > 2 || game.player2.score > 2) {
+
+      game.ball.x += game.ball.dx * game.ball.speed;
+      game.ball.y += game.ball.dy * game.ball.speed;
+
+      //check if ball hits player 1
+      if (game.ball.x <= game.player1.width && game.ball.y >= game.player1.y && game.ball.y <= game.player1.y + game.player1.height - game.ball.size) {
+        game.ball.dx = 1;
+      
+
+        //change ball direction
+        if (game.ball.y < game.player1.y + game.player1.height / 2) {
+          game.ball.dy = -1;
+        } else {
+          game.ball.dy = 1;
+        }
+      }
+
+      //check if ball hits player 2
+      //
+      if (game.ball.x >= (1280 - game.player1.width - game.ball.size) && game.ball.y >= game.player2.y && game.ball.y <= game.player2.y + game.player2.height - game.ball.size) {
+        game.ball.dx = -1;
+
+        //change ball direction
+        if (game.ball.y < game.player2.y + game.player2.height / 2) {
+          game.ball.dy = -1;
+        } else {
+          game.ball.dy = 1;
+        }
+      }
+
+      //check if ball hits top or bottom wall
+      if (game.ball.y < 0 || game.ball.y > 720 - game.ball.size) {
+        game.ball.dy *= -1;
+      }
+
+      // check if ball hits left or right wall and reset it if it does
+      if (game.ball.x < -20 || game.ball.x > 1280) {
+      if (game.ball.x < -20) {
+        if (game.type === 'power'){
+          game.player1.height = game.player1.height + 50;
+          game.player2.height = game.player2.baseHeight;
+        }
+        game.player2.score++;
+        game.ball.dx = 1;
+      } else if (game.ball.x > 1280) {
+        if (game.type === 'power'){
+          game.player2.height = game.player2.height + 50;
+          game.player1.height = game.player1.baseHeight;
+        }
+        game.player1.score++;
+        game.ball.dx = -1;
+      }
+      game.ball.dy = Math.random() < 0.5 ? 1 : -1;
+      game.ball.x = 1280 / 2 - 10;
+      game.ball.y = 720 / 2 - 10;
+      game.player1.x = 0;
+      game.player1.y = 720 / 2 - 60;
+      game.player2.x = 1280 - 20;
+      game.player2.y = 720 / 2 - 60;
+    }
+
+      if (game.type === "classic" && (game.player1.score > 2 || game.player2.score > 2)) {
+        await this.handlEndGame(game, player1Socket, player2Socket, interval);
+        return;
+      } else if (game.type === "power" && (game.player1.score > 4 || game.player2.score > 4)) {
         await this.handlEndGame(game, player1Socket, player2Socket, interval);
         return;
       }
@@ -221,11 +333,30 @@ export class GameGateway {
     }, 1000 / 60);
   }
 
-  @SubscribeMessage('incrementScore')
-  incrementScore(client: Socket, data: { userId: number; gameId: number }) {
-    console.log('incrementScore', data);
-    if (this.games[data.gameId].player1.userId === data.userId) this.games[data.gameId].player1.score++;
-    else this.games[data.gameId].player2.score++;
+  @SubscribeMessage('move')
+  move(client: Socket, data: { userId: number; gameId: number; direction: string }) {
+    if (this.games[data.gameId].player1.userId === data.userId && data.direction === 'up') {
+      this.games[data.gameId].player1.y -= 20;
+      if (this.games[data.gameId].player1.y < 0) {
+        this.games[data.gameId].player1.y = 0;
+      }
+    } else if (this.games[data.gameId].player1.userId === data.userId && data.direction === 'down') {
+      this.games[data.gameId].player1.y += 20;
+      if (this.games[data.gameId].player1.y > 720 - this.games[data.gameId].player1.height) {
+        this.games[data.gameId].player1.y = 720 - this.games[data.gameId].player1.height;
+      }
+    } else if (this.games[data.gameId].player2.userId === data.userId && data.direction === 'up') {
+      this.games[data.gameId].player2.y -= 20;
+      if (this.games[data.gameId].player2.y < 0) {
+        this.games[data.gameId].player2.y = 0;
+      }
+    }
+    if (this.games[data.gameId].player2.userId === data.userId && data.direction === 'down') {
+      this.games[data.gameId].player2.y += 20;
+      if (this.games[data.gameId].player2.y > 720 - this.games[data.gameId].player2.height) {
+        this.games[data.gameId].player2.y = 720 - this.games[data.gameId].player2.height;
+      }
+    }
   }
 
   //=================================================================================INVITES=================================================================================
@@ -267,7 +398,7 @@ export class GameGateway {
       const player1Socket = this.connectedUsers[data.inviteOwner];
       const player2Socket = this.connectedUsers[client.user.id];
 
-      const game = await this.createGame(player1Socket, player2Socket);
+      const game = await this.createGame(player1Socket, player2Socket, 'classic');
       console.log('newwww game', game);
 
       this.startGame(game, player1Socket, player2Socket);
@@ -282,7 +413,6 @@ export class GameGateway {
     }
   }
 }
-//
 //
 //
 //

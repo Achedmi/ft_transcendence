@@ -24,6 +24,10 @@ export class UserService {
     return await this.prisma.user.findUnique({ where: data });
   }
 
+  async findUniqueWithoutSensitiveData(data) {
+    return await this.prisma.user.findUnique({ where: data, select: { username: true, displayName: true, avatar: true, id: true } });
+  }
+
   async isFriendWithMe(id: number, friendId: number) {
     const friendship = await this.prisma.friendship.findFirst({
       where: {

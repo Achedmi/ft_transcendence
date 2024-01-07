@@ -42,12 +42,12 @@ export class ChatGateway {
           id: true,
         },
       });
+
       chats.forEach((chat) => {
         console.log('user: ' + user.username + ' joining room: ', chat.id);
         client.join(String(chat.id));
       });
 
-      this.server.to('11').emit('message', { message: 'hello' });
       console.log('Client connected to Game socket: ', user.username);
     } catch (err) {
       console.log(err);
