@@ -368,7 +368,7 @@ export class ChatService {
     const isUserInChat = await this.isUserInChat(giveOwnershipDto.userId, giveOwnershipDto.chatId);
     if (!isUserInChat) throw new BadRequestException('User is not in this chat');
 
-    return await this.prisma.chat.update({
+    await this.prisma.chat.update({
       where: { id: giveOwnershipDto.chatId },
       data: {
         owner: {
@@ -376,6 +376,20 @@ export class ChatService {
         },
       },
     });
+
+    await this.prisma.userChat.update({
+      where: {
+        userId_chatId: {
+          userId: giveOwnershipDto.userId,
+          chatId: giveOwnershipDto.chatId,
+        },
+      },
+      data: {
+        isAdmin: true,
+      },
+    });
+
+    return await this.getChatInfos(me, giveOwnershipDto.chatId);
   }
 
   async isAdmin(id: number, chatId: number) {
@@ -397,7 +411,7 @@ export class ChatService {
     if (!isAbleto) throw new BadRequestException('You are not the owner of this chat');
     const isUserInChat = await this.isUserInChat(addAdminDto.userId, addAdminDto.chatId);
     if (!isUserInChat) throw new BadRequestException('User is not in this chat');
-    return await this.prisma.userChat.update({
+    await this.prisma.userChat.update({
       where: {
         userId_chatId: {
           userId: addAdminDto.userId,
@@ -408,6 +422,7 @@ export class ChatService {
         isAdmin: true,
       },
     });
+    return await this.getChatInfos(me, addAdminDto.chatId);
   }
 
   async removeAdmin(me: number, remvoeAdminDto: RemoveAdminDto) {
@@ -417,7 +432,7 @@ export class ChatService {
     const isUserInChat = await this.isUserInChat(remvoeAdminDto.userId, remvoeAdminDto.chatId);
     if (!isUserInChat) throw new BadRequestException('User is not in this chat');
 
-    return await this.prisma.userChat.update({
+    await this.prisma.userChat.update({
       where: {
         userId_chatId: {
           userId: remvoeAdminDto.userId,
@@ -428,6 +443,7 @@ export class ChatService {
         isAdmin: false,
       },
     });
+    return await this.getChatInfos(me, remvoeAdminDto.chatId);
   }
 
   async addMember(me: number, addMemberDto: AddMemberDto) {
@@ -448,7 +464,7 @@ export class ChatService {
       },
     });
 
-    return await this.prisma.chat.update({
+    await this.prisma.chat.update({
       where: { id: addMemberDto.chatId },
       data: {
         members: {
@@ -458,6 +474,7 @@ export class ChatService {
         },
       },
     });
+    return await this.getChatInfos(me, addMemberDto.chatId);
   }
 
   async kickMember(me: number, kickMemberDto: KickMemberDto) {
@@ -492,9 +509,8 @@ export class ChatService {
       },
     });
 
-    return chat;
+    return await this.getChatInfos(me, kickMemberDto.chatId);
   }
-
   async banMember(me: number, banMemberDto: BanMemberDto) {
     if (me === banMemberDto.userId) throw new BadRequestException('You can not ban yourself');
 
@@ -507,8 +523,7 @@ export class ChatService {
     const isUserInChat = await this.isUserInChat(banMemberDto.userId, banMemberDto.chatId);
     if (!isUserInChat) throw new BadRequestException('User is not in this chat');
 
-    console.log('+++++++++++++++++++++++++');
-    const chat = await this.prisma.chat.update({
+    await this.prisma.chat.update({
       where: { id: banMemberDto.chatId },
       data: {
         bannedUsers: {
@@ -533,7 +548,7 @@ export class ChatService {
       },
     });
 
-    return chat;
+    return await this.getChatInfos(me, banMemberDto.chatId);
   }
 
   async unbanMember(me: number, unbanMemberDto: BanMemberDto) {
@@ -545,7 +560,7 @@ export class ChatService {
     // const isUserInChat = await this.isUserInChat(unbanMemberDto.userId, unbanMemberDto.chatId);
     // if (!isUserInChat) throw new BadRequestException('User is not in this chat');
 
-    const chat = await this.prisma.chat.update({
+    await this.prisma.chat.update({
       where: { id: unbanMemberDto.chatId },
       data: {
         bannedUsers: {
@@ -556,7 +571,7 @@ export class ChatService {
       },
     });
 
-    return chat;
+    return await this.getChatInfos(me, unbanMemberDto.chatId);
   }
   //
 
@@ -632,7 +647,7 @@ export class ChatService {
     const mutedUntil = new Date();
     mutedUntil.setMinutes(mutedUntil.getMinutes() + muteDto.time);
 
-    return await this.prisma.userChat.update({
+    await this.prisma.userChat.update({
       where: {
         userId_chatId: {
           userId: muteDto.userId,
@@ -644,6 +659,8 @@ export class ChatService {
         isMuted: true,
       },
     });
+
+    return await this.getChatInfos(me, muteDto.chatId);
   }
 
   async block(me: number, blockDto: BlockeDto) {
