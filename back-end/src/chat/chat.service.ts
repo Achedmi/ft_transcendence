@@ -65,13 +65,11 @@ export class ChatService {
     }
 
     const members = {};
-    await Promise.all(
-      chat.chatUser.map(async (chatUser) => {
-        if ((await this.isBlocked(me, chatUser.user.id)) && chat.type === ChatType.CHANNEL) blockedUsers.add(chatUser.user.id);
-        members[chatUser.user.id] = chatUser;
-      }),
-    );
-
+    const blocking = await this.getBlockedAndBlockedBe(me);
+    chat.chatUser.map(async (chatUser) => {
+      if (blocking.includes(chatUser.user.id) && chat.type === ChatType.CHANNEL) blockedUsers.add(chatUser.user.id);
+      members[chatUser.user.id] = chatUser;
+    });
     chat.messages.map((message) => {
       if (blockedUsers.has(message.user.id)) message.message = 'blocked message';
     });
@@ -81,7 +79,7 @@ export class ChatService {
     return chat;
   }
 
-  async getChatMessages(id, skip?: number) {
+  async getChatMessages(me, id, skip?: number) {
     const messages = await this.prisma.message.findMany({
       where: { chatId: id },
       take: 20,
@@ -98,6 +96,12 @@ export class ChatService {
         },
       },
     });
+
+    const blocking = await this.getBlockedAndBlockedBe(me);
+    messages.forEach((message) => {
+      if (blocking.includes(message.userId)) message.message = 'blocked message';
+    });
+
     return messages.reverse();
   }
 
@@ -602,5 +606,52 @@ export class ChatService {
       },
     });
     return blockedBy?.BlockedById;
+  }
+
+  async getBlockedAndBlockedBe(me: number) {
+    const blocked = await this.prisma.blocking.findMany({
+      where: {
+        OR: [
+          {
+            user1Id: me,
+          },
+          {
+            user2Id: me,
+          },
+        ],
+      },
+      select: {
+        user1: {
+          where: {
+            NOT: {
+              id: me,
+            },
+          },
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            displayName: true,
+          },
+        },
+        user2: {
+          where: {
+            NOT: {
+              id: me,
+            },
+          },
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            displayName: true,
+          },
+        },
+      },
+    });
+    return blocked.map((block) => {
+      if (block.user1) return block.user1.id;
+      else return block.user2.id;
+    });
   }
 }

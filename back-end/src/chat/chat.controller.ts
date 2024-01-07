@@ -113,8 +113,8 @@ export class ChatController {
   }
 
   @Get('getChatMessages/:id')
-  getChatMessages(@Param('id', new ParseIntPipe({ optional: false })) id: number, @Query() { skip }: GetChatMessagesDto) {
-    return this.chatService.getChatMessages(id, skip);
+  getChatMessages(@GetCurrent('id') me: number, @Param('id', new ParseIntPipe({ optional: false })) id: number, @Query() { skip }: GetChatMessagesDto) {
+    return this.chatService.getChatMessages(me, id, skip);
   }
 
   @Get('getChatInfos/:id')

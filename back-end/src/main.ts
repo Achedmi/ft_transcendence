@@ -27,5 +27,3 @@ async function bootstrap() {
   await app.listen(4000);
 }
 bootstrap();
-
-//!!!! don't forget te blocking
