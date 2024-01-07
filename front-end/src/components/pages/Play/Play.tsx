@@ -9,9 +9,7 @@ import toastConfig from '../../../utils/toastConf';
 import Game from './Game';
 
 const Play = () => {
-  const [gameEnded, setGameEnded] = useState(false);
-  const { socket, user, setUserData, abelToPlay, setAbelToPlay } = useUserStore();
-  const [winner, setWinner] = useState<string>('');
+  const { socket, user, setUserData, abelToPlay, setAbelToPlay, gameEnded, setGameEnded } = useUserStore();
   const game = useGameStore();
   const handleGameMode = useCallback(
     async (type: string) => {
@@ -39,48 +37,15 @@ const Play = () => {
     [abelToPlay, socket?.game],
   );
 
-  useEffect(() => {
-    socket?.game?.on('updateStatus', (status: string) => {
-      console.log('updateStatus', status);
-      setUserData({ status });
-    });
 
-    // socket?.game?.on('gameIsReady', (data: any) => {
-    //   console.log('gameIsReady', data);
-    //   game.setId(data.gameId);
-
-    //   game.setPlayerData(data.player1, data.player2);
-    // });
-
-    socket?.game?.on('countdown', (count: number) => {
-      game.setCounter(count);
-      console.log('countdown', count);
-    });
-
-    socket?.game?.on('gameEnded', (data: any) => {
-      if (data?.winner) setWinner(data.winner);
-      else setWinner('');
-      setGameEnded(true);
-      setAbelToPlay(false);
-      game.setCounter(5);
-    });
-
-    return () => {
-      socket?.game?.off('updateStatus');
-      socket?.game?.off('countdown');
-      socket?.game?.off('gameEnded');
-    };
-  }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore, gameEnded, winner, game.counter]);
-
-  useEffect(() => {}, []);
 
   if (gameEnded)
     return (
       <div className='bg-[#D9D9D9] border-solid border-dark-cl border-[4px] rounded-2xl h-full w-full flex justify-center items-center md:gap-24 gap-7 md:flex-row flex-col relative'>
         <div className='flex flex-col gap-7 items-center'>
           <span className='text-dark-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>Game Over</span>
-          {winner &&
-            (winner === user.username ? (
+          {game.winner &&
+            (game.winner === user.username ? (
               <span className='text-blue-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>You Won</span>
             ) : (
               <span className='text-red-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>You Lost</span>

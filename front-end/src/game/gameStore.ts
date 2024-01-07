@@ -37,6 +37,8 @@ export interface GameStore {
   player1: Player;
   player2: Player;
   ball: Ball;
+  winner: string;
+  setWinner: (winner: string) => void;
   setCounter: (counter: number) => void;
   setMyScore: (myScore: number) => void;
   setOpponentScore: (opponentScore: number) => void;
@@ -80,6 +82,8 @@ const useGameStore: any = create<GameStore>((set) => ({
     size: 20,
     speed: 5,
   },
+  winner: '',
+  setWinner: (winner: string) => set((state) => ({ ...state, winner })),
   setMyScore: (myScore: number) => set((state) => ({ ...state, myScore })),
   setOpponentScore: (opponentScore: number) => set((state) => ({ ...state, opponentScore })),
   setCounter: (counter: number) => set((state) => ({ ...state, counter })),

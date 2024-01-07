@@ -17,6 +17,8 @@ import useChatStore from '../stores/chatStore';
 export function CommandDialogDemo() {
   const navigate = useNavigate();
   const searchStore = useSearchStore();
+  const { socket, user, setUserData, setAbelToPlay, gameEnded, setGameEnded } = useUserStore();
+  const game = useGameStore();
 
   const handleSelectPlay = useCallback(() => {
     navigate('/play');
@@ -78,6 +80,39 @@ export function CommandDialogDemo() {
       document.removeEventListener('keydown', handleCmdp);
     };
   }, [open]);
+
+  useEffect(() => {
+    socket?.game?.on('updateStatus', (status: string) => {
+      console.log('updateStatus', status);
+      setUserData({ status });
+    });
+
+    // socket?.game?.on('gameIsReady', (data: any) => {
+    //   console.log('gameIsReady', data);
+    //   game.setId(data.gameId);
+
+    //   game.setPlayerData(data.player1, data.player2);
+    // });
+
+    socket?.game?.on('countdown', (count: number) => {
+      game.setCounter(count);
+      console.log('countdown', count);
+    });
+
+    socket?.game?.on('gameEnded', (data: any) => {
+      if (data?.winner) game.setWinner(data.winner);
+      else game.setWinner('');
+      setGameEnded(true);
+      setAbelToPlay(false);
+      game.setCounter(5);
+    });
+
+    return () => {
+      socket?.game?.off('updateStatus');
+      socket?.game?.off('countdown');
+      socket?.game?.off('gameEnded');
+    };
+  }, [user.status, game.counter, socket?.game, game.myScore, game.opponentScore, gameEnded, game.winner, game.counter]);
 
   return (
     <CommandDialog open={searchStore.isOpen} onOpenChange={searchStore.setIsOpen}>
