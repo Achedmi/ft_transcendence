@@ -121,6 +121,7 @@ const useChatStore = create<ChatState>()((set) => {
           },
           members: channel.members,
           isCached: false,
+          visibility: channel.visibility,
         })),
       });
     },
