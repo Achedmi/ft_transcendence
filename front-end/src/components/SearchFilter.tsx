@@ -60,11 +60,18 @@ export const useSearchStore = create<SearchState>((set) => ({
     }
   },
   fetchFilteredChannels: async (search: string) => {
+    const chatStore = useChatStore.getState();
     try {
       if (search.length > 2) {
         set({ isLoading: true });
-        const response = await axios.get(`/search?search=${search}&type=chat`);
-        set({ filteredChannels: response.data?.chat || [], isLoading: false });
+        const publicAndProtectedChats = await axios.get(`/search?search=${search}&type=chat`);
+        const privateChats = chatStore.ChannelsPreview.filter((channel) => channel.visibility === 'PRIVATE');
+        console.log('privateChats', privateChats);
+        
+        set({ filteredChannels: [...publicAndProtectedChats.data?.chat, ...privateChats] || [], isLoading: false });
+
+
+        // set({ filteredChannels: response.data?.chat || [], isLoading: false });
       } else {
         set({ filteredChannels: [], isLoading: false });
       }
