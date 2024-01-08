@@ -3,13 +3,18 @@
 import * as React from 'react';
 import { type DialogProps } from '@radix-ui/react-dialog';
 import { Command as CommandPrimitive } from 'cmdk';
-import { Search } from './icons/icons';
+import { Search } from '../../icons/icons';
 
-import { cn } from '../utils/ui';
+import { cn } from '../../../utils/ui';
 import { Dialog, DialogContent } from './Dialog';
 
 const Command = React.forwardRef<React.ElementRef<typeof CommandPrimitive>, React.ComponentPropsWithoutRef<typeof CommandPrimitive>>(({ className, ...props }, ref) => (
-  <CommandPrimitive shouldFilter={false} ref={ref} className={cn('flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground', className)} {...props} />
+  <CommandPrimitive
+    shouldFilter={false}
+    ref={ref}
+    className={cn('flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground', className)}
+    {...props}
+  />
 ));
 Command.displayName = CommandPrimitive.displayName;
 

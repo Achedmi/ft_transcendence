@@ -1,16 +1,16 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import NavBar from './NavBar';
 import { useCallback, useEffect } from 'react';
-import { Profile, Home, Game, MessageIcon } from './icons/icons';
-import { CommandDialog, CommandGroup, CommandItem, CommandList, CommandSeparator, CommandShortcut } from './Command';
-import CommandSearchResults, { CommandSearch } from './SearchFilter';
-import { useSearchStore } from './SearchFilter';
+import { Profile, Home, Game, MessageIcon } from '../icons/icons';
+import { CommandDialog, CommandGroup, CommandItem, CommandList, CommandSeparator, CommandShortcut } from './Dialogue/Command';
+import CommandSearchResults, { CommandSearch } from './Dialogue/SearchFilter';
 import io from 'socket.io-client';
-import { useUserStore } from '../stores/userStore';
+import { useUserStore } from '../../stores/userStore';
 import GameInvitePopup from './GameInvitePopup';
-import useGameStore from '../game/gameStore';
+import useGameStore from '../../game/gameStore';
 import { useQuery } from 'react-query';
-import useChatStore from '../stores/chatStore';
+import useChatStore from '../../stores/chatStore';
+import NavBar from '../NavBar';
+import { useSearchStore } from '../../stores/searchStore';
 
 export function CommandDialogDemo() {
   const navigate = useNavigate();
@@ -139,7 +139,7 @@ export function CommandDialogDemo() {
 }
 
 function PrivateRoutes() {
-  const { socket, setSocket, setAbelToPlay, abelToPlay } = useUserStore();
+  const { socket, setSocket, setAbelToPlay } = useUserStore();
   const game = useGameStore();
   const navigate = useNavigate();
   const chatStore = useChatStore();
@@ -206,7 +206,6 @@ function PrivateRoutes() {
   useEffect(() => {
     socket?.game?.on('gameIsReady', (data: any) => {
       game.setId(data.gameId);
-      console.log('gameIsReady');
       game.setPlayersData(data.player1, data.player2);
       navigate('/play');
       setAbelToPlay(true);
@@ -216,7 +215,6 @@ function PrivateRoutes() {
       socket?.game?.off('gameIsReady');
     };
   });
-  // }, [socket?.game, game.id, abelToPlay, socket?.chat, socket, navigate, setAbelToPlay]);
 
   return (
     <>

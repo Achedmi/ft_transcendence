@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import Login from './components/pages/login/Login.tsx';
-import Layout from './components/Layout.tsx';
+import Layout from './components/Layout/Layout.tsx';
 import Home from './components/pages/Home.tsx';
 import Profile from './components/pages/Profile/Profile.tsx';
 import { Play } from './components/pages/Play/Play.tsx';
