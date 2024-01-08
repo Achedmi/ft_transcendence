@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable, Get } from '@nestjs/common';
+import { joinChannel } from './dto/joinChannel.dto';
+import { BadRequestException, Injectable, Get, NotFoundException } from '@nestjs/common';
 import { CreateChanneltDto } from './dto/create-channel.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -13,6 +14,7 @@ import { KickMemberDto } from './dto/kickMember.dto';
 import { MuteDto } from './dto/mute.dto';
 import { BlockeDto } from './dto/block.dto';
 import { BanMemberDto } from './dto/banMember.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChatService {
@@ -573,7 +575,6 @@ export class ChatService {
 
     return await this.getChatInfos(me, unbanMemberDto.chatId);
   }
-  //
 
   async isBanned(me: number, chatId: number) {
     const chat = await this.prisma.chat.findUnique({
@@ -587,6 +588,43 @@ export class ChatService {
       },
     });
     return chat;
+  }
+
+  async joinChannel(me: number, joinChannelDto: joinChannel) {
+    const chat = await this.prisma.chat.findFirst({
+      where: {
+        id: joinChannelDto.channelId,
+      },
+    });
+    if (!chat) throw new NotFoundException('Chat not found');
+    if (chat.visibility === Visibility.PRIVATE) throw new BadRequestException('This chat is private');
+    if (chat.visibility === Visibility.PROTECTED && !joinChannelDto.password) throw new BadRequestException('Password is required for protected chats');
+    const isBanned = await this.isBanned(me, joinChannelDto.channelId);
+    if (isBanned) throw new BadRequestException('You are banned from this chat');
+    if (chat.visibility === Visibility.PROTECTED && joinChannelDto.password) {
+      const isPasswordCorrect = await bcrypt.compare(joinChannelDto.password, chat.password);
+      if (!isPasswordCorrect) throw new BadRequestException('Wrong password');
+    }
+    const isUserInChat = await this.isUserInChat(me, joinChannelDto.channelId);
+    if (isUserInChat) throw new BadRequestException('You are already in this chat');
+
+    await this.prisma.userChat.create({
+      data: {
+        userId: me,
+        chatId: joinChannelDto.channelId,
+      },
+    });
+    await this.prisma.chat.update({
+      where: { id: joinChannelDto.channelId },
+      data: {
+        members: {
+          connect: {
+            id: me,
+          },
+        },
+      },
+    });
+    return await this.getChatInfos(me, joinChannelDto.channelId);
   }
 
   async findAll() {

@@ -31,6 +31,7 @@ import { MuteDto } from './dto/mute.dto';
 import { BlockeDto } from './dto/block.dto';
 import { GetChatMessagesDto } from './dto/getChatMessages.dto';
 import { BanMemberDto } from './dto/banMember.dto';
+import { joinChannel } from './dto/joinChannel.dto';
 
 @Controller('chat')
 @UseGuards(TFAGuard)
@@ -65,6 +66,11 @@ export class ChatController {
   @Post('unbanMember')
   async unbanMember(@GetCurrent('id') me, @Body() unbanMemberDto: KickMemberDto) {
     return await this.chatService.unbanMember(me, unbanMemberDto);
+  }
+
+  @Post('joinChannel')
+  async joinChannel(@GetCurrent('id') me, @Body() joinChannelDto: joinChannel) {
+    return await this.chatService.joinChannel(me, joinChannelDto);
   }
 
   @UseInterceptors(FileInterceptor('image'))

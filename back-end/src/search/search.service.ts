@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { SearchDto } from './dto/search.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ChatType, Visibility } from '@prisma/client';
 
 @Injectable()
 export class SearchService {
@@ -18,6 +19,7 @@ export class SearchService {
         },
       });
     }
+
     if (!searchDto.type || searchDto.type === 'chat') {
       response.chat = await this.prismaService.chat.findMany({
         take: 10,
@@ -25,6 +27,7 @@ export class SearchService {
           name: {
             contains: searchDto.search,
           },
+          OR: [{ visibility: Visibility.PROTECTED }, { visibility: Visibility.PUBLIC }],
         },
       });
     }
