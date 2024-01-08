@@ -15,10 +15,16 @@ import { MuteDto } from './dto/mute.dto';
 import { BlockeDto } from './dto/block.dto';
 import { BanMemberDto } from './dto/banMember.dto';
 import * as bcrypt from 'bcrypt';
+import { ChatGateway } from 'src/socket/chat.gateway';
 
 @Injectable()
 export class ChatService {
-  constructor(private readonly prisma: PrismaService, private readonly cloudinaryService: CloudinaryService, private readonly helpersService: HelpersService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly helpersService: HelpersService,
+    private readonly socketService: ChatGateway,
+  ) {}
 
   async GetChatById(me: number, id: number) {
     const blockedUsers = new Set();
@@ -316,6 +322,7 @@ export class ChatService {
       },
     });
 
+    this.socketService.chatUpdated(id);
     return this.getChatInfos(me, id);
   }
 
@@ -394,6 +401,7 @@ export class ChatService {
       },
     });
 
+    this.socketService.chatUpdated(giveOwnershipDto.chatId);
     return await this.getChatInfos(me, giveOwnershipDto.chatId);
   }
 
@@ -427,6 +435,7 @@ export class ChatService {
         isAdmin: true,
       },
     });
+    this.socketService.chatUpdated(addAdminDto.chatId);
     return await this.getChatInfos(me, addAdminDto.chatId);
   }
 
@@ -448,6 +457,7 @@ export class ChatService {
         isAdmin: false,
       },
     });
+    this.socketService.chatUpdated(remvoeAdminDto.chatId);
     return await this.getChatInfos(me, remvoeAdminDto.chatId);
   }
 
@@ -479,6 +489,7 @@ export class ChatService {
         },
       },
     });
+    this.socketService.chatUpdated(addMemberDto.chatId);
     return await this.getChatInfos(me, addMemberDto.chatId);
   }
 
@@ -514,6 +525,7 @@ export class ChatService {
       },
     });
 
+    this.socketService.chatUpdated(kickMemberDto.chatId);
     return await this.getChatInfos(me, kickMemberDto.chatId);
   }
   async banMember(me: number, banMemberDto: BanMemberDto) {
@@ -553,6 +565,7 @@ export class ChatService {
       },
     });
 
+    this.socketService.chatUpdated(banMemberDto.chatId);
     return await this.getChatInfos(me, banMemberDto.chatId);
   }
 
@@ -627,6 +640,7 @@ export class ChatService {
         },
       },
     });
+    this.socketService.chatUpdated(joinChannelDto.channelId);
     return await this.getChatInfos(me, joinChannelDto.channelId);
   }
 
