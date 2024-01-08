@@ -1,20 +1,15 @@
-import axios from '../../../utils/axios';
-import { create } from 'zustand';
-
-import { CommandGroup, CommandInput, CommandItem, CommandShortcut } from './Command';
+import { CommandGroup, CommandInput, CommandItem, CommandShortcut } from './config/Command';
 import { useNavigate } from 'react-router-dom';
 import { useCallback, useEffect } from 'react';
 import { useCommandState } from 'cmdk';
 import { debounce } from '../../../utils/ui';
 import { LockIcon } from '../../icons/icons';
-import useChatStore, { ChatPreview } from '../../../stores/chatStore';
+import useChatStore from '../../../stores/chatStore';
 import { useUserStore } from '../../../stores/userStore';
 import axiosInstance from '../../../utils/axios';
 import { toast } from 'react-toastify';
 import toastConfig from '../../../utils/toastConf';
 import { useSearchStore } from '../../../stores/searchStore';
-
-
 
 export function CommandSearch() {
   const search = useCommandState((state) => state.search);
@@ -45,7 +40,6 @@ export default function CommandSearchResults() {
       chatStore.getChannelsPreview();
 
       if (!chatStore.isMemberOfChat(channelId, user.id)) {
-        console.log('not a member');
         toast.promise(
           async () => {
             try {

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import useChatStore, { ChatType, Member } from '../../../stores/chatStore';
 import { useCallback, useState } from 'react';
-import { AdminIcon, BlockIcon, CrownIcon, Edit, Game, GroupMembersIcon, KickIcon, MuteIcon, Profile } from '../../icons/icons';
+import { AddMemberIcon, AdminIcon, BlockIcon, CrownIcon, Edit, Game, GroupMembersIcon, KickIcon, MuteIcon, Profile } from '../../icons/icons';
 import { useQuery } from 'react-query';
 import { SyncLoader } from 'react-spinners';
 import { useUserStore } from '../../../stores/userStore';
@@ -9,6 +9,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../utils/axios';
 import toastConfig from '../../../utils/toastConf';
+import AddMemberDialogue from '../../Layout/Dialogue/AddMemberDialogue';
+import useAddGroupStore from '../../../stores/addMemberStore';
 
 function ActionDropDown({ member, currentMember }: { member: Member; currentMember: Member }) {
   const chatStore = useChatStore();
@@ -278,6 +280,7 @@ function InfoButton({ text, Icon, onClick }: { text: string; Icon: any; onClick?
 function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   const chatStore = useChatStore();
   const { socket, user } = useUserStore();
+  const addMemberStore = useAddGroupStore();
   function handleEditGroup() {
     console.log('edit group');
     setEditGroupOpen(true);
@@ -317,6 +320,8 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
         </div>
       ) : (
         <>
+          {chatStore.chatInfo?.get(chatStore.selectedChatId)?.type == ChatType.CHANNEL && <AddMemberDialogue />}
+
           <div className='flex justify-center mt-10'>
             <img className='h-36 w-36 rounded-full border-2 border-solid border-dark-cl object-cover' src={chatStore.chatInfo?.get(chatStore.selectedChatId)?.image} alt='pfp' />
           </div>
@@ -339,6 +344,9 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
             ) : (
               <>
                 {chatStore.chatInfo?.get(chatStore.selectedChatId)?.ownerId === user.id && <InfoButton text='Edit Group' Icon={Edit} onClick={handleEditGroup} />}
+                {chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id == user.id)?.isAdmin && (
+                  <InfoButton text='Add User' Icon={AddMemberIcon} onClick={() => addMemberStore.setIsOpen(true)} />
+                )}
                 <InfoButton text={`Group Members (${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.length})`} Icon={GroupMembersIcon} />
               </>
             )}
