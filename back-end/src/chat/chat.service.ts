@@ -348,18 +348,21 @@ export class ChatService {
   }
 
   async isUserInChat(id: number, chatId: number) {
-    const chat = await this.prisma.userChat.findFirst({
+    console.log(chatId);
+    const chat = await this.prisma.chat.findFirst({
       where: {
-        chat: {
-          id: chatId,
-          members: {
-            some: {
-              id,
-            },
+        id: chatId,
+        members: {
+          some: {
+            id,
           },
         },
       },
+      include: {
+        members: true,
+      },
     });
+    console.log(chat);
     return chat;
   }
 
