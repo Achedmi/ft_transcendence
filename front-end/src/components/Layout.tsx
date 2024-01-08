@@ -1,15 +1,13 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import NavBar from './NavBar';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Profile, Home, Game, MessageIcon } from './icons/icons';
 import { CommandDialog, CommandGroup, CommandItem, CommandList, CommandSeparator, CommandShortcut } from './Command';
 import CommandSearchResults, { CommandSearch } from './SearchFilter';
 import { useSearchStore } from './SearchFilter';
 import io from 'socket.io-client';
 import { useUserStore } from '../stores/userStore';
-import axios from '../utils/axios';
 import GameInvitePopup from './GameInvitePopup';
-import { AnimatePresence } from 'framer-motion';
 import useGameStore from '../game/gameStore';
 import { useQuery } from 'react-query';
 import useChatStore from '../stores/chatStore';
@@ -66,7 +64,7 @@ export function CommandDialogDemo() {
           e.preventDefault();
           handleSelectProfile();
         }
-        if (e.key === 'c') {
+        if (e.key === 'm') {
           e.preventDefault();
           handleSelectChat();
         }
@@ -132,7 +130,7 @@ export function CommandDialogDemo() {
           <CommandItem onSelect={handleSelectChat}>
             <MessageIcon className='mr-2 h-4 w-4' />
             <span>Chat</span>
-            <CommandShortcut>⌘C</CommandShortcut>
+            <CommandShortcut>⌘M</CommandShortcut>
           </CommandItem>
         </CommandGroup>
       </CommandList>
@@ -168,10 +166,10 @@ function PrivateRoutes() {
     };
   }, []);
 
-  const { refetch: refetchDms } = useQuery('DmsPreview', chatStore.getDmsPreview, {
+  useQuery('DmsPreview', chatStore.getDmsPreview, {
     refetchOnWindowFocus: false,
   });
-  const { refetch: refetchChannels } = useQuery('ChannelsPreview', chatStore.getChannelsPreview, {
+  useQuery('ChannelsPreview', chatStore.getChannelsPreview, {
     refetchOnWindowFocus: false,
   });
 
