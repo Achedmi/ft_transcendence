@@ -3,9 +3,10 @@ import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 import { HelpersModule } from 'src/helpers/helpers.module';
+import { SocketModule } from 'src/socket/socket.module';
 
 @Module({
-  imports: [CloudinaryModule, HelpersModule],
+  imports: [CloudinaryModule, HelpersModule, SocketModule],
   controllers: [ChatController],
   providers: [ChatService],
   exports: [ChatService],
