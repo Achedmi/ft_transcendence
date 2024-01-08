@@ -230,13 +230,11 @@ const useChatStore = create<ChatState>()((set) => {
       set({ chatInfoLoading: false });
     },
     isMemberOfChat: (chatId: number, userId: number | undefined) => {
-      const chatInfo = useChatStore.getState().chatInfo?.get(chatId);
-      if (chatInfo) {
-        if (!userId) return false;
-        const member = chatInfo.members?.find((member) => member.id === userId);
-        if (member) {
-          return true;
-        }
+      const channels = useChatStore.getState().ChannelsPreview;
+      const chat = channels.find((channel) => channel.id === chatId);
+      if (chat) {
+        const member = chat.members.find((member) => member.id === userId);
+        if (member) return true;
       }
       return false;
     },

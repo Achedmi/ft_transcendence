@@ -114,12 +114,15 @@ export default function CommandSearchResults() {
       chatStore.getChannelsPreview();
 
       if (!chatStore.isMemberOfChat(channelId, user.id)) {
+        console.log('not a member');
         toast.promise(
           async () => {
             try {
               const response = await axiosInstance.post(`chat/joinChannel`, { channelId });
               console.log('response', response);
 
+              chatStore.getChannelsPreview();
+              chatStore.setSelectedChatId(response.data.id);
               chatStore.getChatInfo(channelId);
               return response;
             } catch (error) {

@@ -8,6 +8,7 @@ import { useUserStore } from '../../../stores/userStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../utils/axios';
+import toastConfig from '../../../utils/toastConf';
 
 function ActionDropDown({ member, currentMember }: { member: Member; currentMember: Member }) {
   const chatStore = useChatStore();
@@ -25,11 +26,11 @@ function ActionDropDown({ member, currentMember }: { member: Member; currentMemb
           throw error;
         }
       },
-      {
+      toastConfig({
         pending: 'Kicking...',
         success: 'Kicked',
         error: 'Failed to kick member',
-      },
+      }),
     );
   }, [
     chatStore.selectedChatId,
@@ -58,11 +59,11 @@ function ActionDropDown({ member, currentMember }: { member: Member; currentMemb
           throw error;
         }
       },
-      {
+      toastConfig({
         pending: 'Muting...',
         success: 'Muted',
         error: 'Failed to mute member',
-      },
+      }),
     );
   }, [
     chatStore.selectedChatId,
@@ -90,11 +91,11 @@ function ActionDropDown({ member, currentMember }: { member: Member; currentMemb
           throw error;
         }
       },
-      {
+      toastConfig({
         pending: 'Banning...',
         success: 'Banned',
         error: 'Failed to ban member',
-      },
+      }),
     );
   }, [
     chatStore.selectedChatId,
@@ -122,11 +123,11 @@ function ActionDropDown({ member, currentMember }: { member: Member; currentMemb
           throw error;
         }
       },
-      {
+      toastConfig({
         pending: 'Giving ownership...',
         success: 'Ownership given',
         error: 'Failed to give ownership',
-      },
+      }),
     );
   }, [
     chatStore.selectedChatId,
@@ -154,11 +155,11 @@ function ActionDropDown({ member, currentMember }: { member: Member; currentMemb
           throw error;
         }
       },
-      {
+      toastConfig({
         pending: 'Making admin...',
         success: 'Admin made',
         error: 'Failed to make admin',
-      },
+      }),
     );
   }, [
     chatStore.selectedChatId,
