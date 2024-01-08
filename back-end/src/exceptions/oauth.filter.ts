@@ -1,9 +1,9 @@
 import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Response } from 'express';
-import { InternalOAuthError } from 'passport-oauth2';
+import { InternalOAuthError, TokenError, AuthorizationError } from 'passport-oauth2';
 
-@Catch(InternalOAuthError)
+@Catch(TokenError, AuthorizationError, InternalOAuthError)
 export class OauthExceptionFilter extends BaseExceptionFilter {
   catch(exception, host: ArgumentsHost) {
     console.error(exception.message);
