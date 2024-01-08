@@ -35,6 +35,7 @@ export interface UserState {
 
 export const useUserStore = create<UserState>((set) => ({
   user: {
+    id: 0,
     username: '',
     displayName: '',
     bio: '',

@@ -7,7 +7,11 @@ import { useCallback, useEffect } from 'react';
 import { useCommandState } from 'cmdk';
 import { debounce } from '../utils/ui';
 import { LockIcon } from './icons/icons';
-import useChatStore from '../stores/chatStore';
+import useChatStore, { ChatPreview } from '../stores/chatStore';
+import { useUserStore } from '../stores/userStore';
+import axiosInstance from '../utils/axios';
+import { toast } from 'react-toastify';
+import toastConfig from '../utils/toastConf';
 
 interface User {
   username: string;
@@ -65,13 +69,12 @@ export const useSearchStore = create<SearchState>((set) => ({
       if (search.length > 2) {
         set({ isLoading: true });
         const publicAndProtectedChats = await axios.get(`/search?search=${search}&type=chat`);
-        const privateChats = chatStore.ChannelsPreview.filter((channel) => channel.visibility === 'PRIVATE');
+        const privateChats = chatStore.ChannelsPreview.filter(
+          (channel: ChatPreview) => channel.visibility === 'PRIVATE' && channel.name.toLowerCase().includes(search.toLowerCase()),
+        );
         console.log('privateChats', privateChats);
-        
+
         set({ filteredChannels: [...publicAndProtectedChats.data?.chat, ...privateChats] || [], isLoading: false });
-
-
-        // set({ filteredChannels: response.data?.chat || [], isLoading: false });
       } else {
         set({ filteredChannels: [], isLoading: false });
       }
@@ -105,6 +108,39 @@ export default function CommandSearchResults() {
   const navigate = useNavigate();
   const searchStore = useSearchStore();
   const chatStore = useChatStore();
+  const { user } = useUserStore();
+  const handleSelectChat = useCallback(
+    async (channelId: number) => {
+      chatStore.getChannelsPreview();
+
+      if (!chatStore.isMemberOfChat(channelId, user.id)) {
+        toast.promise(
+          async () => {
+            try {
+              const response = await axiosInstance.post(`chat/joinChannel`, { channelId });
+              console.log('response', response);
+
+              chatStore.getChatInfo(channelId);
+              return response;
+            } catch (error) {
+              throw error;
+            }
+          },
+          toastConfig({
+            success: 'Joined!',
+            error: 'Error Joining',
+            pending: 'Joining...',
+          }),
+        );
+      } else {
+        chatStore.setSelectedChatId(channelId);
+        navigate(`/chat`);
+      }
+
+      searchStore.setIsOpen(false);
+    },
+    [chatStore, navigate, searchStore],
+  );
 
   if (searchStore.isLoading)
     return (
@@ -141,11 +177,8 @@ export default function CommandSearchResults() {
           {searchStore.filteredChannels.map((channel: any) => (
             <CommandItem
               key={'search-channel-' + channel.id}
-              onSelect={() => {
-                chatStore.getChannelsPreview();
-                chatStore.setSelectedChatId(channel.id);
-                navigate(`/chat`);
-                searchStore.setIsOpen(false);
+              onSelect={async () => {
+                await handleSelectChat(channel.id);
               }}
               className=''
             >

@@ -26,7 +26,7 @@ export interface Message {
 export interface ChatPreview {
   id: number;
   type: ChatType;
-  name?: string;
+  name: string;
   image?: string;
   lastMessage: Message;
   visibility?: string;
@@ -63,6 +63,7 @@ interface ChatState {
   updateLastDM: (message: any, chatId: number) => void;
   updateLastGroupMessage: (message: any, chatId: number) => void;
   updateChatInfo: (chatId: number, chatInfo: ChatInfo) => void;
+  isMemberOfChat: (chatId: number, userId: number | undefined) => boolean;
 }
 
 const useChatStore = create<ChatState>()((set) => {
@@ -227,6 +228,17 @@ const useChatStore = create<ChatState>()((set) => {
         });
       }
       set({ chatInfoLoading: false });
+    },
+    isMemberOfChat: (chatId: number, userId: number | undefined) => {
+      const chatInfo = useChatStore.getState().chatInfo?.get(chatId);
+      if (chatInfo) {
+        if (!userId) return false;
+        const member = chatInfo.members?.find((member) => member.id === userId);
+        if (member) {
+          return true;
+        }
+      }
+      return false;
     },
   };
 });
