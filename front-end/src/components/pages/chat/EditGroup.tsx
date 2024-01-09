@@ -70,7 +70,6 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
   }, [newImage, updatedGroup, chatStore.selectedChatId]);
 
   const close = useCallback(() => {
-    setOpen(false);
     setUpdatedGroup({
       name: chatStore.chatInfo?.get(chatStore.selectedChatId)?.name || '',
       visibility: chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility || '',
@@ -78,6 +77,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
       password: '',
     });
     setNewImage(null);
+    setOpen(false);
   }, [setOpen]);
 
   return (

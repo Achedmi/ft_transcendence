@@ -16,6 +16,8 @@ down:
 
 
 #remove the stopped containers, dangling images, dangling build cache
-remove: down
+clean: down
 	docker system prune -f
 	
+images:
+	docker rmi -f $(docker images -a -q)

@@ -183,7 +183,7 @@ function Chat() {
               className={`text-xl flex justify-center items-center rounded-3xl w-1/2 h-full cursor-pointer hover:bg-[#ECE8E8]
                ${chatType == ChatType.DM ? 'bg-[#ECE8E8]   border-2 border-solid border-dark-cl' : ''}`}
             >
-              <span>Dms</span>
+              <span>DMs</span>
             </div>
             <div
               onClick={() => {
