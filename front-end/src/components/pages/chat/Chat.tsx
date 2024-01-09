@@ -8,7 +8,6 @@ import EditGroup from './EditGroup';
 import ChatInfo from './ChatInfo';
 import { SendIcon } from '../../icons/icons';
 import CreateGroup from './CreateGroup';
-import AddMemberDialogue from '../../Layout/Dialogue/AddMemberDialogue';
 
 function ChatPreviewColumn({ chat, CurrentUserId, clearMessage }: { chat: ChatPreview; CurrentUserId: number; clearMessage: any }) {
   const chatStore = useChatStore();

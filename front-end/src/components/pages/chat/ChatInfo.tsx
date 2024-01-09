@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import useChatStore, { ChatType, Member } from '../../../stores/chatStore';
 import { useCallback, useState } from 'react';
-import { AddMemberIcon, AdminIcon, BlockIcon, CrownIcon, Edit, Game, GroupMembersIcon, KickIcon, MuteIcon, Profile } from '../../icons/icons';
+import { AddMemberIcon, AdminIcon, BlockIcon, Check, CrownIcon, Edit, Game, GroupMembersIcon, KickIcon, MuteIcon, Profile } from '../../icons/icons';
 import { useQuery } from 'react-query';
 import { SyncLoader } from 'react-spinners';
 import { useUserStore } from '../../../stores/userStore';
@@ -12,8 +12,23 @@ import toastConfig from '../../../utils/toastConf';
 import AddMemberDialogue from '../../Layout/Dialogue/AddMemberDialogue';
 import useAddGroupStore from '../../../stores/addMemberStore';
 
-function ActionDropDown({ member, currentMember }: { member: Member; currentMember: Member }) {
+function ActionDropDown({ member, currentMember, setActiveDropDown }: { member: Member; currentMember: Member; setActiveDropDown: any }) {
   const chatStore = useChatStore();
+  const { socket } = useUserStore();
+
+  const sendGameInvite = useCallback(
+    (usertoInviteId: any) => {
+      socket.game?.emit('createInvite', { userId: usertoInviteId });
+      toast.success('Game invite sent', {
+        className: 'toast-success',
+        icon: Check,
+        progressClassName: 'Toastify__progress-bar-success',
+      });
+      setActiveDropDown(0);
+    },
+    [socket.game],
+  );
+
   const KickMember = useCallback(async () => {
     toast.promise(
       async () => {
@@ -22,7 +37,6 @@ function ActionDropDown({ member, currentMember }: { member: Member; currentMemb
             userId: member.id,
             chatId: chatStore.selectedChatId,
           });
-          console.log(response);
           chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
         } catch (error) {
           throw error;
@@ -183,7 +197,13 @@ function ActionDropDown({ member, currentMember }: { member: Member; currentMemb
       className=' bg-gray-cl border-2 border-solid border-dark-cl rounded-lg absolute right-2 top-11 z-50 rounded-tr-none border-b-'
     >
       <ul>
-        <li key={1} className='flex gap-2  p-1 justify-around items-center border-b-2 border-solid border-dark-cl group hover:bg-dark-cl cursor-pointer'>
+        <li
+          key={1}
+          className='flex gap-2  p-1 justify-around items-center border-b-2 border-solid border-dark-cl group hover:bg-dark-cl cursor-pointer'
+          onClick={() => {
+            sendGameInvite(member.id);
+          }}
+        >
           <Game className='h-6 w-6  fill-dark-cl group-hover:fill-white' />
           <span className='text-sm text-dark-cl group-hover:text-white'>Invite to game</span>
         </li>
@@ -250,7 +270,7 @@ function GroupMemberCol({ member, activeDropDown, setActiveDropDown, currentMemb
           {activeDropDown == member.id ? '⌅' : '⌄'}
         </span>
       )}
-      <AnimatePresence>{activeDropDown == member.id && <ActionDropDown member={member} currentMember={currentMember} />}</AnimatePresence>
+      <AnimatePresence>{activeDropDown == member.id && <ActionDropDown member={member} currentMember={currentMember} setActiveDropDown={setActiveDropDown} />}</AnimatePresence>
     </div>
   );
 }
