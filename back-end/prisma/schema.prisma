@@ -52,7 +52,7 @@ model Chat {
   id        Int      @default(autoincrement()) @id
   type ChatType
   visibility Visibility
-  name String? @unique
+  name String?
   ownerId Int?
   image String?
   password String?
