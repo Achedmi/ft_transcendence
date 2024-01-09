@@ -139,7 +139,7 @@ export class GameGateway {
       type: type == 'classic' ? GameType.CLASSIC : GameType.POWERUP,
     });
     console.log('GAME CREATED', game.id);
-
+//
     player1Socket['gameId'] = game.id;
     player2Socket['gameId'] = game.id;
 
