@@ -65,7 +65,7 @@ function Users() {
       )}
       {data && (
         <div className='flex flex-col  bg-[#D9D9D9]  text-dark-cl border-solid border-dark-cl border-[4px] rounded-xl  h-full w-full relative overflow-y-scroll no-scrollbar'>
-          <SendDm open={dmOpen} setOpen={setDmOpen} id={data.id}/>
+          <SendDm open={dmOpen} setOpen={setDmOpen} id={data.id} />
           <div className='z-0'>
             <div className='bg-dark-cl h-40  relative'>
               <motion.div>
