@@ -65,6 +65,8 @@ interface ChatState {
   updateLastGroupMessage: (message: any, chatId: number) => void;
   updateChatInfo: (chatId: number, chatInfo: ChatInfo) => void;
   isMemberOfChat: (chatId: number, userId: number | undefined) => boolean;
+  addNewUnreadMessage: (chatId: number, chatType: ChatType) => void;
+  resetNewUnreadMessage: (chatId: number, chatType: ChatType) => void;
 }
 
 const useChatStore = create<ChatState>()((set) => {
@@ -123,6 +125,7 @@ const useChatStore = create<ChatState>()((set) => {
             chatId: channel.id,
           },
           members: channel.members,
+          unreadMessages: 0,
           isCached: false,
           visibility: channel.visibility,
         })),
@@ -239,6 +242,37 @@ const useChatStore = create<ChatState>()((set) => {
         if (member) return true;
       }
       return false;
+    },
+    addNewUnreadMessage: (chatId: number, chatType: ChatType) => {
+      console.log('addNewUnreadMessage', chatId, chatType);
+      if (chatType === ChatType.DM) {
+        const dms = useChatStore.getState().DmsPreview;
+        const dm = dms.find((dm) => dm.id === chatId);
+        if (dm) {
+          dm.unreadMessages = dm.unreadMessages ? dm.unreadMessages + 1 : 1;
+        }
+      } else {
+        const channels = useChatStore.getState().ChannelsPreview;
+        const channel = channels.find((channel) => channel.id === chatId);
+        if (channel) {
+          channel.unreadMessages = channel.unreadMessages ? channel.unreadMessages + 1 : 1;
+        }
+      }
+    },
+    resetNewUnreadMessage: (chatId: number, chatType: ChatType) => {
+      if (chatType === ChatType.DM) {
+        const dms = useChatStore.getState().DmsPreview;
+        const dm = dms.find((dm) => dm.id === chatId);
+        if (dm) {
+          dm.unreadMessages = 0;
+        }
+      } else {
+        const channels = useChatStore.getState().ChannelsPreview;
+        const channel = channels.find((channel) => channel.id === chatId);
+        if (channel) {
+          channel.unreadMessages = 0;
+        }
+      }
     },
   };
 });

@@ -5,7 +5,7 @@ import { useUserStore } from '../../stores/userStore';
 import GameInvitePopup from './GameInvitePopup';
 import useGameStore from '../../game/gameStore';
 import { useQuery } from 'react-query';
-import useChatStore from '../../stores/chatStore';
+import useChatStore, { ChatType } from '../../stores/chatStore';
 import NavBar from '../NavBar';
 import { GlobalCommandDialog } from './Dialogue/GlobalSearchDialogue';
 
@@ -51,10 +51,16 @@ function PrivateRoutes() {
       if (!chatStore.DmsPreview.find((chat: any) => chat.id == data.chatId)) {
         console.log('refetching dms');
         chatStore.getDmsPreview();
+        if (chatStore.selectedChatId != data.chatId) {
+          chatStore.addNewUnreadMessage(data.chatId, ChatType.CHANNEL);
+        }
       }
       if (!chatStore.ChannelsPreview.find((chat: any) => chat.id == data.chatId)) {
         console.log('refetching channels');
         chatStore.getChannelsPreview();
+        if (chatStore.selectedChatId != data.chatId) {
+          chatStore.addNewUnreadMessage(data.chatId, ChatType.DM);
+        }
       }
       chatStore.pushMessage(data, data.chatId);
       chatStore.updateLastDM(data, data.chatId);

@@ -13,6 +13,7 @@ function ChatPreviewColumn({ chat, CurrentUserId, clearMessage }: { chat: ChatPr
   const chatStore = useChatStore();
   const handleChatClick = useCallback(() => {
     chatStore.setSelectedChatId(chat.id);
+    chatStore.resetNewUnreadMessage(chat.id, chat.type);
     clearMessage();
   }, [chatStore, chat.id]);
 
@@ -35,6 +36,11 @@ function ChatPreviewColumn({ chat, CurrentUserId, clearMessage }: { chat: ChatPr
           chat.lastMessage.content ? chat.lastMessage.content : ''
         }`}</span>
       </div>
+      {chat.unreadMessages ? (
+        <div className='absolute top-3 right-2 h-6 w-6 bg-red-cl text-white rounded-full flex justify-center items-center '>
+          <span className='pt-1'>{chat.unreadMessages}</span>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -73,7 +79,6 @@ function ChatPreviews({ currentUserId, chatType, clearMessage }: { currentUserId
               return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} clearMessage={clearMessage} />;
             })
           )}
-          {/* <div className='fillspace h-10'></div> */}
         </div>
       )}
     </>
