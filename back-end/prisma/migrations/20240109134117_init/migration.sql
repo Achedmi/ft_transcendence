@@ -5,6 +5,9 @@ CREATE TYPE "Status" AS ENUM ('ONLINE', 'OFFLINE', 'INGAME', 'INQUEUE', 'STARTIN
 CREATE TYPE "GameStatus" AS ENUM ('ENDED', 'ONGOING');
 
 -- CreateEnum
+CREATE TYPE "GameType" AS ENUM ('CLASSIC', 'POWERUP');
+
+-- CreateEnum
 CREATE TYPE "ChatType" AS ENUM ('DM', 'CHANNEL');
 
 -- CreateEnum
@@ -92,6 +95,9 @@ CREATE TABLE "Game" (
     "player1Score" INTEGER NOT NULL DEFAULT 0,
     "player2Score" INTEGER NOT NULL DEFAULT 0,
     "status" "GameStatus" NOT NULL DEFAULT 'ONGOING',
+    "type" "GameType",
+    "test" TEXT,
+    "test2" TEXT,
     "player1Id" INTEGER,
     "player2Id" INTEGER,
     "winnerPlayerId" INTEGER,

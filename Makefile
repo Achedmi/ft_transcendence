@@ -15,9 +15,11 @@ down:
 	docker-compose down
 
 
-#remove the stopped containers, dangling images, dangling build cache
+#remove the stopped containers, dangling images, dangling build cache, remove all the volumes, images
 clean: down
 	docker system prune -f
+	docker volume prune -f
+	
 	
 images:
 	docker rmi -f $(docker images -a -q)

@@ -1,5 +1,5 @@
 import { SubscribeMessage, WebSocketServer, WebSocketGateway } from '@nestjs/websockets';
-import { GameStatus, Status } from '@prisma/client';
+import { GameStatus, GameType, Status } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { GameService } from 'src/game/game.service';
 import { UserService } from 'src/user/user.service';
@@ -136,6 +136,7 @@ export class GameGateway {
   async createGame(player1Socket, player2Socket, type: 'power' | 'classic') {
     const game = await this.gameService.create({
       players: [player1Socket['user'].id, player2Socket['user'].id],
+      type: type == 'classic' ? GameType.CLASSIC : GameType.POWERUP,
     });
     console.log('GAME CREATED', game.id);
 

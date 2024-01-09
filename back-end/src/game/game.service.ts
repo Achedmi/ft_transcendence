@@ -15,6 +15,7 @@ export class GameService {
         player2: {
           connect: { id: createGameDto.players[1] },
         },
+        type: createGameDto.type,
       },
     });
   }

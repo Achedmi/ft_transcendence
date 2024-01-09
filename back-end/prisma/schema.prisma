@@ -8,9 +8,6 @@ generator client {
 datasource db {
   provider = "postgresql"
    url      = env("DATABASE_URL")
-  // url      = "postgresql://postgres:postgres@127.0.0.1:5432/postgres?schema=public"
-  // url      = "postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
- // url      = "postgresql://postgres:postgres@db:5432/postgres?schema=public"
 }
 
 enum Status {
@@ -26,6 +23,13 @@ enum GameStatus {
   ENDED
   ONGOING
 }
+
+enum GameType {
+  CLASSIC
+  POWERUP
+}
+
+
 
 enum ChatType {
   DM
@@ -146,6 +150,7 @@ model Game {
   player2Score Int  @default(0)
   status GameStatus @default(ONGOING)
   winnerPlayer User? @relation("winnerPlayer", fields: [winnerPlayerId], references: [id])
+  type GameType? 
   player1Id  Int?
   player2Id  Int?
   winnerPlayerId Int?

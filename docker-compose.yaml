@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 services:
   backend:
     container_name: backend
@@ -10,6 +10,8 @@ services:
     depends_on:
       - db
     restart: always
+    env_file:
+      - ./back-end/.env-docker
 
   frontend:
     container_name: frontend
