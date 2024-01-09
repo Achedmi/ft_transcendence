@@ -7,10 +7,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // url      = env("DATABASE_URL")
   // url      = "postgresql://postgres:postgres@127.0.0.1:5432/postgres?schema=public"
   // url      = "postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
-  // url      = "postgresql://postgres:postgres@db:5432/postgres?schema=public"
+  url      = "postgresql://postgres:postgres@db:5432/postgres?schema=public"
 }
 
 enum Status {
@@ -52,7 +52,7 @@ model Chat {
   id        Int      @default(autoincrement()) @id
   type ChatType
   visibility Visibility
-  name String?
+  name String? @unique
   ownerId Int?
   image String?
   password String?
