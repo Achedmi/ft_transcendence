@@ -32,6 +32,7 @@ export interface ChatPreview {
   visibility?: string;
   members: Member[];
   isCached: boolean;
+  unreadMessages?: number;
 }
 
 export interface ChatInfo {
@@ -98,6 +99,7 @@ const useChatStore = create<ChatState>()((set) => {
             chatId: dm.id,
           },
           members: dm.members,
+          unreadMessages: 0,
           isCached: false,
         })),
       });

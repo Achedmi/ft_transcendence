@@ -49,14 +49,30 @@ function ChatPreviews({ currentUserId, chatType, clearMessage }: { currentUserId
           <SyncLoader color='#433650' />
         </div>
       ) : (
-        <div className='flex flex-col gap-2 pb-10'>
-          {chatType == ChatType.DM
-            ? chatStore.DmsPreview.map((chat: ChatPreview) => {
+        <div className='flex flex-col gap-2 pb-10 h-full'>
+          {chatType == ChatType.DM ? (
+            !chatStore.DmsPreview.length ? (
+              <div className='flex justify-center flex-col items-center h-full w-full'>
+                <span className='text-lg'>No Dms Yet</span>
+                <span className='text-sm text-dark-cl/60 w-[80%] text-center pt-1'>
+                  Start a conversation by going to the profile of the user you want to chat with and send them a message
+                </span>
+              </div>
+            ) : (
+              chatStore.DmsPreview.map((chat: ChatPreview) => {
                 return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} clearMessage={clearMessage} />;
               })
-            : chatStore.ChannelsPreview.map((chat: ChatPreview) => {
-                return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} clearMessage={clearMessage} />;
-              })}
+            )
+          ) : !chatStore.ChannelsPreview.length ? (
+            <div className='flex justify-center flex-col items-center h-full w-full'>
+              <span className='text-lg'>No Groups Yet</span>
+              <span className='text-sm text-dark-cl/60 w-[80%] text-center pt-1'>Create a group by clicking the button below</span>
+            </div>
+          ) : (
+            chatStore.ChannelsPreview.map((chat: ChatPreview) => {
+              return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} clearMessage={clearMessage} />;
+            })
+          )}
           {/* <div className='fillspace h-10'></div> */}
         </div>
       )}
