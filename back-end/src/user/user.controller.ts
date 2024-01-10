@@ -20,6 +20,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { GetCurrent } from 'src/auth/decorator/current.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { TFAGuard } from 'src/auth/guards/TFAGuard.guard';
+import { BlockeDto } from 'src/chat/dto/block.dto';
 
 @Controller('user')
 @UseGuards(TFAGuard)
@@ -82,7 +83,8 @@ export class UserController {
     const { wins, losses } = await this.userService.getWinsAndLosses(user.username);
     user['wins'] = wins;
     user['losses'] = losses;
-    return user;
+    const { TFAsecret, ...rest } = user;
+    return rest;
   }
 
   @Get(':username')
@@ -93,5 +95,15 @@ export class UserController {
   @Post('setMeOnline')
   setMeOnline(@GetCurrent('id') id: number) {
     return this.userService.setMeOnline(id);
+  }
+
+  @Post('block')
+  block(@GetCurrent('id') me: number, @Body() blockDto: BlockeDto) {
+    return this.userService.block(me, blockDto);
+  }
+
+  @Post('unblock')
+  unblock(@GetCurrent('id') me: number, @Body() blockDto: BlockeDto) {
+    return this.userService.unblock(me, blockDto);
   }
 }

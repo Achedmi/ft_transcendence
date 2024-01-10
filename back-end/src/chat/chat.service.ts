@@ -16,6 +16,7 @@ import { BlockeDto } from './dto/block.dto';
 import { BanMemberDto } from './dto/banMember.dto';
 import * as bcrypt from 'bcrypt';
 import { ChatGateway } from 'src/socket/chat.gateway';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class ChatService {
@@ -24,6 +25,7 @@ export class ChatService {
     private readonly cloudinaryService: CloudinaryService,
     private readonly helpersService: HelpersService,
     private readonly socketService: ChatGateway,
+    private readonly userService: UserService,
   ) {}
 
   async GetChatById(me: number, id: number) {
@@ -143,8 +145,10 @@ export class ChatService {
         chat.name = otherUser?.displayName;
         chat['username'] = otherUser?.username;
         chat.image = otherUser?.avatar;
+        chat['isBlocked'] = await this.userService.isBlocked(me, otherUser?.userId);
       }
-      return chat;
+      const { password, ...rest } = chat;
+      return rest;
     } else return {};
   }
 
@@ -248,7 +252,7 @@ export class ChatService {
     await Promise.all(
       channles.map(async (channel) => {
         if (channel.messages.length === 0) return;
-        const isLastMessageFromBlockedUser = await this.isBlocked(me, channel.messages[0].userId);
+        const isLastMessageFromBlockedUser = await this.userService.isBlocked(me, channel.messages[0].userId);
         if (isLastMessageFromBlockedUser) channel.messages[0].message = 'blocked message';
       }),
     );
@@ -716,58 +720,6 @@ export class ChatService {
     });
 
     return await this.getChatInfos(me, muteDto.chatId);
-  }
-
-  async block(me: number, blockDto: BlockeDto) {
-    if (me === blockDto.userId) throw new BadRequestException('You can not block yourself');
-
-    const blockedBy = await this.isBlocked(me, blockDto.userId);
-    if (blockedBy) {
-      if (blockedBy === me) throw new BadRequestException('You have already blocked this user');
-      else throw new BadRequestException('You have been blocked by this user');
-    }
-
-    return await this.prisma.blocking.create({
-      data: {
-        user1Id: me,
-        user2Id: blockDto.userId,
-        BlockedById: me,
-      },
-    });
-  }
-
-  async unblock(me: number, blockDto: BlockeDto) {
-    if (me === blockDto.userId) throw new BadRequestException('You can not unblock yourself');
-
-    const isBlocked = await this.isBlocked(me, blockDto.userId);
-    if (!isBlocked) throw new BadRequestException('You have not blocked this user');
-
-    return await this.prisma.blocking.delete({
-      where: {
-        user1Id_user2Id: {
-          user1Id: me,
-          user2Id: blockDto.userId,
-        },
-      },
-    });
-  }
-
-  async isBlocked(me: number, userId: number) {
-    const blockedBy = await this.prisma.blocking.findFirst({
-      where: {
-        OR: [
-          {
-            user1Id: me,
-            user2Id: userId,
-          },
-          {
-            user1Id: userId,
-            user2Id: me,
-          },
-        ],
-      },
-    });
-    return blockedBy?.BlockedById;
   }
 
   async getBlockedAndBlockedBe(me: number) {

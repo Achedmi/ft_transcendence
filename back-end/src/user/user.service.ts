@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { GameStatus, Status } from '@prisma/client';
+import { BlockeDto } from 'src/chat/dto/block.dto';
 
 @Injectable()
 export class UserService {
@@ -89,8 +90,8 @@ export class UserService {
     const { wins, losses } = await this.getWinsAndLosses(username);
     user['friends'] = await this.getUserFriendsByUsername(id, username);
     const isFriend = user['friends'].some((friend) => friend.id === id || friend.id === id);
-
-    return { ...user, isFriend, wins, losses };
+    const isBlocked = await this.isBlocked(id, user.id);
+    return { ...user, isFriend, wins, losses, isBlocked: isBlocked ? true : false };
   }
 
   async findOne(id: number) {
@@ -130,6 +131,12 @@ export class UserService {
   async addFriend(id: number, friendId: number) {
     if (id == friendId) {
       throw new BadRequestException('You cannot add yourself as a friend.');
+    }
+
+    const isBlocked = await this.isBlocked(id, friendId);
+    if (isBlocked) {
+      if (isBlocked === id) throw new BadRequestException('You have blocked this user');
+      else throw new BadRequestException('You have been blocked by this user');
     }
 
     await this.prisma.friendship.create({
@@ -220,5 +227,59 @@ export class UserService {
       },
     });
     return { wins, losses };
+  }
+
+  async block(me: number, blockDto: BlockeDto) {
+    if (me === blockDto.userId) throw new BadRequestException('You can not block yourself');
+
+    const blockedBy = await this.isBlocked(me, blockDto.userId);
+    if (blockedBy) {
+      if (blockedBy === me) throw new BadRequestException('You have already blocked this user');
+      else throw new BadRequestException('You have been blocked by this user');
+    }
+
+    await this.unfriend(me, blockDto.userId);
+
+    return await this.prisma.blocking.create({
+      data: {
+        user1Id: me,
+        user2Id: blockDto.userId,
+        BlockedById: me,
+      },
+    });
+  }
+
+  async unblock(me: number, blockDto: BlockeDto) {
+    if (me === blockDto.userId) throw new BadRequestException('You can not unblock yourself');
+
+    const isBlocked = await this.isBlocked(me, blockDto.userId);
+    if (!isBlocked) throw new BadRequestException('You have not blocked this user');
+
+    return await this.prisma.blocking.delete({
+      where: {
+        user1Id_user2Id: {
+          user1Id: me,
+          user2Id: blockDto.userId,
+        },
+      },
+    });
+  }
+
+  async isBlocked(me: number, userId: number) {
+    const blockedBy = await this.prisma.blocking.findFirst({
+      where: {
+        OR: [
+          {
+            user1Id: me,
+            user2Id: userId,
+          },
+          {
+            user1Id: userId,
+            user2Id: me,
+          },
+        ],
+      },
+    });
+    return blockedBy?.BlockedById;
   }
 }

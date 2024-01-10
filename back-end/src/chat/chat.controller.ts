@@ -119,16 +119,6 @@ export class ChatController {
     return this.chatService.mute(me, muteDto);
   }
 
-  @Post('block')
-  block(@GetCurrent('id') me: number, @Body() blockDto: BlockeDto) {
-    return this.chatService.block(me, blockDto);
-  }
-
-  @Post('unblock')
-  unblock(@GetCurrent('id') me: number, @Body() blockDto: BlockeDto) {
-    return this.chatService.unblock(me, blockDto);
-  }
-
   @Get('getChatMessages/:id')
   getChatMessages(@GetCurrent('id') me: number, @Param('id', new ParseIntPipe({ optional: false })) id: number, @Query() { skip }: GetChatMessagesDto) {
     return this.chatService.getChatMessages(me, id, skip);
