@@ -24,7 +24,7 @@ export class TFAStrategy extends PassportStrategy(Strategy, 'TFA') {
 
     const { isTFAenabled, username, isSetupCompleted } = user;
 
-    // if (!user?.isSetupCompleted) throw new ForbiddenException({ isTFAenabled, username, isSetupCompleted, isTFAVerified: payload.isTFAVerified });
+    if (!user?.isSetupCompleted) throw new ForbiddenException({ isTFAenabled, username, isSetupCompleted, isTFAVerified: payload.isTFAVerified });
     if (user?.isTFAenabled && !payload.isTFAVerified) throw new ForbiddenException({ isTFAenabled, username, isSetupCompleted, isTFAVerified: payload.isTFAVerified });
     return {
       ...user,

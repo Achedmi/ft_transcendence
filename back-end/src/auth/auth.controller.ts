@@ -62,10 +62,7 @@ export class AuthController {
       response.redirect(process.env.FRONT_END_URL);
       return;
     }
-    const { accessToken, refreshToken } = await this.authService.signUp(
-      req.user.profile.username,
-      'https://res.cloudinary.com/dwrysd8sm/image/upload/v1704717037/incognito_gtm9s0.jpg',
-    );
+    const { accessToken, refreshToken } = await this.authService.signUp(req.user.profile.username, 'https://i.imgur.com/VLTROAT.png');
 
     this.helpersService.setTokenCookies(response, accessToken, refreshToken);
     response.redirect(process.env.FRONT_END_URL);

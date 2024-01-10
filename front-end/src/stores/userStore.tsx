@@ -73,6 +73,7 @@ export const useUserStore = create<UserState>((set) => ({
     try {
       const response = await axios.get('/user/me');
       set({ user: { ...response.data } });
+      
       return true;
     } catch (error: AxiosError | any) {
       return false;

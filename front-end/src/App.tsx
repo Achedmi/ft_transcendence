@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import { useUserStore } from './stores/userStore.tsx';
 import Chat from './components/pages/chat/Chat.tsx';
 import Ranking from './components/pages/Ranking.tsx';
+import SetupProfile from './components/pages/SetupProfile.tsx';
 
 const queryClient = new QueryClient();
 
@@ -42,9 +43,11 @@ function App() {
     <Routes>
       <Route path='login' element={<Login />} />
       <Route path='tfa' element={<VerifyTfa />} />
+      <Route path='setup' element={<SetupProfile />} />
     </Routes>
   ) : (
     <Routes>
+      {/* <Route index element={<SetupProfile />} /> */}
       <Route path='/' element={<Layout />}>
         <Route index element={<Home />} />
         <Route path='play' element={<Play />} />
@@ -61,6 +64,7 @@ function App() {
         <Route path='login' element={<Navigate to='/' />} />
         <Route path='tfa' element={<Navigate to='/' />} />
       </Route>
+      {/* <Route path='setup*' element={<Navigate to='/' />} /> */}
       <Route path='*' element={<NotFound404 />} />
     </Routes>
   );

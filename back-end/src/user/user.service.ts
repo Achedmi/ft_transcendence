@@ -5,7 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { GameStatus, Status } from '@prisma/client';
 import { BlockeDto } from 'src/chat/dto/block.dto';
-
+import { Response } from 'express';
+//
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService, private readonly cloudinaryService: CloudinaryService) {}
@@ -98,7 +99,7 @@ export class UserService {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id } });
     return user;
   }
-
+  //
   async update(
     image,
     id: number,
@@ -120,6 +121,32 @@ export class UserService {
       data: updateUserDto,
     });
     return user;
+  }
+
+  async finishSetup(
+    image,
+    id: number,
+    updateUserDto: UpdateUserDto & {
+      TFAsecret?: string;
+      isTFAenabled?: boolean;
+    },
+  ) {
+    if (image) {
+      const { url } = await this.cloudinaryService.uploadImage(image).catch(() => {
+        throw new BadRequestException('Something went wrong.');
+      });
+      updateUserDto.avatar = url;
+    }
+    console.log(updateUserDto);
+    const { TFAsecret, ...user } = await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        ...updateUserDto,
+        isSetupCompleted: true,
+      },
+    });
   }
 
   async remove(id: number) {
