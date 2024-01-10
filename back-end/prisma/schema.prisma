@@ -122,6 +122,8 @@ model User {
   bio String? @default("Nothing to see here...")
   createdAt DateTime @default(now())
   
+  isSetupCompleted Boolean @default(false)
+  
   bannedFrom Chat[] @relation("bannedUsers")
   
   player1 Game[] @relation("player1")
