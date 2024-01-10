@@ -10,8 +10,9 @@ import { toast } from 'react-toastify';
 import { SubNavBar } from '../../SubNavBar';
 import { userFriendsStore } from '../Profile/Friends';
 import toastConfig from '../../../utils/toastConf';
-import { AddFriendIcon, MessageIcon, Toggle, UnfriendIcon } from '../../icons/icons';
+import { AddFriendIcon, BlockIcon, MessageIcon, UnblockIcon, UnfriendIcon } from '../../icons/icons';
 import SendDm from './SendDm';
+import axiosInstance from '../../../utils/axios';
 
 function Users() {
   const [dmOpen, setDmOpen] = useState(false);
@@ -23,7 +24,43 @@ function Users() {
   const { data, refetch, isLoading, isFetching } = useQuery('users', () => friendsStore.fetchUserAndFriends(username || ''), {
     refetchOnWindowFocus: false,
   });
-  const game = useUserStore((state) => state.socket?.game);
+
+  const handleBlock = useCallback(async () => {
+    try {
+      toast.promise(
+        async () => {
+          await axiosInstance.post(`user/block`, { userId: data.id });
+        },
+        toastConfig({
+          success: 'Blocked!',
+          error: 'Error Blocking',
+          pending: 'Blocking...',
+        }),
+      );
+      await refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [data?.id, refetch]);
+
+  const handleUnblock = useCallback(async () => {
+    try {
+      toast.promise(
+        async () => {
+          await axiosInstance.post(`user/unblock/`, { userId: data.id });
+        },
+        toastConfig({
+          success: 'Unblocked!',
+          error: 'Error unblocking',
+          pending: 'Unblocking...',
+        }),
+      );
+      await refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [data?.id, refetch]);
+
   const handleLoaded = useCallback(() => {
     setIsLoaded(true);
     console.log('loaded');
@@ -114,6 +151,29 @@ function Users() {
                 >
                   <AddFriendIcon className='h-5 w-5 fill-white' />
                   <span className='hidden sm:block non-selectable'>Add Friend</span>
+                </motion.div>
+              )}
+              {!data.isBlocked ? (
+                <motion.div
+                  className='bg-red-cl hover:cursor-pointer text-white flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute bottom-6 right-0 mr-4 p-2 h-11'
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title='Unfriend'
+                  onClick={handleBlock}
+                >
+                  <BlockIcon className='h-5 w-5 fill-white' />
+                  <span className='hidden sm:block non-selectable'>Block</span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  className='bg-red-cl hover:cursor-pointer text-white flex justify-center gap-2 items-center rounded-3xl border-solid border-dark-cl border-[4px] absolute bottom-6 right-0 mr-4 p-2 h-11'
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title='Unfriend'
+                  onClick={handleUnblock}
+                >
+                  <UnblockIcon className='h-6 w-6 fill-white' />
+                  <span className='hidden sm:block non-selectable'>Unblock</span>
                 </motion.div>
               )}
             </div>
