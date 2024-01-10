@@ -57,7 +57,7 @@ export class ChatGateway {
 
   handleDisconnect(client) {
     if (!client.user) return;
-    console.log('Client disconnected from Game socket: ', client.user.username);
+    console.log('Client disconnected from Chat socket: ', client.user.username);
     delete this.connectedUsers[client.user.id];
   }
 

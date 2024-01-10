@@ -112,7 +112,7 @@ model Blocking {
 model User {
   id    Int     @default(autoincrement()) @id
   username String  @unique
-  displayName String
+  displayName String @unique
   avatar String
   level Float  @default(0)
   status  Status @default(ONLINE)
