@@ -31,7 +31,6 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
   }, []);
 
   const visibilitySelected = (newVisibility: string, currentVisibility: string | undefined, tobeCompared: string) => {
-    console.log(newVisibility, currentVisibility, tobeCompared);
     if (newVisibility == tobeCompared) return 'bg-dark-cl text-white';
     if (!newVisibility && currentVisibility == tobeCompared) return 'bg-dark-cl text-white';
     return 'hover:bg-dark-cl/25';
@@ -51,7 +50,6 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
               'Content-Type': 'multipart/form-data',
             },
           });
-          console.log('response', response);
           chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
           chatStore.getChannelsPreview();
           return response;
@@ -71,14 +69,14 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
 
   const close = useCallback(() => {
     setUpdatedGroup({
-      name: chatStore.chatInfo?.get(chatStore.selectedChatId)?.name || '',
-      visibility: chatStore.chatInfo?.get(chatStore.selectedChatId)?.visibility || '',
-      image: chatStore.chatInfo?.get(chatStore.selectedChatId)?.image || '',
+      name:  '',
+      visibility:  '',
+      image:  '',
       password: '',
     });
     setNewImage(null);
     setOpen(false);
-  }, [setOpen]);
+  }, [setOpen, chatStore.selectedChatId, setNewImage]);
 
   return (
     <AnimatePresence>
@@ -144,9 +142,8 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                   <input
                     className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64'
                     type='text'
-                    placeholder={chatStore.chatInfo?.get(chatStore.selectedChatId)?.name}
+                    placeholder={chatStore.chatInfo?.get(chatStore.selectedChatId)?.name + '' + chatStore.chatInfo?.get(chatStore.selectedChatId)?.id}
                     onChange={(e) => {
-                      console.log(e.target.value);
                       setUpdatedGroup({
                         ...updatedGroup,
                         name: e.target.value,

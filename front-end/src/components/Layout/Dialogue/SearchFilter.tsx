@@ -48,7 +48,6 @@ export default function CommandSearchResults() {
 
               chatStore.getChannelsPreview();
               chatStore.setSelectedChatId(response.data.id);
-              chatStore.getChatInfo(channelId);
               return response;
             } catch (error) {
               throw error;

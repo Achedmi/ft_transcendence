@@ -143,6 +143,7 @@ const useChatStore = create<ChatState>()((set) => {
     },
     getChatInfo: async ({ queryKey }: any) => {
       const [_, id] = queryKey;
+      console.log('getChatInfo', id);
       if (useChatStore.getState().chatInfo?.has(id)) return;
       set({ chatInfoLoading: true });
       const chatInfo = await axios.get(`/chat/getChatInfos/${id}`);

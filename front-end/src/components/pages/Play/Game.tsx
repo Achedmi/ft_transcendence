@@ -71,7 +71,7 @@ function Game() {
 
   return (
     <div className='h-full w-full flex justify-center items-center '>
-      <div className='w-[80%]  aspect-video flex  justify-center bg-dark-cl p-4 rounded-xl '>
+      <div className='max-h-[75%] w-[80%]  aspect-video flex  justify-center bg-dark-cl p-4 rounded-xl '>
         <canvas className=' aspect-video  relative z-50 border-4 border-solid border-gray-cl/25 ' width={1280} height={720} ref={canvasRef}></canvas>
       </div>
     </div>

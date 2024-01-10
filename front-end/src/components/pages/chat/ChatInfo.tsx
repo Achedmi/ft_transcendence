@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import useChatStore, { ChatType, Member } from '../../../stores/chatStore';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AddMemberIcon, AdminIcon, BlockIcon, Check, CrownIcon, Edit, Game, GroupMembersIcon, KickIcon, MuteIcon, Profile } from '../../icons/icons';
 import { useQuery } from 'react-query';
 import { SyncLoader } from 'react-spinners';
@@ -277,7 +277,6 @@ function GroupMemberCol({ member, activeDropDown, setActiveDropDown, currentMemb
 
 function GroupMembers({ members, currentMember }: { members: Member[] | undefined; currentMember: Member }) {
   const [activeDropDown, setActiveDropDown] = useState(0);
-  console.log('membersssss: ', members);
   return (
     <div className='h-full m-3 ml-2 flex flex-col gap-2'>
       {members?.map((member: any) => {
@@ -302,7 +301,8 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   const { socket, user } = useUserStore();
   const addMemberStore = useAddGroupStore();
   function handleEditGroup() {
-    console.log('edit group');
+    console.log('edit group clicked: ', chatStore.chatInfo?.get(chatStore.selectedChatId)?.name, chatStore.selectedChatId);
+
     setEditGroupOpen(true);
   }
   useQuery(['ChatInfo', chatStore.selectedChatId], chatStore.getChatInfo, {
