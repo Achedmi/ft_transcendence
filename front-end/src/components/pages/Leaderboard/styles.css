@@ -18,3 +18,12 @@
     border-radius: 50%; /* Make it round */
     cursor: pointer;
 }
+.seperator::before{
+    content: '';
+    display: inline-block;
+    height: 1.5em; 
+    width: 2px; 
+    background: linear-gradient(45deg, #8A0000, #4B7605);
+    position: absolute;
+    left: -0.09em;
+}
