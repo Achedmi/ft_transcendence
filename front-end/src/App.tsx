@@ -16,7 +16,8 @@ import MatchHistory from './components/pages/Profile/MatchHistory.tsx';
 import { useEffect } from 'react';
 import { useUserStore } from './stores/userStore.tsx';
 import Chat from './components/pages/chat/Chat.tsx';
-import Ranking from './components/pages/Ranking.tsx';
+// import Ranking from './components/pages/Ranking.tsx';
+import LeaderBoard from './components/pages/Leaderboard/Leaderboard.tsx';
 
 const queryClient = new QueryClient();
 
@@ -48,7 +49,7 @@ function App() {
       <Route path='/' element={<Layout />}>
         <Route index element={<Home />} />
         <Route path='play' element={<Play />} />
-        <Route path='ranking' element={<Ranking />} />
+        <Route path='ranking' element={<LeaderBoard />} />
         <Route path='chat' element={<Chat />} />
         <Route path='profile' element={<Profile />}>
           <Route index element={<MatchHistory />} />
