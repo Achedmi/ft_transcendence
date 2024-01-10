@@ -372,3 +372,15 @@ export const UnblockIcon = (icon: IconProps) => {
     </svg>
   );
 };
+
+export const LeaveIcon = (icon: IconProps) => {
+  return (
+    <svg className={icon.className} width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+      <path
+        fillRule='evenodd'
+        clipRule='evenodd'
+        d='M11.7071 3.29289L15.4142 7L11.7071 10.7071C11.3166 11.0976 10.6834 11.0976 10.2929 10.7071C9.90237 10.3166 9.90237 9.68342 10.2929 9.29289L11.5858 8H4.5C3.67157 8 3 8.67157 3 9.5C3 10.3284 3.67157 11 4.5 11H6C6.55228 11 7 11.4477 7 12C7 12.5523 6.55228 13 6 13H4.5C2.567 13 1 11.433 1 9.5C1 7.567 2.567 6 4.5 6H11.5858L10.2929 4.70711C9.90237 4.31658 9.90237 3.68342 10.2929 3.29289C10.6834 2.90237 11.3166 2.90237 11.7071 3.29289Z'
+      />
+    </svg>
+  );
+};

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import useChatStore, { ChatType, Member } from '../../../stores/chatStore';
 import { useCallback, useEffect, useState } from 'react';
-import { AddMemberIcon, AdminIcon, BlockIcon, Check, CrownIcon, Edit, Game, GroupMembersIcon, KickIcon, MuteIcon, Profile } from '../../icons/icons';
+import { AddMemberIcon, AdminIcon, BlockIcon, Check, CrownIcon, Edit, Game, GroupMembersIcon, KickIcon, LeaveIcon, MuteIcon, Profile } from '../../icons/icons';
 import { useQuery } from 'react-query';
 import { SyncLoader } from 'react-spinners';
 import { useUserStore } from '../../../stores/userStore';
@@ -300,6 +300,30 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   const chatStore = useChatStore();
   const { socket, user } = useUserStore();
   const addMemberStore = useAddGroupStore();
+
+  const leaveGroup = useCallback(async () => {
+    toast.promise(
+      async () => {
+        try {
+          const response = await axiosInstance.post(`chat/kickMember`, {
+            userId: user.id,
+            chatId: chatStore.selectedChatId,
+          });
+          chatStore.setSelectedChatId(-1);
+          chatStore.getChannelsPreview();
+          // chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
+        } catch (error) {
+          throw error;
+        }
+      },
+      toastConfig({
+        pending: 'Leaving...',
+        success: 'Channel left successfully',
+        error: 'Failed to leave',
+      }),
+    );
+  }, [chatStore.selectedChatId, user.id]);
+
   function handleEditGroup() {
     console.log('edit group clicked: ', chatStore.chatInfo?.get(chatStore.selectedChatId)?.name, chatStore.selectedChatId);
 
@@ -366,6 +390,7 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
                 {chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id == user.id)?.isAdmin && (
                   <InfoButton text='Add User' Icon={AddMemberIcon} onClick={() => addMemberStore.setIsOpen(true)} />
                 )}
+                <InfoButton text={'Leave'} Icon={LeaveIcon} onClick={leaveGroup} />
                 <InfoButton text={`Group Members (${chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.length})`} Icon={GroupMembersIcon} />
               </>
             )}

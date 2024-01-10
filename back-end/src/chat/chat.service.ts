@@ -498,16 +498,21 @@ export class ChatService {
   }
 
   async kickMember(me: number, kickMemberDto: KickMemberDto) {
-    if (me === kickMemberDto.userId) throw new BadRequestException('You can not kick yourself');
+    if (me === kickMemberDto.userId) {
+      const isOwner = await this.isOwner(me, kickMemberDto.chatId);
+      if (isOwner) throw new BadRequestException('Give ownership to someone else before leaving');
+    }
 
-    const isAbleto = await this.isAdminOrOwner(me, kickMemberDto.chatId);
-    if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
+    if (me !== kickMemberDto.userId) {
+      const isAbleto = await this.isAdminOrOwner(me, kickMemberDto.chatId);
+      if (!isAbleto) throw new BadRequestException('You are not the owner or the Admin of this chat');
 
-    const isOwner = await this.isOwner(kickMemberDto.userId, kickMemberDto.chatId);
-    if (isOwner) throw new BadRequestException('You can not kick the owner of this chat');
+      const isOwner = await this.isOwner(kickMemberDto.userId, kickMemberDto.chatId);
+      if (isOwner) throw new BadRequestException('You can not kick the owner of this chat');
 
-    const isUserInChat = await this.isUserInChat(kickMemberDto.userId, kickMemberDto.chatId);
-    if (!isUserInChat) throw new BadRequestException('User is not in this chat');
+      const isUserInChat = await this.isUserInChat(kickMemberDto.userId, kickMemberDto.chatId);
+      if (!isUserInChat) throw new BadRequestException('User is not in this chat');
+    }
 
     const chat = await this.prisma.userChat.delete({
       where: {

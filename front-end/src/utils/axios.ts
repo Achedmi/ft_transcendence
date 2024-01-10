@@ -20,7 +20,7 @@ axiosInstance.interceptors.response.use(
         window.location.href = '/login';
       }
     } else if (error.response?.status === 403 && location.pathname !== '/tfa') window.location.href = '/tfa';
-    else
+    else if (error.response?.status !== 403 && error.response.status !== 401)
       toast.error(error.response?.data?.message || error.response?.data?.error || 'Something went wrong', {
         className: 'toast-error',
         icon: Error,
