@@ -199,7 +199,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                   <div className='flex  justify-center items-center gap-8 pb-4'>
                     <div className='text-md w-10 text-center'>code:</div>
                     <input
-                      type='text'
+                      type='password'
                       className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64 overflow-hidden'
                       placeholder={'#459aBc'}
                       onChange={(e) => {
@@ -208,6 +208,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                           password: e.target.value,
                         });
                       }}
+                      required
                     />
                   </div>
                 )}
