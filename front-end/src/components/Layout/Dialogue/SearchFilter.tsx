@@ -102,25 +102,30 @@ export default function CommandSearchResults() {
       )}
       {searchStore.filteredChannels.length > 0 && (
         <CommandGroup heading='Channels' className=''>
-          {searchStore.filteredChannels.map((channel: any) => (
-            <CommandItem
-              key={'search-channel-' + channel.id}
-              onSelect={async () => {
-                await handleSelectChat(channel.id);
-              }}
-              className=''
-            >
-              <img src={channel.image} alt='avatar' className='object-cover  mr-2 w-8 h-8 rounded-full' />
-              <div className='flex flex-col'>
-                <span className='text-sm font-bold'>{channel.name}</span>
-              </div>
-              {channel.visibility === 'PROTECTED' && (
-                <CommandShortcut>
-                  <LockIcon className='h-4 w-4' />
-                </CommandShortcut>
-              )}
-            </CommandItem>
-          ))}
+          {searchStore.filteredChannels.map((channel: any) => {
+            console.log('id', channel.id, 'name', channel.name);
+            return (
+              <CommandItem
+                key={'search-channel-' + channel.id}
+                onSelect={async (value) => {
+                  console.log('value', value);
+                  await handleSelectChat(channel.id);
+                }}
+                className=''
+                value={'search-channel-' + channel.id}
+              >
+                <img src={channel.image} alt='avatar' className='object-cover  mr-2 w-8 h-8 rounded-full' />
+                <div className='flex flex-col'>
+                  <span className='text-sm font-bold'>{channel.name}</span>
+                </div>
+                {channel.visibility === 'PROTECTED' && (
+                  <CommandShortcut>
+                    <LockIcon className='h-4 w-4' />
+                  </CommandShortcut>
+                )}
+              </CommandItem>
+            );
+          })}
         </CommandGroup>
       )}
     </>

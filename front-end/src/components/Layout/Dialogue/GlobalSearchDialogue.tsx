@@ -1,11 +1,11 @@
-import { useNavigate } from "react-router-dom";
-import { useSearchStore } from "../../../stores/searchStore";
-import { useUserStore } from "../../../stores/userStore";
-import useGameStore from "../../../game/gameStore";
-import { useCallback, useEffect } from "react";
-import { CommandDialog, CommandGroup, CommandItem, CommandList, CommandSeparator, CommandShortcut } from "./config/Command";
-import CommandSearchResults, { CommandSearch } from "./SearchFilter";
-import { Game, Home, MessageIcon, Profile } from "../../icons/icons";
+import { useNavigate } from 'react-router-dom';
+import { useSearchStore } from '../../../stores/searchStore';
+import { useUserStore } from '../../../stores/userStore';
+import useGameStore from '../../../game/gameStore';
+import { useCallback, useEffect } from 'react';
+import { Command, CommandDialog, CommandGroup, CommandItem, CommandList, CommandSeparator, CommandShortcut } from './config/Command';
+import CommandSearchResults, { CommandSearch } from './SearchFilter';
+import { Game, Home, MessageIcon, Profile } from '../../icons/icons';
 
 export function GlobalCommandDialog() {
   const navigate = useNavigate();
@@ -102,33 +102,42 @@ export function GlobalCommandDialog() {
 
   return (
     <CommandDialog open={searchStore.isOpen} onOpenChange={searchStore.setIsOpen}>
-      <CommandSearch />
-      <CommandList className='font-bold text-dark-cl bg-[#D9D9D9] overflow-y-scroll scrollbar-thin scrollbar-thumb-dark-cl/70 scrollbar-thumb-rounded-full'>
-        <CommandSearchResults />
-        <CommandSeparator />
-        <CommandGroup heading='Pages'>
-          <CommandItem onSelect={handleSelectProfile}>
-            <Profile className='mr-2 h-4 w-4' size={16} />
-            <span>Profile</span>
-            <CommandShortcut>⌘P</CommandShortcut>
-          </CommandItem>
-          <CommandItem onSelect={handleSelectPlay}>
-            <Game className='mr-2 h-4 w-4' size={16} />
-            <span>Game</span>
-            <CommandShortcut>⌘G</CommandShortcut>
-          </CommandItem>
-          <CommandItem onSelect={handleSelectHome}>
-            <Home className='mr-2 h-4 w-4' />
-            <span>Home</span>
-            <CommandShortcut>⌘H</CommandShortcut>
-          </CommandItem>
-          <CommandItem onSelect={handleSelectChat}>
-            <MessageIcon className='mr-2 h-4 w-4' />
-            <span>Chat</span>
-            <CommandShortcut>⌘M</CommandShortcut>
-          </CommandItem>
-        </CommandGroup>
-      </CommandList>
+      <Command
+        loop
+        filter={(value, search) => {
+          if (value.includes(search)) return 1;
+          return 0;
+        }}
+      >
+        <CommandSearch />
+
+        <CommandList className='font-bold text-dark-cl bg-[#D9D9D9] overflow-y-scroll scrollbar-thin scrollbar-thumb-dark-cl/70 scrollbar-thumb-rounded-full'>
+          <CommandSearchResults />
+          <CommandSeparator />
+          <CommandGroup heading='Pages'>
+            <CommandItem onSelect={handleSelectProfile}>
+              <Profile className='mr-2 h-4 w-4' size={16} />
+              <span>Profile</span>
+              <CommandShortcut>⌘P</CommandShortcut>
+            </CommandItem>
+            <CommandItem onSelect={handleSelectPlay}>
+              <Game className='mr-2 h-4 w-4' size={16} />
+              <span>Game</span>
+              <CommandShortcut>⌘G</CommandShortcut>
+            </CommandItem>
+            <CommandItem onSelect={handleSelectHome}>
+              <Home className='mr-2 h-4 w-4' />
+              <span>Home</span>
+              <CommandShortcut>⌘H</CommandShortcut>
+            </CommandItem>
+            <CommandItem onSelect={handleSelectChat}>
+              <MessageIcon className='mr-2 h-4 w-4' />
+              <span>Chat</span>
+              <CommandShortcut>⌘M</CommandShortcut>
+            </CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </Command>
     </CommandDialog>
   );
 }
