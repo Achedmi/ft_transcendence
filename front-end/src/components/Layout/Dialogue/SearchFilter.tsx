@@ -36,14 +36,21 @@ export default function CommandSearchResults() {
   const chatStore = useChatStore();
   const { user } = useUserStore();
   const handleSelectChat = useCallback(
-    async (channelId: number) => {
+    async (channelId: number, visibility: string) => {
       chatStore.getChannelsPreview();
 
       if (!chatStore.isMemberOfChat(channelId, user.id)) {
+        if (visibility === 'PROTECTED') {
+          chatStore.setChannelToJoinId(channelId);
+          chatStore.setPromptPasswordOpen(true);
+          searchStore.setIsOpen(false);
+          return;
+        }
+
+        const response = await axiosInstance.post(`chat/joinChannel`, { channelId });
         toast.promise(
           async () => {
             try {
-              const response = await axiosInstance.post(`chat/joinChannel`, { channelId });
               console.log('response', response);
 
               chatStore.getChannelsPreview();
@@ -59,6 +66,8 @@ export default function CommandSearchResults() {
             pending: 'Joining...',
           }),
         );
+        chatStore.setSelectedChatId(response.data.id);
+        navigate(`/chat`);
       } else {
         chatStore.setSelectedChatId(channelId);
         navigate(`/chat`);
@@ -106,9 +115,9 @@ export default function CommandSearchResults() {
             return (
               <CommandItem
                 key={'search-channel-' + channel.id}
-                onSelect={async (value) => {
-                  console.log('value', value);
-                  await handleSelectChat(channel.id);
+                onSelect={async () => {
+                  console.log('cnd', channel);
+                  await handleSelectChat(channel.id, channel.visibility);
                 }}
                 className=''
                 value={'search-channel-' + channel.id}

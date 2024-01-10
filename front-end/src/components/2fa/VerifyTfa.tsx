@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import { toast } from 'react-toastify';
 import axios from '../../utils/axios';
+import { Error } from '../icons/icons';
 
 function VerifyTfa() {
   const codeInputRef = useRef<HTMLInputElement>(null);
@@ -10,14 +11,22 @@ function VerifyTfa() {
       e.preventDefault();
       const code = codeInputRef.current?.value;
       if (!code || code.length !== 6) {
-        toast.error('invalid code. must be 6 digits');
+        toast.error('invalid code. must be 6 digits', {
+          className: 'toast-error',
+          icon: Error,
+          progressClassName: 'Toastify__progress-bar-error',
+        });
         return;
       }
       try {
         await axios.post('/auth/verifyTFAcode', { TFAcode: code });
         window.location.replace(`http://${import.meta.env.VITE_ADDRESS}:6969/`);
       } catch (error) {
-        toast.error('invalid code');
+        toast.error('invalid code', {
+          className: 'toast-error',
+          icon: Error,
+          progressClassName: 'Toastify__progress-bar-error',
+        });
       }
     },
     [codeInputRef],

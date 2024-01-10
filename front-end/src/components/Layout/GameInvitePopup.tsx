@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useUserStore } from '../../stores/userStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'react-toastify';
+import { Error } from '../icons/icons';
 
 function GameInvitePopup() {
   const game = useUserStore((state) => state.socket?.game);
@@ -35,7 +36,11 @@ function GameInvitePopup() {
     });
 
     game?.on('invalidInvite', () => {
-      toast.error('Invalid invite');
+      toast.error('Invalid invite', {
+        className: 'toast-error',
+        icon: Error,
+        progressClassName: 'Toastify__progress-bar-error',
+      });
     });
 
     return () => {

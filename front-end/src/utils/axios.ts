@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { Error } from '../components/icons/icons';
 
 const axiosInstance = axios.create({
   baseURL: `http://${import.meta.env.VITE_ADDRESS}:9696`,
@@ -20,9 +21,12 @@ axiosInstance.interceptors.response.use(
       }
     } else if (error.response?.status === 403 && location.pathname !== '/tfa') window.location.href = '/tfa';
     else
-      toast.error(error.response?.data?.message || error.response?.data?.error || 'Something went wrong');
+      toast.error(error.response?.data?.message || error.response?.data?.error || 'Something went wrong', {
+        className: 'toast-error',
+        icon: Error,
+        progressClassName: 'Toastify__progress-bar-error',
+      });
     return Promise.reject(error);
-  
   },
 );
 

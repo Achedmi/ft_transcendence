@@ -47,6 +47,10 @@ export interface ChatInfo {
 }
 
 interface ChatState {
+  promptPasswordOpen: boolean;
+  setPromptPasswordOpen: (open: boolean) => void;
+  channelToJoinId?: number;
+  setChannelToJoinId: (id: number) => void;
   DmsPreview: ChatPreview[];
   DmsLoading: boolean;
   ChannelsPreview: ChatPreview[];
@@ -71,6 +75,14 @@ interface ChatState {
 
 const useChatStore = create<ChatState>()((set) => {
   return {
+    promptPasswordOpen: false,
+    setPromptPasswordOpen: (open: boolean) => {
+      set({ promptPasswordOpen: open });
+    },
+    channelToJoinId: undefined,
+    setChannelToJoinId: (id: number) => {
+      set({ channelToJoinId: id });
+    },
     DmsPreview: [],
     ChannelsPreview: [],
     DmsLoading: true,

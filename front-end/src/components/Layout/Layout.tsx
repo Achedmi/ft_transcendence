@@ -8,6 +8,7 @@ import { useQuery } from 'react-query';
 import useChatStore, { ChatType } from '../../stores/chatStore';
 import NavBar from '../NavBar';
 import { GlobalCommandDialog } from './Dialogue/GlobalSearchDialogue';
+import PromptPassword from './Dialogue/PromptPassword';
 
 function PrivateRoutes() {
   const { socket, setSocket, setAbelToPlay } = useUserStore();
@@ -96,6 +97,7 @@ function PrivateRoutes() {
     <>
       <div className='flex flex-col p-3 gap-4 h-screen font-Baloo font-bold z-0 '>
         <GlobalCommandDialog />
+        <PromptPassword open={chatStore.promptPasswordOpen} setOpen={chatStore.setPromptPasswordOpen} />
         <NavBar />
         <GameInvitePopup />
         <div className='outlet  h-full w-full min-w-[300px] overflow-y-scroll no-scrollbar'>

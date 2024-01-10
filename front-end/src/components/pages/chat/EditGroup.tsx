@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import axiosInstance from '../../../utils/axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Close, Edit } from '../../icons/icons';
+import toastConfig from '../../../utils/toastConf';
 
 type updatedGroup = {
   name: string;
@@ -59,19 +60,19 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
           throw error;
         }
       },
-      {
-        success: 'Group updated!',
-        error: 'Error updating group!',
-        pending: 'Updating group...',
-      },
+      toastConfig({
+        success: 'Updated!',
+        error: 'Error Updating',
+        pending: 'Updating...',
+      }),
     );
   }, [newImage, updatedGroup, chatStore.selectedChatId]);
 
   const close = useCallback(() => {
     setUpdatedGroup({
-      name:  '',
-      visibility:  '',
-      image:  '',
+      name: '',
+      visibility: '',
+      image: '',
       password: '',
     });
     setNewImage(null);

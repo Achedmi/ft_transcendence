@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../utils/axios';
 import { Close, Edit } from '../../icons/icons';
+import toastConfig from '../../../utils/toastConf';
 
 type newGroup = {
   name: string;
@@ -59,11 +60,11 @@ function CreateGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
           throw error;
         }
       },
-      {
-        success: 'Group created!',
-        error: 'Error creating group!',
-        pending: 'Creating group...',
-      },
+      toastConfig({
+        success: 'Created!',
+        error: 'Error Creating',
+        pending: 'Creating...',
+      }),
     );
   }, [newImage, newGroup, chatStore.selectedChatId]);
 
