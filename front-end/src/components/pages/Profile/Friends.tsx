@@ -90,6 +90,7 @@ function FriendRow({
   beFriends,
   me,
   isFriend,
+  status,
 }: {
   username: string;
   displayName: string;
@@ -100,9 +101,24 @@ function FriendRow({
   beFriends: any;
   me: string | undefined;
   isFriend: boolean;
+  status: string;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const color = useCallback(() => {
+    switch (status) {
+      case 'ONLINE':
+        return 'text-blue-cl';
+      case 'OFFLINE':
+        return 'text-dark-cl/50';
+      case 'INGAME':
+        return 'text-dark-cl';
+      case 'STARTINGGAME':
+        return 'text-red-cl';
+      default:
+        return 'text-red-cl';
+    }
+  }, [status]);
   const handleUnfriend = useCallback(async () => {
     try {
       toast.promise(
@@ -147,7 +163,8 @@ function FriendRow({
         <div>
           <a href={`/user/${username}`}>
             <p className='text-xl '>{displayName}</p>
-            <p className=' text-sm opacity-75'>@{username}</p>
+            {/* <p className=' text-sm opacity-75'>@{username}</p> */}
+            <p className={`text-sm  ${color()}`}>{status.toLocaleLowerCase()}</p>
           </a>
         </div>
       </div>
@@ -203,6 +220,7 @@ export default function () {
     '
     >
       {friendsStore.friends.map((friend: any) => {
+        console.log('friend', friend);
         return (
           <FriendRow
             username={friend.username}
@@ -215,6 +233,7 @@ export default function () {
             beFriends={friendsStore.beFriends}
             key={friend.id}
             isFriend={friend.isFriend}
+            status={friend.status}
           />
         );
       })}
