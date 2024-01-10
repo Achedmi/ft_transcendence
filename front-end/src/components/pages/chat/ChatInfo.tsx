@@ -352,7 +352,6 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
             {chatStore.chatInfo?.get(chatStore.selectedChatId)?.type == ChatType.DM ? (
               <>
                 <InfoButton text='Profile' Icon={Profile} onClick={handleGotToProfile} />
-                <InfoButton text='Block' Icon={BlockIcon} />
                 <InfoButton
                   text='Invite to play'
                   Icon={Game}

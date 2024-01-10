@@ -23,6 +23,8 @@ interface FriendsState {
   fetchUserAndFriends: (userName: string) => Promise<any>;
   unfriend: (id: number) => Promise<void>;
   beFriends: (id: number) => Promise<void>;
+  block: (id: number) => Promise<void>;
+  unBlock: (id: number) => Promise<void>;
 }
 
 export const userFriendsStore = create<FriendsState>((set) => ({
@@ -58,6 +60,20 @@ export const userFriendsStore = create<FriendsState>((set) => ({
   beFriends: async (id: number) => {
     try {
       await axios.post(`/user/addfriend/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  block: async (id: number) => {
+    try {
+      await axios.post(`/user/block/`, { userId: id });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  unBlock: async (id: number) => {
+    try {
+      await axios.post(`/user/block/`, { userId: id });
     } catch (error) {
       console.log(error);
     }
@@ -160,7 +176,7 @@ function FriendRow({
             }}
             className=' bg-blue-cl gap-2 rounded-2xl h-9  text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
           >
-            <MessageIcon  className='w-6 h-6  min-h-max min-w-max fill-white' />
+            <MessageIcon className='w-6 h-6  min-h-max min-w-max fill-white' />
             <p className='pt-[2px] hidden sm:block'>Message</p>
           </div>
         </div>
