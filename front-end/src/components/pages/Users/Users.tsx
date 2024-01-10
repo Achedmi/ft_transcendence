@@ -26,39 +26,39 @@ function Users() {
   });
 
   const handleBlock = useCallback(async () => {
-    try {
-      toast.promise(
-        async () => {
+    toast.promise(
+      async () => {
+        try {
           await axiosInstance.post(`user/block`, { userId: data.id });
-        },
-        toastConfig({
-          success: 'Blocked!',
-          error: 'Error Blocking',
-          pending: 'Blocking...',
-        }),
-      );
-      await refetch();
-    } catch (error) {
-      console.log(error);
-    }
+          await refetch();
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      toastConfig({
+        success: 'Blocked!',
+        error: 'Error Blocking',
+        pending: 'Blocking...',
+      }),
+    );
   }, [data?.id, refetch]);
 
   const handleUnblock = useCallback(async () => {
-    try {
-      toast.promise(
-        async () => {
-          await axiosInstance.post(`user/unblock/`, { userId: data.id });
-        },
-        toastConfig({
-          success: 'Unblocked!',
-          error: 'Error unblocking',
-          pending: 'Unblocking...',
-        }),
-      );
-      await refetch();
-    } catch (error) {
-      console.log(error);
-    }
+    toast.promise(
+      async () => {
+        try {
+          await axiosInstance.post(`user/unblock`, { userId: data.id });
+          await refetch();
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      toastConfig({
+        success: 'Unblocked!',
+        error: 'Error Unblocking',
+        pending: 'Unblocking...',
+      }),
+    );
   }, [data?.id, refetch]);
 
   const handleLoaded = useCallback(() => {
@@ -75,22 +75,24 @@ function Users() {
   }, [isLoading, data, username]);
 
   const friendToggle = useCallback(async () => {
-    try {
-      toast.promise(
-        async () => {
+    toast.promise(
+      async () => {
+        try {
           if (data?.isFriend) await friendsStore.unfriend(data.id);
           else await friendsStore.beFriends(data.id);
+          // await axiosInstance.post(`/user/addfriend/${data.id}`);
           await refetch();
-        },
-        toastConfig({
-          success: !data?.isFriend ? 'Friend added!' : 'Friend removed!',
-          error: !data?.isFriend ? 'Error adding friend' : 'Error removing friend',
-          pending: !data?.isFriend ? 'Sending friend request...' : 'Removing friend...',
-        }),
-      );
-    } catch (error) {
-      console.log(error);
-    }
+        } catch (error) {
+          console.log(error);
+          throw error;
+        }
+      },
+      toastConfig({
+        success: !data?.isFriend ? 'Friend added!' : 'Friend removed!',
+        error: !data?.isFriend ? 'Error adding friend' : 'Error removing friend',
+        pending: !data?.isFriend ? 'Sending friend request...' : 'Removing friend...',
+      }),
+    );
   }, [data?.isFriend]);
 
   return (

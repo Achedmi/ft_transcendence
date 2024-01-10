@@ -61,6 +61,7 @@ export const userFriendsStore = create<FriendsState>((set) => ({
     try {
       await axios.post(`/user/addfriend/${id}`);
     } catch (error) {
+      throw error;
       console.log(error);
     }
   },
