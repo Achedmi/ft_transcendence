@@ -109,11 +109,8 @@ export class ChatService {
     // });
 
     const blockedUsers = await this.userService.blockedUsers(me);
-    messages.map((message) => {
-      message['blockedUsers'] = blockedUsers;
-    });
 
-    return messages.reverse();
+    return { messages: messages.reverse(), blockedUsers };
   }
 
   async getChatMembers(id) {

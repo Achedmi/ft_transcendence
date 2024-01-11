@@ -57,8 +57,8 @@ export class MessageService {
         },
       },
     });
-    message['blockedUsers'] = blockedUsers;
-    this.socketService.toChat(message);
+    // message
+    this.socketService.toChat({ message, blockedUsers }, chat.id);
     return message;
   }
 
@@ -88,8 +88,8 @@ export class MessageService {
       },
     });
 
-    message['blockedUsers'] = blockedUsers;
-    this.socketService.toChat(message, sendDmDto.to);
+    // message['blockedUsers'] = blockedUsers;
+    this.socketService.toChat({ message, blockedUsers }, sendDmDto.to);
 
     return message;
   }
