@@ -14,9 +14,10 @@ import { PrismaModule } from './prisma/prisma.module';
 import { MessageModule } from './message/message.module';
 import { SearchModule } from './search/search.module';
 import { GameModule } from './game/game.module';
+import { LeaderboardModule } from './leaderboard/leaderboard.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, AuthModule, HelpersModule, ChatModule, PrismaModule, MessageModule, SearchModule, GameModule],
+  imports: [ConfigModule.forRoot(), UserModule, AuthModule, HelpersModule, ChatModule, PrismaModule, MessageModule, SearchModule, GameModule, LeaderboardModule],
   controllers: [AppController],
   providers: [AppService, UserAccessTokenStrategy, UserRefreshTokenStrategy, IntraStrategy, TFAStrategy],
 })
