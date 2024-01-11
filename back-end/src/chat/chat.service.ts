@@ -29,6 +29,7 @@ export class ChatService {
   ) {}
 
   async GetChatById(me: number, id: number) {
+    const blockedUsers = new Set();
     const chat = await this.prisma.chat.findFirstOrThrow({
       where: { id },
       select: {
@@ -75,13 +76,16 @@ export class ChatService {
     }
 
     const members = {};
+    const blocking = await this.getBlockedAndBlockedBe(me);
     chat.chatUser.map(async (chatUser) => {
+      if (blocking.includes(chatUser.user.id) && chat.type === ChatType.CHANNEL) blockedUsers.add(chatUser.user.id);
       members[chatUser.user.id] = chatUser;
     });
-    const blockedUsers = await this.userService.blockedUsers(me);
+    chat.messages.map((message) => {
+      if (blockedUsers.has(message.user.id)) message.message = 'blocked message';
+    });
 
     chat['members'] = members;
-    chat['blockedUsers'] = blockedUsers;
 
     return chat;
   }
@@ -103,14 +107,12 @@ export class ChatService {
       },
     });
 
-    // const blocking = await this.getBlockedAndBlockedBe(me);
-    // messages.forEach((message) => {
-    //   if (blocking.includes(message.userId)) message.message = 'blocked message';
-    // });
+    const blocking = await this.getBlockedAndBlockedBe(me);
+    messages.forEach((message) => {
+      if (blocking.includes(message.userId)) message.message = 'blocked message';
+    });
 
-    const blockedUsers = await this.userService.blockedUsers(me);
-
-    return { messages: messages.reverse(), blockedUsers };
+    return messages.reverse();
   }
 
   async getChatMembers(id) {
