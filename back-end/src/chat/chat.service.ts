@@ -632,7 +632,7 @@ export class ChatService {
     const isUserInChat = await this.isUserInChat(me, joinChannelDto.channelId);
     if (isUserInChat) throw new BadRequestException('You are already in this chat');
 
-    this.socketService.joinChat({ userId: me, chatId: joinChannelDto.channelId });
+    this.socketService.emitJoinChat({ userId: me, chatId: joinChannelDto.channelId });
 
     await this.prisma.userChat.create({
       data: {

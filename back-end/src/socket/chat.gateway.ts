@@ -61,9 +61,14 @@ export class ChatGateway {
     delete this.connectedUsers[client.user.id];
   }
 
+  emitJoinChat(data) {
+    this.server.to(String(data.chatId)).emit('joinChat', data);
+  }
+
   @SubscribeMessage('joinChat')
-  joinChat(data) {
-    this.connectedUsers[data.userId].join(String(data.chatId));
+  joinChat(client: Socket, data) {
+    console.log(client.id, 'joining room: ', data.chatId);
+    client.join(data.chatId);
   }
 
   @SubscribeMessage('leaveChat')
