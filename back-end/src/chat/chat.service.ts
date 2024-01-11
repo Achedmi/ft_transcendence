@@ -326,7 +326,9 @@ export class ChatService {
     });
 
     this.socketService.chatUpdated(id);
-    return this.getChatInfos(me, id);
+    const infos = await this.getChatInfos(me, id);
+    this.socketService.chatUpdated(infos);
+    return infos;
   }
 
   async createDm(me: number, friendId: number) {
@@ -404,8 +406,9 @@ export class ChatService {
       },
     });
 
-    this.socketService.chatUpdated(giveOwnershipDto.chatId);
-    return await this.getChatInfos(me, giveOwnershipDto.chatId);
+    const infos = await this.getChatInfos(me, giveOwnershipDto.chatId);
+    this.socketService.chatUpdated(infos);
+    return infos;
   }
 
   async isAdmin(id: number, chatId: number) {
@@ -439,7 +442,9 @@ export class ChatService {
       },
     });
     this.socketService.chatUpdated(addAdminDto.chatId);
-    return await this.getChatInfos(me, addAdminDto.chatId);
+    const infos = await this.getChatInfos(me, addAdminDto.chatId);
+    this.socketService.chatUpdated(infos);
+    return infos;
   }
 
   async removeAdmin(me: number, remvoeAdminDto: RemoveAdminDto) {
@@ -461,7 +466,9 @@ export class ChatService {
       },
     });
     this.socketService.chatUpdated(remvoeAdminDto.chatId);
-    return await this.getChatInfos(me, remvoeAdminDto.chatId);
+    const infos = await this.getChatInfos(me, remvoeAdminDto.chatId);
+    this.socketService.chatUpdated(infos);
+    return infos;
   }
 
   async addMember(me: number, addMemberDto: AddMemberDto) {
@@ -493,7 +500,9 @@ export class ChatService {
       },
     });
     this.socketService.chatUpdated(addMemberDto.chatId);
-    return await this.getChatInfos(me, addMemberDto.chatId);
+    const infos = await this.getChatInfos(me, addMemberDto.chatId);
+    this.socketService.chatUpdated(infos);
+    return infos;
   }
 
   async kickMember(me: number, kickMemberDto: KickMemberDto) {
@@ -533,8 +542,9 @@ export class ChatService {
       },
     });
 
-    this.socketService.chatUpdated(kickMemberDto.chatId);
-    return await this.getChatInfos(me, kickMemberDto.chatId);
+    const infos = await this.getChatInfos(me, kickMemberDto.chatId);
+    this.socketService.chatUpdated(infos);
+    return infos;
   }
   async banMember(me: number, banMemberDto: BanMemberDto) {
     if (me === banMemberDto.userId) throw new BadRequestException('You can not ban yourself');
@@ -574,7 +584,9 @@ export class ChatService {
     });
 
     this.socketService.chatUpdated(banMemberDto.chatId);
-    return await this.getChatInfos(me, banMemberDto.chatId);
+    const infos = await this.getChatInfos(me, banMemberDto.chatId);
+    this.socketService.chatUpdated(infos);
+    return infos;
   }
 
   async unbanMember(me: number, unbanMemberDto: BanMemberDto) {
@@ -597,7 +609,10 @@ export class ChatService {
       },
     });
 
-    return await this.getChatInfos(me, unbanMemberDto.chatId);
+    // return await this.getChatInfos(me, unbanMemberDto.chatId);
+    const infos = await this.getChatInfos(me, unbanMemberDto.chatId);
+    this.socketService.chatUpdated(infos);
+    return infos;
   }
 
   async isBanned(me: number, chatId: number) {
@@ -650,8 +665,9 @@ export class ChatService {
         },
       },
     });
-    this.socketService.chatUpdated(joinChannelDto.channelId);
-    return await this.getChatInfos(me, joinChannelDto.channelId);
+    const infos = await this.getChatInfos(me, joinChannelDto.channelId);
+    this.socketService.chatUpdated(infos);
+    return infos;
   }
 
   async findAll() {
@@ -725,7 +741,9 @@ export class ChatService {
       },
     });
 
-    return await this.getChatInfos(me, muteDto.chatId);
+    const infos = await this.getChatInfos(me, muteDto.chatId);
+    this.socketService.chatUpdated(infos);
+    return infos;
   }
 
   async getBlockedAndBlockedBe(me: number) {

@@ -29,6 +29,8 @@ export class MessageService {
       },
     });
 
+    const blockedUsers = await this.userService.blockedUsers(from);
+
     const isMuted = await this.chatService.isMuted(from, chat.id);
     if (isMuted) throw new BadRequestException(`muted until ${isMuted}`);
 
@@ -55,6 +57,7 @@ export class MessageService {
         },
       },
     });
+    message['blockedUsers'] = blockedUsers;
     this.socketService.toChat(message);
     return message;
   }
@@ -68,6 +71,7 @@ export class MessageService {
     let chat: { id: number } = await this.chatService.findDm(from, sendDmDto.to);
     if (!chat) chat = await this.chatService.createDm(from, sendDmDto.to);
 
+    const blockedUsers = await this.userService.blockedUsers(from);
     const message = await this.prisma.message.create({
       data: {
         chatId: chat.id,
@@ -84,6 +88,7 @@ export class MessageService {
       },
     });
 
+    message['blockedUsers'] = blockedUsers;
     this.socketService.toChat(message, sendDmDto.to);
 
     return message;

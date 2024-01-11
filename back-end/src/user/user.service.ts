@@ -311,4 +311,19 @@ export class UserService {
     });
     return blockedBy?.BlockedById;
   }
+
+  async blockedUsers(id: number) {
+    //get list of ids of users that i blocked or blocked me without me
+    const blockedUsers = await this.prisma.blocking.findMany({
+      where: {
+        OR: [{ user1Id: id }, { user2Id: id }],
+      },
+      select: {
+        user1Id: true,
+        user2Id: true,
+      },
+    });
+
+    return blockedUsers.map((user) => (user.user1Id === id ? user.user2Id : user.user1Id));
+  }
 }
