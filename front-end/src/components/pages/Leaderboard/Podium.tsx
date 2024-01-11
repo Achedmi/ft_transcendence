@@ -11,21 +11,21 @@ function Podium({mode='', firsts=[]}){
     
     if (firsts.length == 1){
        return (<div className="container-podium flex bg-podium-color justify-around h-60 m-0.5 shadow-md" style={{borderRadius: "47% 53% 50% 50% / 0% 0% 100% 100%"}}>
-        <Avatar src={firsts[0].avatar} borderColor={borderColor} boxShadow={boxShadow}/>
+        <Avatar src={firsts[0].avatar} borderColor={borderColor} boxShadow={boxShadow} name={firsts[0].username} points={firsts[0].totalScore}/>
         </div>)
     }
     else if (firsts.length == 2){
         return (<div className="container-podium flex bg-podium-color justify-around h-60 m-0.5 shadow-md" style={{borderRadius: "47% 53% 50% 50% / 0% 0% 100% 100%"}}>
-        <Avatar src={firsts[0].avatar} borderColor={borderColor} boxShadow={boxShadow} />
-        <Avatar src={firsts[1].avatar} rank="2nd" borderColor={borderColor} boxShadow={boxShadow} />
+        <Avatar src={firsts[0].avatar} borderColor={borderColor} boxShadow={boxShadow} name={firsts[0].username} points={firsts[0].totalScore}/>
+        <Avatar src={firsts[1].avatar} rank="2nd" borderColor={borderColor} boxShadow={boxShadow} name={firsts[1].username} points={firsts[1].totalScore} />
         </div>)
     }
     else{
         return (
         <div className="container-podium flex bg-podium-color justify-around h-60 m-0.5 shadow-md" style={{borderRadius: "47% 53% 50% 50% / 0% 0% 100% 100%"}}>
-        <Avatar src={firsts[0].avatar} rank="2nd" boxShadow="0px 4px 12px 1px #433650" />
-        <Avatar src={firsts[1].avatar} borderColor={borderColor} boxShadow={boxShadow}/>
-        <Avatar src={firsts[2].avatar} rank="3th" boxShadow="0px 4px 12px 1px #433650"/>
+        <Avatar src={firsts[1].avatar} rank="2nd" boxShadow="0px 4px 12px 1px #433650"  name={firsts[1].username} points={firsts[1].totalScore}/>
+        <Avatar src={firsts[0].avatar} borderColor={borderColor} boxShadow={boxShadow} name={firsts[0].username} points={firsts[0].totalScore}/>
+        <Avatar src={firsts[2].avatar} rank="3th" boxShadow="0px 4px 12px 1px #433650" name={firsts[2].username} points={firsts[2].totalScore}/>
         </div>
     )
     }

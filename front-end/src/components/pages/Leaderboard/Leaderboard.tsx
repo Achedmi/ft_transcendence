@@ -5,6 +5,7 @@ import { useState, useEffect} from "react";
 import BoardList from "./BoardList";
 import PlayerBox from "./PlayerBox";
 import PaginationControl from "./PaginationControl";
+import Info from "./Info";
 
 const LeaderBoard = () =>{
     //the public classic one
