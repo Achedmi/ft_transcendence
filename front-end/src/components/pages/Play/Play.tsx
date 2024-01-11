@@ -11,6 +11,7 @@ import Game from './Game';
 const Play = () => {
   const { socket, user, setUserData, abelToPlay, setAbelToPlay, gameEnded, setGameEnded } = useUserStore();
   const game = useGameStore();
+
   const handleGameMode = useCallback(
     async (type: string) => {
       const fetchedAbleToPlay = (await axios.get('/user/isAbleToPlay'))?.data;
@@ -37,7 +38,13 @@ const Play = () => {
     [abelToPlay, socket?.game],
   );
 
-
+  function QueueMusic(){
+    return (
+      <audio autoPlay loop>
+        <source src="/sounds/queue.mp3" type="audio/mpeg" />
+      </audio>
+    );
+  }
 
   if (gameEnded)
     return (
@@ -127,6 +134,7 @@ const Play = () => {
         )}
         {user.status?.startsWith('INQUEUE') && abelToPlay && (
           <div className='flex flex-col justify-center items-center gap-4'>
+            <QueueMusic/>
             <div className='text-dark-cl text-2xl sm:text-2xl  lg:text-3xl font-bold'>Looking for a game...</div>
             <PropagateLoader color='#433650' speedMultiplier={0.8}></PropagateLoader>
           </div>

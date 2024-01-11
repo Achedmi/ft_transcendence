@@ -19,6 +19,8 @@ export type Ball = {
   dy: number;
   size: number;
   speed: number;
+  hit: "1" | "2" | "0";
+  scored: boolean;
 };
 
 export type GameData = {
@@ -81,6 +83,8 @@ const useGameStore: any = create<GameStore>((set) => ({
     dy: 1,
     size: 20,
     speed: 5,
+    hit: "0",
+    scored: false,
   },
   winner: '',
   setWinner: (winner: string) => set((state) => ({ ...state, winner })),
