@@ -97,6 +97,7 @@ const useChatStore = create<ChatState>()((set) => {
     getDmsPreview: async () => {
       set({ DmsLoading: true });
       const Dms = await axios.get('/chat/getDms');
+      console.log('Dms', Dms);
       set({ DmsLoading: false });
       set({
         DmsPreview: Dms.data.map((dm: any) => ({
@@ -156,6 +157,7 @@ const useChatStore = create<ChatState>()((set) => {
     getChatInfo: async ({ queryKey }: any) => {
       const [_, id] = queryKey;
       console.log('getChatInfo', id);
+      if (!id) return;
       if (useChatStore.getState().chatInfo?.has(id)) return;
       set({ chatInfoLoading: true });
       const chatInfo = await axios.get(`/chat/getChatInfos/${id}`);

@@ -12,7 +12,7 @@ import PromptPassword from './Dialogue/PromptPassword';
 import { AnimatePresence } from 'framer-motion';
 
 function PrivateRoutes() {
-  const { socket, setSocket, setAbelToPlay } = useUserStore();
+  const { socket, setSocket, setAbelToPlay, user } = useUserStore();
   const game = useGameStore();
   const navigate = useNavigate();
   const chatStore = useChatStore();
@@ -42,7 +42,7 @@ function PrivateRoutes() {
   useQuery('DmsPreview', chatStore.getDmsPreview, {
     refetchOnWindowFocus: false,
   });
-  useQuery('ChannelsPreview', chatStore.getChannelsPreview, {
+  const { refetch } = useQuery('ChannelsPreview', chatStore.getChannelsPreview, {
     refetchOnWindowFocus: false,
   });
 
@@ -68,8 +68,17 @@ function PrivateRoutes() {
       chatStore.updateLastDM(data, data.chatId);
       chatStore.updateLastGroupMessage(data, data.chatId);
     });
+    socket?.chat?.on('chatUpdated', (chatInfo: any) => {
+      refetch();
+      chatStore.updateChatInfo(chatInfo.chatId, chatInfo.infos);
+      if (!chatStore.chatInfo?.get(chatStore.selectedChatId)?.members?.find((member) => member.id == user.id)) {
+        chatStore.setSelectedChatId(-1);
+      }
+    });
+
     return () => {
       socket?.chat?.off('message');
+      socket?.chat?.off('chatUpdated');
     };
   }, [
     socket?.chat,
@@ -80,6 +89,7 @@ function PrivateRoutes() {
     chatStore.messages,
     chatStore.DmsPreview,
     chatStore.ChannelsPreview,
+    refetch,
   ]);
 
   useEffect(() => {

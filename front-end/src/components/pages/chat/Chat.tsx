@@ -12,7 +12,6 @@ import CreateGroup from './CreateGroup';
 function ChatPreviewColumn({ chat, CurrentUserId, clearMessage }: { chat: ChatPreview; CurrentUserId: number; clearMessage: any }) {
   const chatStore = useChatStore();
   const handleChatClick = useCallback(() => {
-    console.log('Clicked on chat', chat.name, chat.id);
     chatStore.setSelectedChatId(chat.id);
     chatStore.resetNewUnreadMessage(chat.id, chat.type);
     clearMessage();
