@@ -11,7 +11,7 @@ services:
       - db
     restart: always
     env_file:
-      - ./back-end/.env-docker
+      - ./back-end/.env
 
   frontend:
     container_name: frontend
@@ -28,10 +28,7 @@ services:
     image: postgres:14-alpine
     ports:
       - 5432:5432
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+
     volumes:
       - data:/var/lib/postgresql/data
 

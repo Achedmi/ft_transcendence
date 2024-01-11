@@ -10,47 +10,15 @@ function Game() {
   const { socket, user } = useUserStore();
   const keyState = useRef({
     ArrowUp: false,
-    ArrowDown: false
+    ArrowDown: false,
   }).current;
-  
-  const hit1Sound = useRef(new Audio("/sounds/hit1.wav"));
-  const hit2Sound = useRef(new Audio("/sounds/hit2.mp3"));
-  const goalSound = useRef(new Audio("/sounds/score.wav"));
-
-  useEffect(() => {
-    hit1Sound.current.volume = 0.5;
-    hit2Sound.current.volume = 0.5;
-    goalSound.current.volume = 0.5;
-
-    hit1Sound.current.load();
-    hit2Sound.current.load();
-    goalSound.current.load();
-  }
-  ,[]);
-
-
-  const playHit1Sound = () => {
-    hit1Sound.current.currentTime = 0;
-    hit1Sound.current.play();
-  }
-
-  const playHit2Sound = () => {
-    hit2Sound.current.currentTime = 0;
-    hit2Sound.current.play();
-  }
-
-  const playGoalSound = () => {
-    goalSound.current.currentTime = 0;
-    goalSound.current.play();
-  }
-
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       keyState[e.key] = true;
     }
   }, []);
-  
+
   const handleKeyUp = useCallback((e: KeyboardEvent) => {
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       keyState[e.key] = false;
@@ -65,7 +33,7 @@ function Game() {
     }
     requestAnimationFrame(sendMovementUpdate);
   }, [socket?.game, user.id, game.id]);
-  
+
   useEffect(() => {
     const animationFrame = requestAnimationFrame(sendMovementUpdate);
     return () => cancelAnimationFrame(animationFrame);
@@ -74,14 +42,13 @@ function Game() {
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-  
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
   }, [handleKeyDown, handleKeyUp]);
-  
-  
+
   const renderPlayer = useCallback((ctx: CanvasRenderingContext2D, player: Player, color?: string) => {
     ctx.fillStyle = color || 'white';
     ctx.fillRect(player.x, player.y, player.width, player.height);
@@ -121,18 +88,6 @@ function Game() {
   useEffect(() => {
     socket?.game.on('gameUpdates', (gameData: GameData) => {
       game.updateGame(gameData);
-      if (game.ball.hit === "1"){
-        console.log("hit1");
-        playHit1Sound();
-      }
-      else if (game.ball.hit === "2"){
-        console.log("hit2");
-        playHit2Sound();
-      }
-      else if (game.ball.scored){
-        console.log("goal");
-        playGoalSound();
-      }
     });
     return () => {
       socket?.game.off('gameUpdates');
