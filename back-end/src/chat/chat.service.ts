@@ -325,9 +325,8 @@ export class ChatService {
       },
     });
 
-    this.socketService.chatUpdated(id);
     const infos = await this.getChatInfos(me, id);
-    this.socketService.chatUpdated(infos);
+    this.socketService.chatUpdated(id, infos);
     return infos;
   }
 
@@ -407,7 +406,7 @@ export class ChatService {
     });
 
     const infos = await this.getChatInfos(me, giveOwnershipDto.chatId);
-    this.socketService.chatUpdated(infos);
+    this.socketService.chatUpdated(giveOwnershipDto.chatId, infos);
     return infos;
   }
 
@@ -441,9 +440,8 @@ export class ChatService {
         isAdmin: true,
       },
     });
-    this.socketService.chatUpdated(addAdminDto.chatId);
     const infos = await this.getChatInfos(me, addAdminDto.chatId);
-    this.socketService.chatUpdated(infos);
+    this.socketService.chatUpdated(addAdminDto.chatId, infos);
     return infos;
   }
 
@@ -465,9 +463,8 @@ export class ChatService {
         isAdmin: false,
       },
     });
-    this.socketService.chatUpdated(remvoeAdminDto.chatId);
     const infos = await this.getChatInfos(me, remvoeAdminDto.chatId);
-    this.socketService.chatUpdated(infos);
+    this.socketService.chatUpdated(remvoeAdminDto.chatId, infos);
     return infos;
   }
 
@@ -499,9 +496,8 @@ export class ChatService {
         },
       },
     });
-    this.socketService.chatUpdated(addMemberDto.chatId);
     const infos = await this.getChatInfos(me, addMemberDto.chatId);
-    this.socketService.chatUpdated(infos);
+    this.socketService.chatUpdated(addMemberDto.chatId, infos);
     return infos;
   }
 
@@ -543,7 +539,7 @@ export class ChatService {
     });
 
     const infos = await this.getChatInfos(me, kickMemberDto.chatId);
-    this.socketService.chatUpdated(infos);
+    this.socketService.chatUpdated(kickMemberDto.chatId, infos);
     return infos;
   }
   async banMember(me: number, banMemberDto: BanMemberDto) {
@@ -583,9 +579,8 @@ export class ChatService {
       },
     });
 
-    this.socketService.chatUpdated(banMemberDto.chatId);
     const infos = await this.getChatInfos(me, banMemberDto.chatId);
-    this.socketService.chatUpdated(infos);
+    this.socketService.chatUpdated(banMemberDto.chatId, infos);
     return infos;
   }
 
@@ -611,7 +606,7 @@ export class ChatService {
 
     // return await this.getChatInfos(me, unbanMemberDto.chatId);
     const infos = await this.getChatInfos(me, unbanMemberDto.chatId);
-    this.socketService.chatUpdated(infos);
+    this.socketService.chatUpdated(unbanMemberDto.chatId, infos);
     return infos;
   }
 
@@ -666,7 +661,7 @@ export class ChatService {
       },
     });
     const infos = await this.getChatInfos(me, joinChannelDto.channelId);
-    this.socketService.chatUpdated(infos);
+    this.socketService.chatUpdated(joinChannelDto.channelId, infos);
     return infos;
   }
 
@@ -742,7 +737,7 @@ export class ChatService {
     });
 
     const infos = await this.getChatInfos(me, muteDto.chatId);
-    this.socketService.chatUpdated(infos);
+    this.socketService.chatUpdated(muteDto.chatId, infos);
     return infos;
   }
 

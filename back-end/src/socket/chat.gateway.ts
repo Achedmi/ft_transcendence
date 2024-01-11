@@ -87,7 +87,7 @@ export class ChatGateway {
     this.server.to(String(data.chatId)).emit('message', data);
   }
 
-  chatUpdated(chatId) {
-    this.server.to(String(chatId)).emit('chatUpdated', chatId);
+  chatUpdated(chatId, infos) {
+    this.server.to(String(chatId)).emit('chatUpdated', { chatId, infos });
   }
 }
