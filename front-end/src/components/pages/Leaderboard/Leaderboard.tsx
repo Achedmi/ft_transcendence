@@ -11,7 +11,7 @@ const LeaderBoard = () =>{
     // const [initialList, setInitList] = useState(['a']);
 
     const [publicList, setPublicList] = useState([]); //this will have both classic and powerups
-    const [podium, setPodium] = useState([{'username':'dummy'}]);
+    const [podium, setPodium] = useState([]);
     const [workingList, setWorkingList] = useState([])
     // default is public, friendsOnly == false
     const [friendsOnly, setFriendsOnly] = useState(false);
@@ -42,7 +42,7 @@ const LeaderBoard = () =>{
                 setLoading(false);
             });
     }, []);
-    console.log(publicList[0])
+    // console.log(publicList[0])
     // if (loading){
     //     return(<div className="h-full w-full bg-repeat border-solid border-dark-cl border-[4px] rounded-xl bg-gray-cl">loading..</div>)
     // }
@@ -58,9 +58,9 @@ const LeaderBoard = () =>{
         setIndex(newIndex)
     }
  
-    const handleFriendsChange = (newState:boolean) => {
-        setFriendsOnly(newState);
-    };
+    // const handleFriendsChange = (newState:boolean) => {
+    //     setFriendsOnly(newState);
+    // };
 
     const handleModeChange = (newMode:string) =>{
         setMode(newMode);
@@ -75,20 +75,9 @@ const LeaderBoard = () =>{
             setWorkingList(firstList.slice(3))
             // setList(the_list);
         } 
-        // else if (!friendsOnly && mode === 'classic') {
-        //     setPodium(firstList[0].slice(0,3))
-        //     setWorkingList(firstList[0].slice(3))
-        //     // setList(the_list);
-        // }
-        // else if (friendsOnly && mode === 'powerups'){
-        //     setPodium(secondList[1].slice(0,3))
-        //     setWorkingList(secondList[1].slice(3))
-        //     // setList(the_list)
-        // }
         else{
             setPodium(secondList.slice(0,3))
             setWorkingList(secondList.slice(3))
-            // setList(the_list)
         }
     }, [friendsOnly, mode, publicList]);
 
@@ -97,19 +86,19 @@ const LeaderBoard = () =>{
     const [displayedPlayers, setDisplayedPlayers] = useState([]);
     useEffect(() => {
             const filteredPlayers = workingList.filter(player => player.username.toLowerCase().includes(searchTerm)).slice(index, index + 3);
-        // setDisplayedPlayers(the_list.slice(index, index + 3));
-        // console.log(displayedPlayers)
-        // setRemainingPlayers(the_list.slice(3));
         setDisplayedPlayers(filteredPlayers)
     }, [workingList, index, searchTerm]);
 
 
-    let pageNumber = workingList ? Math.ceil(workingList.length / 3) : 0;
+    let pageNumber = workingList ? Math.ceil(workingList.length / 3) : 1;
+    if (pageNumber === 0){
+        pageNumber = 1
+    }
     return(
         <div className="h-full w-full bg-repeat border-solid border-dark-cl border-[4px] rounded-xl bg-gray-cl">
       {podium.length > 0 && <Podium firsts={podium} mode={mode}/>}
       
-      <Choices friendsOnly={friendsOnly} onFriendsChange={handleFriendsChange} onModeChange={handleModeChange} mode={mode} onSearchTerm={handleSearchTerm}/>
+      <Choices onModeChange={handleModeChange} mode={mode} onSearchTerm={handleSearchTerm}/>
       <BoardList mode={mode}>
         {displayedPlayers.map((x) => {
         return <PlayerBox  mode={mode} player={{size: 60, src: x.avatar, name: x.username, score: x.totalScore}} win_loss={{win: x.wins, loss: x.losses}} />;

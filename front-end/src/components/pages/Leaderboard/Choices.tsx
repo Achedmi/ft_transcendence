@@ -2,16 +2,13 @@ import Friends from "./Friends";
 import SearchBar from "./SearchBar";
 import Modes from "./Modes";
 interface ChoicesProps{
-    friendsOnly: boolean;
     mode: string;
-    onFriendsChange: (newState: boolean) => void;
     onModeChange: (newMode: string) => void;
     onSearchTerm: (term: string) => void;
 }
 
-function Choices({friendsOnly=true,
+function Choices({
      mode="classic",
-      onFriendsChange, 
       onModeChange,
        onSearchTerm}: ChoicesProps){
     return (<div className="flex justify-around mt-10">

@@ -18,7 +18,7 @@ export class LeaderboardController {
     //create fake games for testing
     @Get('fakeGame')
     async createFakeGame(){
-        return await this.leaderboardService.createFakeGame(6, 9, 'CLASSIC');
+        return await this.leaderboardService.createFakeGame(6, 8, 'CLASSIC');
     }
     @Get('played')
     async getUsersWhoPlayed(){
