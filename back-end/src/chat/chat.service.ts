@@ -688,7 +688,8 @@ export class ChatService {
         mutedUntil: true,
       },
     });
-    if (chat.isMuted && chat.mutedUntil >= new Date()) return chat.mutedUntil;
+    //return how many minutes left
+    if (chat.isMuted && chat.mutedUntil >= new Date()) return chat.mutedUntil.toLocaleTimeString();
     else if (chat.isMuted && chat.mutedUntil <= new Date()) {
       await this.prisma.userChat.update({
         where: {
