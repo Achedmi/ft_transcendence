@@ -24,7 +24,14 @@ type Ball = {
   dx: number;
   dy: number;
   size: number;
+  maxX: number;
+  maxY: number;
+  minX: number;
+  minY: number;
+  accel: number;
   speed: number;
+  hit: "1" | "2" | "0";
+  scored: boolean;
 };
 @WebSocketGateway({ namespace: '/game', cors: true, origins: '*' })
 export class GameGateway {
@@ -139,7 +146,7 @@ export class GameGateway {
       type: type == 'classic' ? GameType.CLASSIC : GameType.POWERUP,
     });
     console.log('GAME CREATED', game.id);
-
+//
     player1Socket['gameId'] = game.id;
     player2Socket['gameId'] = game.id;
 
@@ -171,10 +178,17 @@ export class GameGateway {
       ball: {
         x: 1280 / 2 - 10,
         y: 720 / 2 - 10,
-        dx: Math.random() < 0.5 ? 1 : -1,
-        dy: 0,
-        size: 20,
-        speed: 5,
+        dx: Math.random() < 0.5 ? 4 : -4,
+        dy: Math.random() < 0.5 ? 4 : -4,
+        maxX: 1280 - 10,
+        maxY: 720 - 10,
+        minX: 10,
+        minY: 10,
+        size: 10,
+        accel: 0.2,
+        speed: 4,
+        hit: "0",
+        scored: false,
       },
       type,
     };
@@ -262,39 +276,125 @@ export class GameGateway {
         await this.handlGameEndOnDisconnect(game.gameId, player1Socket, player2Socket, interval);
         return;
       }
+      game.ball.hit = "0";
+      game.ball.scored = false;
+      game.ball.y += game.ball.dy;
+      game.ball.x += game.ball.dx;
+      const dt = 1 / 60;
 
-      game.ball.x += game.ball.dx * game.ball.speed;
-      game.ball.y += game.ball.dy * game.ball.speed;
+      function accelerate(ball, dx, dy, dt, accel){
+        // calculate next position
+        const x2 = ball.x + (dx * dt) + (accel * dt * dt / 2);
+        const y2 = ball.y + (dy * dt) + (accel * dt * dt / 2);
+        // calculate next velocity
+        const  nextDx = dx + (accel * dt) * (dx > 0 ? 1 : -1);
+        const  nextDy = dy + (accel * dt) * (dy > 0 ? 1 : -1);
+        return {nextX: (x2 - ball.x), nextY: (y2 - ball.y), x: x2, y: y2, dx: nextDx, dy: nextDy};
+      }
 
-      //check if ball hits player 1
-      if (game.ball.x <= game.player1.width && game.ball.y >= game.player1.y && game.ball.y <= game.player1.y + game.player1.height - game.ball.size) {
-        game.ball.dx = 1;
-
-        //change ball direction
-        if (game.ball.y < game.player1.y + game.player1.height / 2) {
-          game.ball.dy = -1;
-        } else {
-          game.ball.dy = 1;
+      function intersect(x1, y1, x2, y2, x3, y3, x4, y4, d?) {
+        const denom = ((y4-y3) * (x2-x1)) - ((x4-x3) * (y2-y1));
+        if (denom != 0) {
+          const ua = (((x4-x3) * (y1-y3)) - ((y4-y3) * (x1-x3))) / denom;
+          if ((ua >= 0) && (ua <= 1)) {
+            const ub = (((x2-x1) * (y1-y3)) - ((y2-y1) * (x1-x3))) / denom;
+            if ((ub >= 0) && (ub <= 1)) {
+              const x = x1 + (ua * (x2-x1));
+              const y = y1 + (ua * (y2-y1));
+              return { x, y};
+            }
+          }
         }
+        return null;
       }
 
-      //check if ball hits player 2
-      //
-      if (game.ball.x >= 1280 - game.player1.width - game.ball.size && game.ball.y >= game.player2.y && game.ball.y <= game.player2.y + game.player2.height - game.ball.size) {
-        game.ball.dx = -1;
 
-        //change ball direction
-        if (game.ball.y < game.player2.y + game.player2.height / 2) {
-          game.ball.dy = -1;
-        } else {
-          game.ball.dy = 1;
+
+      function ballIntercept() {
+        const futureBallX = game.ball.x + game.ball.dx;
+        const futureBallY = game.ball.y + game.ball.dy;
+
+        let interception = intersect(game.ball.x, game.ball.y,
+          futureBallX, futureBallY,
+            game.player1.x + game.player1.width, game.player1.y,
+            game.player1.x + game.player1.width, game.player1.y + game.player1.height)
+        if (interception) {
+          game.ball.dx *= -1;
+          game.ball.hit = "1";
+          console.log('intercepted 1', interception);
+          return;
         }
+
+        interception = intersect(game.ball.x, game.ball.y,
+          futureBallX, futureBallY,
+            game.player2.x, game.player2.y,
+            game.player2.x, game.player2.y + game.player2.height)
+        if (interception) {
+          game.ball.dx *= -1;
+          game.ball.hit = "2";
+          console.log('intercepted 2', interception);
+          return;
+        }
+
+        // check top edges of paddle
+        interception = intersect(game.ball.x, game.ball.y,
+          futureBallX, futureBallY,
+            game.player1.x + game.player1.width, game.player1.y,
+            game.player1.x, game.player1.y)
+        if (interception) {
+          game.ball.dy *= -1;
+          return;
+        }
+
+        interception = intersect(game.ball.x, game.ball.y,
+          futureBallX, futureBallY,
+            game.player2.x, game.player2.y,
+            game.player2.x + game.player2.width, game.player2.y)
+        if (interception) {
+          game.ball.dy *= -1;
+          return;
+        }
+        // check bottom edges of paddle
+
+        interception = intersect(game.ball.x, game.ball.y,
+          futureBallX, futureBallY,
+            game.player1.x + game.player1.width, game.player1.y + game.player1.height,
+            game.player1.x, game.player1.y + game.player1.height)
+        if (interception) {
+          game.ball.dy *= -1;
+          return;
+        }
+
+        interception = intersect(game.ball.x, game.ball.y,
+          futureBallX, futureBallY,
+            game.player2.x, game.player2.y + game.player2.height,
+            game.player2.x + game.player2.width, game.player2.y + game.player2.height)
+        if (interception) {
+          game.ball.dy *= -1;
+          return;
+        }
+
       }
 
-      //check if ball hits top or bottom wall
-      if (game.ball.y < 0 || game.ball.y > 720 - game.ball.size) {
-        game.ball.dy *= -1;
+
+      const pos = accelerate(game.ball, game.ball.dx, game.ball.dy, dt, game.ball.accel);
+      
+      game.ball.x = pos.x;
+      game.ball.y = pos.y;
+      game.ball.dx = pos.dx;
+      game.ball.dy = pos.dy;
+      
+      if (game.ball.y > game.ball.maxY) {
+        game.ball.y = game.ball.maxY;
+        game.ball.dy = -game.ball.dy;
       }
+      if (game.ball.y < game.ball.minY) {
+        game.ball.y = game.ball.minY;
+        game.ball.dy = -game.ball.dy;
+      }
+
+      ballIntercept();
+
 
       // check if ball hits left or right wall and reset it if it does
       if (game.ball.x < -20 || game.ball.x > 1280) {
@@ -313,13 +413,15 @@ export class GameGateway {
           game.player1.score++;
           game.ball.dx = -1;
         }
-        game.ball.dy = Math.random() < 0.5 ? 1 : -1;
+        game.ball.dy = Math.random() < 0.5 ? game.ball.speed : -game.ball.speed;
+        game.ball.dx = Math.random() < 0.5 ? game.ball.speed : -game.ball.speed;
         game.ball.x = 1280 / 2 - 10;
         game.ball.y = 720 / 2 - 10;
         game.player1.x = 0;
         game.player1.y = 720 / 2 - 60;
         game.player2.x = 1280 - 20;
         game.player2.y = 720 / 2 - 60;
+        game.ball.scored = true;
       }
 
       if (game.type === 'classic' && (game.player1.score > 2 || game.player2.score > 2)) {
@@ -335,24 +437,26 @@ export class GameGateway {
 
   @SubscribeMessage('move')
   move(client: Socket, data: { userId: number; gameId: number; direction: string }) {
+    // console.log('AAAAAAAAAAAAA', this.games[data.gameId]);
+    if (!this.games[data.gameId]) return;
     if (this.games[data.gameId].player1.userId === data.userId && data.direction === 'up') {
-      this.games[data.gameId].player1.y -= 20;
+      this.games[data.gameId].player1.y -= 5;
       if (this.games[data.gameId].player1.y < 0) {
         this.games[data.gameId].player1.y = 0;
       }
     } else if (this.games[data.gameId].player1.userId === data.userId && data.direction === 'down') {
-      this.games[data.gameId].player1.y += 20;
+      this.games[data.gameId].player1.y += 5;
       if (this.games[data.gameId].player1.y > 720 - this.games[data.gameId].player1.height) {
         this.games[data.gameId].player1.y = 720 - this.games[data.gameId].player1.height;
       }
     } else if (this.games[data.gameId].player2.userId === data.userId && data.direction === 'up') {
-      this.games[data.gameId].player2.y -= 20;
+      this.games[data.gameId].player2.y -= 5;
       if (this.games[data.gameId].player2.y < 0) {
         this.games[data.gameId].player2.y = 0;
       }
     }
     if (this.games[data.gameId].player2.userId === data.userId && data.direction === 'down') {
-      this.games[data.gameId].player2.y += 20;
+      this.games[data.gameId].player2.y += 5;
       if (this.games[data.gameId].player2.y > 720 - this.games[data.gameId].player2.height) {
         this.games[data.gameId].player2.y = 720 - this.games[data.gameId].player2.height;
       }
