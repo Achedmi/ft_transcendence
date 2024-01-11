@@ -54,11 +54,14 @@ export class LeaderboardService {
             });
     
             return {
+
                 username: user.username,
                 avatar: user.avatar,
+                id:user.id,
                 wins,
                 losses,
-                totalScore
+                totalScore,
+                rank: 0
             };
         });
     }
@@ -66,6 +69,9 @@ export class LeaderboardService {
     //return first 3 and the rest 
     async getPublicStatsSorted(gameType:'CLASSIC' | 'POWERUP'){
         const sorted_list = (await this.getPublicStats(gameType)).sort((a, b)=> b.totalScore - a.totalScore);
+        sorted_list.forEach((user, index) => {
+            user.rank = index + 1;
+        });
         return sorted_list
     }
 

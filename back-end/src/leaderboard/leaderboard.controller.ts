@@ -18,7 +18,7 @@ export class LeaderboardController {
     //create fake games for testing
     @Get('fakeGame')
     async createFakeGame(){
-        return await this.leaderboardService.createFakeGame(6, 8, 'CLASSIC');
+        return await this.leaderboardService.createFakeGame(6, 8, 'POWERUP');
     }
     @Get('played')
     async getUsersWhoPlayed(){
@@ -26,16 +26,16 @@ export class LeaderboardController {
     }
 
     //PUBLIC CLASSIC MODE
-    @Get('stats/public/classic')
-    async getPublicStatsClassic(){
-        return await this.leaderboardService.getPublicStats('CLASSIC')
-    }
+    // @Get('stats/public/classic')
+    // async getPublicStatsClassic(){
+    //     return await this.leaderboardService.getPublicStats('CLASSIC')
+    // }
 
-    //PUBLIC POWERUP MODE
-    @Get('stats/public/powerup')
-    async getPublicStatsPowerup(){
-        return await this.leaderboardService.getPublicStats('POWERUP')
-    }
+    // //PUBLIC POWERUP MODE
+    // @Get('stats/public/powerup')
+    // async getPublicStatsPowerup(){
+    //     return await this.leaderboardService.getPublicStats('POWERUP')
+    // }
     
     @Get('stats/public/')
     // async getPublicStats()
