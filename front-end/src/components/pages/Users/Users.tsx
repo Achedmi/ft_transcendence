@@ -51,6 +51,7 @@ function Users() {
           await refetch();
         } catch (error) {
           console.log(error);
+          throw error;
         }
       },
       toastConfig({

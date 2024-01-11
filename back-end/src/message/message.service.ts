@@ -60,14 +60,13 @@ export class MessageService {
   }
 
   async sendDm(from: number, sendDmDto: SendDmDto) {
-    let chat: { id: number } = await this.chatService.findDm(from, sendDmDto.to);
-    if (!chat) chat = await this.chatService.createDm(from, sendDmDto.to);
-
     const blockedBy = await this.userService.isBlocked(from, sendDmDto.to);
     if (blockedBy) {
       if (blockedBy === from) throw new BadRequestException(`You have blocked this user`);
       else throw new BadRequestException(`You are blocked by this user`);
     }
+    let chat: { id: number } = await this.chatService.findDm(from, sendDmDto.to);
+    if (!chat) chat = await this.chatService.createDm(from, sendDmDto.to);
 
     const message = await this.prisma.message.create({
       data: {

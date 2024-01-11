@@ -282,6 +282,8 @@ export class UserService {
     const isBlocked = await this.isBlocked(me, blockDto.userId);
     if (!isBlocked) throw new BadRequestException('You have not blocked this user');
 
+    if (isBlocked !== me) throw new BadRequestException('You have been blocked by this user');
+
     return await this.prisma.blocking.delete({
       where: {
         user1Id_user2Id: {
