@@ -94,17 +94,6 @@ function Game() {
     };
   }, [socket?.game, game, canvas]);
 
-  // const handleKeyDown = useCallback(
-  //   (e: KeyboardEvent) => {
-  //     if (e.key === 'ArrowUp') {
-  //       socket?.game.emit('move', { userId: user.id, gameId: game.id, direction: 'up' });
-  //     } else if (e.key === 'ArrowDown') {
-  //       socket?.game.emit('move', { userId: user.id, gameId: game.id, direction: 'down' });
-  //     }
-  //   },
-  //   [socket?.game, game],
-  // );
-
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => {
@@ -115,35 +104,23 @@ function Game() {
   return (
     <div className='h-full w-full flex flex-col gap-4 justify-center items-center '>
       <div className=' scoreBoard flex   w-[80%]   justify-between gap-10  '>
-        <div
-          className='flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white
-                '
-        >
-          <div
-            className='flex gap-2 items-center 
-                  '
-          >
-            <img className='h-10 w-10 rounded-full' src={game.player1.userId === user.id ? game.player1.avatar : game.player2.avatar} alt='user avatar' />
-            <span>{game.player1.userId === user.id ? game.player1.displayName : game.player2.displayName}</span>
+        <div className='leftplayer flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white'>
+          <div className='flex gap-2 items-center '>
+            <img className='h-10 w-10 rounded-full' src={game.player1.userId < game.player2.userId ? game.player1.avatar : game.player2.avatar} alt='user avatar' />
+            <span>{game.player1.userId < game.player2.userId ? game.player1.displayName : game.player2.displayName}</span>
           </div>
           <div className='flex  items-center'>
-            <span>{`${game.player1.userId === user.id ? game.player1.score : game.player2.score} `}</span>
+            <span>{`${game.player1.userId < game.player2.userId ? game.player1.score : game.player2.score} `}</span>
           </div>
         </div>
 
-        <div
-          className='flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white
-                '
-        >
+        <div className='right player flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white'>
           <div className='flex  items-center'>
-            <span>{`${game.player2.userId === user.id ? game.player1.score : game.player2.score} `}</span>
+            <span>{`${game.player2.userId < game.player1.userId ? game.player1.score : game.player2.score} `}</span>
           </div>
-          <div
-            className='flex gap-2 items-center 
-                  '
-          >
-            <span>{`${game.player2.userId === user.id ? game.player1.displayName : game.player2.displayName}`}</span>
-            <img className='h-10 w-10 rounded-full' src={`${game.player2.userId === user.id ? game.player1.avatar : game.player2.avatar}`} alt='user avatar' />
+          <div className='flex gap-2 items-center '>
+            <span>{`${game.player2.userId < game.player1.userId ? game.player1.displayName : game.player2.displayName}`}</span>
+            <img className='h-10 w-10 rounded-full' src={`${game.player2.userId < game.player1.userId ? game.player1.avatar : game.player2.avatar}`} alt='user avatar' />
           </div>
         </div>
       </div>
