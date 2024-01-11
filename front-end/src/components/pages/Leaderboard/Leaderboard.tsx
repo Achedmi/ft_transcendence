@@ -102,7 +102,7 @@ const LeaderBoard = () =>{
       <Choices onModeChange={handleModeChange} mode={mode} onSearchTerm={handleSearchTerm}/>
       <BoardList mode={mode}>
         {displayedPlayers.map((x) => {
-        return <PlayerBox  mode={mode} player={{size: 60, src: x.avatar, name: x.username, score: x.totalScore}} win_loss={{win: x.wins, loss: x.losses}} />;
+        return <PlayerBox  mode={mode} player={{size: 60, src: x.avatar, name: x.username, score: x.totalScore}} win_loss={{win: x.wins, loss: x.losses}} username={x.username}/>;
         })}
         </BoardList>
         <PaginationControl pageNumber={pageNumber} mode={mode} onIndexChange={handleIndexChange} />
