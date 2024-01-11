@@ -8,13 +8,17 @@ export class LeaderboardController {
     async getUsers(){
         return await this.leaderboardService.getAllUsers()
     }
+
+    //create fake users for testing
     @Get('fakeUsers')
     async createFakeUsers(){
-        await this.leaderboardService.createFakeUsers(4, 7);
+        await this.leaderboardService.createFakeUsers(6, 7);
     }
+
+    //create fake games for testing
     @Get('fakeGame')
     async createFakeGame(){
-        return await this.leaderboardService.createFakeGame(4, 5, 'POWERUP');
+        return await this.leaderboardService.createFakeGame(6, 9, 'CLASSIC');
     }
     @Get('played')
     async getUsersWhoPlayed(){
@@ -34,13 +38,25 @@ export class LeaderboardController {
     }
     
     @Get('stats/public/')
+    // async getPublicStats()
+    // {
+    //     const list_global_public = []
+    //     const list_classic_public = await this.leaderboardService.getPublicStats('CLASSIC');
+    //     const list_power_public = await this.leaderboardService.getPublicStats('POWERUP');
+    //     list_global_public.push(list_classic_public)
+    //     list_global_public.push(list_power_public)
+    //     return list_global_public
+    //     // so I return 2 lists [public 3, public classic list, public 3, public powerup list]
+    // }
     async getPublicStats()
     {
         const list_global_public = []
-        const list_classic_public = await this.leaderboardService.getPublicStats('CLASSIC');
-        const list_power_public = await this.leaderboardService.getPublicStats('POWERUP');
+        const list_classic_public = await this.leaderboardService.getPublicStatsSorted('CLASSIC');
+        const list_power_public = await this.leaderboardService.getPublicStatsSorted('POWERUP');
         list_global_public.push(list_classic_public)
         list_global_public.push(list_power_public)
         return list_global_public
+        // so I return 2 lists [public 3, public classic list, public 3, public powerup list]
     }
+
 }

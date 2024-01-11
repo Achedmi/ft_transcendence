@@ -15,7 +15,7 @@ function Choices({friendsOnly=true,
       onModeChange,
        onSearchTerm}: ChoicesProps){
     return (<div className="flex justify-around mt-10">
-        <Friends  friendsOnly={friendsOnly} onFriendsChange={onFriendsChange} mode={mode}/>
+        {/* <Friends  friendsOnly={friendsOnly} onFriendsChange={onFriendsChange} mode={mode}/> */}
         <SearchBar onSearchTerm={onSearchTerm}/>
         <Modes mode={mode} onModeChange={onModeChange}/>
     </div>)

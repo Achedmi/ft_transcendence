@@ -63,6 +63,12 @@ export class LeaderboardService {
         });
     }
 
+    //return first 3 and the rest 
+    async getPublicStatsSorted(gameType:'CLASSIC' | 'POWERUP'){
+        const sorted_list = (await this.getPublicStats(gameType)).sort((a, b)=> b.totalScore - a.totalScore);
+        return sorted_list
+    }
+
     async getAllUsersWhoPlayed(){
         const users = await this.prismaService.user.findMany({
                     where: {

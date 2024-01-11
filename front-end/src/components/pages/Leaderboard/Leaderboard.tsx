@@ -10,17 +10,20 @@ const LeaderBoard = () =>{
     //the public classic one
     // const [initialList, setInitList] = useState(['a']);
 
-    const [publicList, setPublicList] = useState([[{username:"dummy"}], [{username:"dummy"}]]);
-    const [workingList, setWorkingList] = useState([{username:"dummy"}])
+    const [publicList, setPublicList] = useState([]); //this will have both classic and powerups
+    const [podium, setPodium] = useState([{'username':'dummy'}]);
+    const [workingList, setWorkingList] = useState([])
     // default is public, friendsOnly == false
     const [friendsOnly, setFriendsOnly] = useState(false);
     //default state classic mode public list
     const [mode, setMode] = useState('classic')
     const [index, setIndex] = useState(0)
-    // const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
+        setLoading(true)
         fetch(`http://${import.meta.env.VITE_ADDRESS}:9696/leaderboard/stats/public/`)
             .then(response => {
                 if (!response.ok) {
@@ -31,17 +34,19 @@ const LeaderBoard = () =>{
             .then(data => {
                 // setInitList(data);
                 setPublicList(data)
-                // setLoading(false);
+                setLoading(false);
             })
             .catch(error => {
                 setError(error);
                 console.log("the error:", error)
-                // setLoading(false);
+                setLoading(false);
             });
     }, []);
-    // console.log(the_list)
-
-    const [searchTerm, setSearchTerm] = useState('');
+    console.log(publicList[0])
+    // if (loading){
+    //     return(<div className="h-full w-full bg-repeat border-solid border-dark-cl border-[4px] rounded-xl bg-gray-cl">loading..</div>)
+    // }
+  
 
     const handleSearchTerm = (term:string) =>{
         setSearchTerm(term.toLowerCase())
@@ -62,23 +67,30 @@ const LeaderBoard = () =>{
     }
 
     useEffect(() => {
-        if (friendsOnly && mode === 'classic') {
-            setWorkingList(publicList[0])
+        const firstList = Array.isArray(publicList[0]) ? publicList[0] : [];
+        const secondList = Array.isArray(publicList[1]) ? publicList[1] : [];
+
+        if (mode === 'classic') {
+            setPodium(firstList.slice(0,3))
+            setWorkingList(firstList.slice(3))
             // setList(the_list);
         } 
-        else if (!friendsOnly && mode === 'classic') {
-            setWorkingList(publicList[0])
-            // setList(the_list);
-        }
-        else if (friendsOnly && mode === 'powerups'){
-            setWorkingList(publicList[1])
-            // setList(the_list)
-        }
+        // else if (!friendsOnly && mode === 'classic') {
+        //     setPodium(firstList[0].slice(0,3))
+        //     setWorkingList(firstList[0].slice(3))
+        //     // setList(the_list);
+        // }
+        // else if (friendsOnly && mode === 'powerups'){
+        //     setPodium(secondList[1].slice(0,3))
+        //     setWorkingList(secondList[1].slice(3))
+        //     // setList(the_list)
+        // }
         else{
-            setWorkingList(publicList[1])
+            setPodium(secondList.slice(0,3))
+            setWorkingList(secondList.slice(3))
             // setList(the_list)
         }
-    }, [friendsOnly, mode]);
+    }, [friendsOnly, mode, publicList]);
 
 
 
@@ -95,7 +107,8 @@ const LeaderBoard = () =>{
     let pageNumber = workingList ? Math.ceil(workingList.length / 3) : 0;
     return(
         <div className="h-full w-full bg-repeat border-solid border-dark-cl border-[4px] rounded-xl bg-gray-cl">
-      <Podium  mode={mode}/>
+      {podium.length > 0 && <Podium firsts={podium} mode={mode}/>}
+      
       <Choices friendsOnly={friendsOnly} onFriendsChange={handleFriendsChange} onModeChange={handleModeChange} mode={mode} onSearchTerm={handleSearchTerm}/>
       <BoardList mode={mode}>
         {displayedPlayers.map((x) => {

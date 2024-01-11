@@ -2,9 +2,9 @@ import { AvatarBox } from "./Avatar"
 import NamePoints from "./NamePoints"
 import WinLoss from "./WinLoss"
 import trophy from "./trophy.png";
-interface PlayerBoxProps{
+// interface PlayerBoxProps{
 
-}
+// }
 
 function PlayerBox({player, win_loss, mode}){
     let borderColor = "#C84D46"

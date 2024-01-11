@@ -1,6 +1,11 @@
-export const first_3 = [{src:"https://i.pinimg.com/474x/90/33/83/903383dbe84483ffe3628a9149a55a1e.jpg"},
-     {src:"https://i.pinimg.com/236x/33/9f/2c/339f2c7ad5b26ee8412bb237ea8affce.jpg"},
-      { src:"https://i.pinimg.com/236x/4d/3c/ac/4d3cacf9e0946057ce21e0d330773bea.jpg"}]
+export const first_3 = [{avatar:"https://i.pinimg.com/474x/90/33/83/903383dbe84483ffe3628a9149a55a1e.jpg"},
+     {avatar:"https://i.pinimg.com/236x/33/9f/2c/339f2c7ad5b26ee8412bb237ea8affce.jpg"},
+      { avatar:"https://i.pinimg.com/236x/4d/3c/ac/4d3cacf9e0946057ce21e0d330773bea.jpg"}]
+
+export const first_2 = [{avatar:"https://i.pinimg.com/474x/90/33/83/903383dbe84483ffe3628a9149a55a1e.jpg"},
+{avatar:"https://i.pinimg.com/236x/33/9f/2c/339f2c7ad5b26ee8412bb237ea8affce.jpg"}]
+export const first_1 = [{avatar:"https://i.pinimg.com/474x/90/33/83/903383dbe84483ffe3628a9149a55a1e.jpg"}]
+
 
     export let classic_mode_list_friends = [{src:"http://t1.gstatic.com/images?q=tbn:ANd9GcQdVnIdNDAcHPUYsZztH_6tLGmgbFWqUsctM1ArgEiaC5bvAqfrKBHA1O2njOYeA_iKkCUHtw", name: "bubble-gum", points: 2000, wins:"100", loss:"50"},
     {src:"https://upload.wikimedia.org/wikipedia/en/7/78/Ice_King.png", name: "ice king", points: 4000, wins:100, loss:909},
