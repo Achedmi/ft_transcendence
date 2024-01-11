@@ -5,7 +5,7 @@ import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-va
 export class FinishSetupUserDto {
   @IsString()
   @MaxLength(12)
-  @MinLength(3)
+  @MinLength(2)
   displayName: string;
 
   @IsString()
