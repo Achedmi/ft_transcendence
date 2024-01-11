@@ -85,7 +85,8 @@ function ChatPreviews({ currentUserId, chatType, clearMessage }: { currentUserId
   );
 }
 
-function Messages({ CurrentUserId }: { CurrentUserId: number | undefined }) {
+function Messages() {
+  const { user } = useUserStore();
   const lastMessageRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: 'instant', block: 'end' });
@@ -106,15 +107,17 @@ function Messages({ CurrentUserId }: { CurrentUserId: number | undefined }) {
           <div
             key={message.id}
             className={
-              message.userId != CurrentUserId
-                ? 'self-start flex justify-center items-start  gap-2'
-                : 'bg-blue-cl rounded-3xl self-end flex justify-center items-center p-3 max-w-xs '
+              message.userId != user.id ? 'self-start flex justify-center items-start  gap-2' : 'bg-blue-cl rounded-3xl self-end flex justify-center items-center p-3 max-w-xs '
             }
           >
-            {message.userId != CurrentUserId ? (
+            {message.userId != user.id ? (
               <>
                 <img className='h-8 w-8 rounded-full border-2 border-solid border-dark-cl object-cover' src={message.user?.avatar} />
-                <p className='text-md bg-gray-cl rounded-3xl flex justify-center items-start p-3 max-w-xs break-words'>{message.message}</p>
+                {message.blockedUsers?.find((id: number) => id == user.id) ? (
+                  <p className='text-xs line-through text-dark-cl/75 bg-gray-cl rounded-3xl flex justify-center items-start p-3 max-w-xs break-words'>Redacted</p>
+                ) : (
+                  <p className='text-md bg-gray-cl rounded-3xl flex justify-center items-start p-3 max-w-xs break-words'>{message.message}</p>
+                )}
               </>
             ) : (
               <p className='text-md break-words px-2 '>{message.message}</p>
@@ -237,7 +240,7 @@ function Chat() {
           scroll-smooth
           overflow-y-auto scrollbar-none'
               >
-                <Messages CurrentUserId={user.id} />
+                <Messages />
               </div>
             </>
           )}

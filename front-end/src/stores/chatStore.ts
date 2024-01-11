@@ -21,6 +21,7 @@ export interface Message {
   content: string;
   sender: Member;
   chatId: number;
+  blockedUsers?: number[];
 }
 
 export interface ChatPreview {
