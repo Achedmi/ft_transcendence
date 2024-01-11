@@ -93,7 +93,6 @@ export class ChatService {
   async getChatMessages(me, id, skip?: number) {
     const messages = await this.prisma.message.findMany({
       where: { chatId: id },
-      take: 20,
       orderBy: {
         createdAt: 'desc',
       },
@@ -632,6 +631,8 @@ export class ChatService {
     }
     const isUserInChat = await this.isUserInChat(me, joinChannelDto.channelId);
     if (isUserInChat) throw new BadRequestException('You are already in this chat');
+
+    this.socketService.joinChat({ userId: me, chatId: joinChannelDto.channelId });
 
     await this.prisma.userChat.create({
       data: {

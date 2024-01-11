@@ -15,7 +15,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
       case 'P2002': {
         response.status(HttpStatus.CONFLICT).json({
           statusCode: HttpStatus.CONFLICT,
-          message: `Duplicate entry for ${exception.meta.target}`,
+          message: `Already Exists`,
         });
         break;
       }
@@ -34,8 +34,10 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
         return;
       }
       default:
-        // default 500 error code
-        super.catch(exception, host);
+        response.status(HttpStatus.BAD_REQUEST).json({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: message,
+        });
         break;
     }
   }

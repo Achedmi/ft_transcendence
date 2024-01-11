@@ -32,6 +32,7 @@ import { BlockeDto } from './dto/block.dto';
 import { GetChatMessagesDto } from './dto/getChatMessages.dto';
 import { BanMemberDto } from './dto/banMember.dto';
 import { joinChannel } from './dto/joinChannel.dto';
+import { ChatGateway } from 'src/socket/chat.gateway';
 
 @Controller('chat')
 @UseGuards(TFAGuard)

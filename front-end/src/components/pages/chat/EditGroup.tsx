@@ -143,7 +143,7 @@ function EditGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                   <input
                     className='border-solid border-2 border-dark-cl rounded-lg px-2 py-1 w-64'
                     type='text'
-                    placeholder={chatStore.chatInfo?.get(chatStore.selectedChatId)?.name + '' + chatStore.chatInfo?.get(chatStore.selectedChatId)?.id}
+                    placeholder={chatStore.chatInfo?.get(chatStore.selectedChatId)?.name}
                     onChange={(e) => {
                       setUpdatedGroup({
                         ...updatedGroup,
