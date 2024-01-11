@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useQuery } from 'react-query';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { useUserStore } from '../../../stores/userStore';
 import { useNavigate } from 'react-router-dom';
 import { useCallback, useEffect } from 'react';
@@ -18,6 +18,7 @@ function Users() {
   const [dmOpen, setDmOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const friendsStore = userFriendsStore();
+  const location = useLocation();
   const { username } = useParams<{ username: string }>();
   const { user } = useUserStore();
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ function Users() {
           await axiosInstance.post(`user/block`, { userId: data.id });
           await refetch();
         } catch (error) {
+          throw error;
         }
       },
       toastConfig({
@@ -66,7 +68,7 @@ function Users() {
 
   useEffect(() => {
     refetch();
-  }, [username]);
+  }, [username, location.pathname]);
 
   useEffect(() => {
     if (!isLoading && data && username === user.username) navigate('/profile');
@@ -78,7 +80,6 @@ function Users() {
         try {
           if (data?.isFriend) await friendsStore.unfriend(data.id);
           else await friendsStore.beFriends(data.id);
-          // await axiosInstance.post(`/user/addfriend/${data.id}`);
           await refetch();
         } catch (error) {
           throw error;
@@ -90,7 +91,7 @@ function Users() {
         pending: !data?.isFriend ? 'Sending friend request...' : 'Removing friend...',
       }),
     );
-  }, [data?.isFriend]);
+  }, [data?.isFriend, location.pathname, data, data?.id]);
 
   return (
     <>

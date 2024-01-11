@@ -69,7 +69,12 @@ export default function () {
   const { username } = useParams<{ username: string }>();
 
   const { data, isLoading, isError } = useQuery('matchHistory', async () => {
-    return await axiosInstance.get(`/user/games/${username ? username : CurrentUsername}`).then((res) => res.data);
+    try {
+      
+      return await axiosInstance.get(`/user/games/${username ? username : CurrentUsername}`).then((res) => res.data);
+    } catch (error) {
+      
+    }
   });
 
   if (isLoading) {

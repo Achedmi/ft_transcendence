@@ -9,28 +9,30 @@ function SendDm({ open, setOpen, id }: { open: boolean; setOpen: any; id: number
   const chatStore = useChatStore();
 
   const sendMessage = useCallback(async () => {
-    if (message) {
-      let buffer = '';
-      if (message.length > 34) {
-        let words = message.split(' ');
-        words.forEach((word) => {
-          if (word.length > 34) {
-            let newWord = '';
-            for (let i = 0; i < word.length; i++) {
-              if (i % 34 == 0) {
-                newWord += ' ';
+    try {
+      
+      if (message) {
+        let buffer = '';
+        if (message.length > 34) {
+          let words = message.split(' ');
+          words.forEach((word) => {
+            if (word.length > 34) {
+              let newWord = '';
+              for (let i = 0; i < word.length; i++) {
+                if (i % 34 == 0) {
+                  newWord += ' ';
+                }
+                newWord += word[i];
               }
-              newWord += word[i];
+              buffer += newWord + ' ';
+            } else {
+              buffer += word + ' ';
             }
-            buffer += newWord + ' ';
-          } else {
-            buffer += word + ' ';
-          }
-        });
-      } else {
-        buffer = message;
+          });
+        } else {
+          buffer = message;
       }
-
+      
       setMessage('');
       const response = await axiosInstance.post('/message/sendDm', {
         message: buffer,
@@ -42,6 +44,9 @@ function SendDm({ open, setOpen, id }: { open: boolean; setOpen: any; id: number
         }
       }
     }
+  } catch (error) {
+    
+  }
   }, [message, id, chatStore.DmsPreview, chatStore.selectedChatId, chatStore, setMessage, setOpen]);
 
   const close = useCallback(() => {

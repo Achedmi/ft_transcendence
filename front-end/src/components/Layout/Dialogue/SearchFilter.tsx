@@ -47,11 +47,11 @@ export default function CommandSearchResults() {
           return;
         }
 
-        const response = await axiosInstance.post(`chat/joinChannel`, { channelId });
         toast.promise(
           async () => {
             try {
-
+              const response = await axiosInstance.post(`chat/joinChannel`, { channelId });
+              
               chatStore.getChannelsPreview();
               chatStore.setSelectedChatId(response.data.id);
               return response;
@@ -65,7 +65,6 @@ export default function CommandSearchResults() {
             pending: 'Joining...',
           }),
         );
-        chatStore.setSelectedChatId(response.data.id);
         navigate(`/chat`);
       } else {
         chatStore.setSelectedChatId(channelId);

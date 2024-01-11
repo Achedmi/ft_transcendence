@@ -55,7 +55,7 @@ function ChatPreviews({ currentUserId, chatType, clearMessage }: { currentUserId
           <SyncLoader color='#433650' />
         </div>
       ) : (
-        <div className='flex flex-col gap-2 pb-10 h-full'>
+        <div className='flex flex-col pb-12 gap-2 h-full overflow-y-scroll no-scrollbar'>
           {chatType == ChatType.DM ? (
             !chatStore.DmsPreview.length ? (
               <div className='flex justify-center flex-col items-center h-full w-full'>
@@ -79,6 +79,7 @@ function ChatPreviews({ currentUserId, chatType, clearMessage }: { currentUserId
               return <ChatPreviewColumn key={chat.id} chat={chat} CurrentUserId={currentUserId} clearMessage={clearMessage} />;
             })
           )}
+ 
         </div>
       )}
     </>
@@ -139,6 +140,9 @@ function Chat() {
   const chatStore = useChatStore();
 
   const handleNewMessage = useCallback(async () => {
+    try {
+      
+ 
     if (message) {
       let buffer = '';
       if (message.length > 34) {
@@ -176,6 +180,9 @@ function Chat() {
 
       setMessage('');
     }
+  } catch (error) {
+      
+  }
   }, [message]);
   const clearMessage = useCallback(() => {
     setMessage('');

@@ -6,7 +6,6 @@ import { InternalOAuthError, TokenError, AuthorizationError } from 'passport-oau
 @Catch(TokenError, AuthorizationError, InternalOAuthError)
 export class OauthExceptionFilter extends BaseExceptionFilter {
   catch(exception, host: ArgumentsHost) {
-    console.error(exception.message);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 

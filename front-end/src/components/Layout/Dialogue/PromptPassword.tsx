@@ -19,16 +19,18 @@ function PromptPassword({ setOpen }: { setOpen: any }) {
   const chatStore = useChatStore();
 
   const submitPassword = async () => {
-    if (password && chatStore.channelToJoinId) {
-      const response = await axiosInstance.post(`chat/joinChannel`, { channelId: chatStore.channelToJoinId, password });
-      toast.promise(
-        async () => {
+    try {
+      
+      if (password && chatStore.channelToJoinId) {
+        const response = await axiosInstance.post(`chat/joinChannel`, { channelId: chatStore.channelToJoinId, password });
+        toast.promise(
+          async () => {
           try {
             chatStore.getChannelsPreview();
             chatStore.setSelectedChatId(response.data.id);
             chatStore.setPromptPasswordOpen(false);
             navigate(`/chat`);
-
+            
             return response;
           } catch (error) {
             throw error;
@@ -39,9 +41,12 @@ function PromptPassword({ setOpen }: { setOpen: any }) {
           error: 'Error Joining',
           pending: 'Joining...',
         }),
-      );
+        );
+      }
+    } catch (error) {
+      
     }
-  };
+    };
 
   return (
     <motion.div

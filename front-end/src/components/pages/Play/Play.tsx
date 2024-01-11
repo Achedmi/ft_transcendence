@@ -14,24 +14,29 @@ const Play = () => {
 
   const handleGameMode = useCallback(
     async (type: string) => {
-      const fetchedAbleToPlay = (await axios.get('/user/isAbleToPlay'))?.data;
-      if (fetchedAbleToPlay == abelToPlay) return;
-      setAbelToPlay(fetchedAbleToPlay);
-      if (!fetchedAbleToPlay) {
-        toast.promise(
-          async () => {
-            throw new Error();
-          },
-          toastConfig({
-            success: '',
-            pending: '',
-            error: "you're already playing or in queue.",
-          }),
-        );
-        return;
-      } else {
-        socket?.game?.emit('readyToPlay', { userId: user.id, type });
-      }
+      try {
+        
+        const fetchedAbleToPlay = (await axios.get('/user/isAbleToPlay'))?.data;
+        if (fetchedAbleToPlay == abelToPlay) return;
+        setAbelToPlay(fetchedAbleToPlay);
+        if (!fetchedAbleToPlay) {
+          toast.promise(
+            async () => {
+              throw new Error();
+            },
+            toastConfig({
+              success: '',
+              pending: '',
+              error: "you're already playing or in queue.",
+            }),
+            );
+            return;
+          } else {
+            socket?.game?.emit('readyToPlay', { userId: user.id, type });
+          }
+        } catch (error) {
+          
+        }
     },
     [abelToPlay, socket?.game],
   );

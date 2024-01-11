@@ -269,7 +269,9 @@ export class ChatService {
       ).url;
     } else url = 'https://res.cloudinary.com/dwrysd8sm/image/upload/v1704553895/group_atuz74.png';
     createChatDto.password = await this.helpersService.hashPassword(createChatDto.password);
-    return await this.prisma.chat.create({
+
+    
+    const chat =  await this.prisma.chat.create({
       data: {
         ...createChatDto,
         members: {
@@ -286,6 +288,8 @@ export class ChatService {
         image: url,
       },
     });
+    this.socketService.addMemberToChat(owner, chat.id)
+    return chat;
   }
 
   async isAdminOrOwner(me: number, chatId: number) {
@@ -493,6 +497,7 @@ export class ChatService {
         },
       },
     });
+    this.socketService.addMemberToChat( addMemberDto.userId,  addMemberDto.chatId );
     const infos = await this.getChatInfos(me, addMemberDto.chatId);
     this.socketService.chatUpdated(addMemberDto.chatId, infos);
     return infos;
@@ -639,7 +644,6 @@ export class ChatService {
     const isUserInChat = await this.isUserInChat(me, joinChannelDto.channelId);
     if (isUserInChat) throw new BadRequestException('You are already in this chat');
 
-    this.socketService.emitJoinChat({ userId: me, chatId: joinChannelDto.channelId });
 
     await this.prisma.userChat.create({
       data: {
@@ -657,6 +661,7 @@ export class ChatService {
         },
       },
     });
+    this.socketService.addMemberToChat(me, joinChannelDto.channelId)
     const infos = await this.getChatInfos(me, joinChannelDto.channelId);
     this.socketService.chatUpdated(joinChannelDto.channelId, infos);
     return infos;
