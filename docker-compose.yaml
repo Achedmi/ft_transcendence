@@ -11,7 +11,7 @@ services:
       - db
     restart: always
     env_file:
-      - ./back-end/.env
+      - .env
 
   frontend:
     container_name: frontend
@@ -28,7 +28,8 @@ services:
     image: postgres:14-alpine
     ports:
       - 5432:5432
-
+    env_file:
+      - .env
     volumes:
       - data:/var/lib/postgresql/data
 
