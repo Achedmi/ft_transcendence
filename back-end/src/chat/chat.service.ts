@@ -82,7 +82,7 @@ export class ChatService {
       members[chatUser.user.id] = chatUser;
     });
     chat.messages.map((message) => {
-      if (blockedUsers.has(message.user.id)) message.message = 'blocked message';
+      if (blockedUsers.has(message.user.id)) message.message = 'Redacted';
     });
 
     chat['members'] = members;
@@ -109,7 +109,7 @@ export class ChatService {
 
     const blocking = await this.getBlockedAndBlockedBe(me);
     messages.forEach((message) => {
-      if (blocking.includes(message.userId)) message.message = 'blocked message';
+      if (blocking.includes(message.userId)) message.message = 'Redacted';
     });
 
     return messages.reverse();
@@ -252,7 +252,7 @@ export class ChatService {
       channles.map(async (channel) => {
         if (channel.messages.length === 0) return;
         const isLastMessageFromBlockedUser = await this.userService.isBlocked(me, channel.messages[0].userId);
-        if (isLastMessageFromBlockedUser) channel.messages[0].message = 'blocked message';
+        if (isLastMessageFromBlockedUser) channel.messages[0].message = 'Redacted';
       }),
     );
     return channles;

@@ -107,7 +107,17 @@ function Game() {
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
+    let d: any = document;
+    if (window.innerWidth / 1280 / 1.2 < 1) d.getElementsByTagName('canvas')[0].parentElement.style.zoom = window.innerWidth / 1280 / 1.2;
+
+    addEventListener('resize', () => {
+      if (window.innerWidth / 1280 / 1.2 < 1) d.getElementsByTagName('canvas')[0].parentElement.style.zoom = window.innerWidth / 1280 / 1.2;
+    });
+
+    onresize = () => {};
+
     return () => {
+      document.removeEventListener('resize', () => {});
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [socket?.game, game]);
@@ -115,14 +125,8 @@ function Game() {
   return (
     <div className='h-full w-full flex flex-col gap-4 justify-center items-center '>
       <div className=' scoreBoard flex   w-[80%]   justify-between gap-10  '>
-        <div
-          className='flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white
-                '
-        >
-          <div
-            className='flex gap-2 items-center 
-                  '
-          >
+        <div className='flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white'>
+          <div className='flex gap-2 items-center '>
             <img className='h-10 w-10 rounded-full' src={game.player1.userId === user.id ? game.player1.avatar : game.player2.avatar} alt='user avatar' />
             <span>{game.player1.userId === user.id ? game.player1.displayName : game.player2.displayName}</span>
           </div>
@@ -131,24 +135,18 @@ function Game() {
           </div>
         </div>
 
-        <div
-          className='flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white
-                '
-        >
+        <div className='flex justify-between w-1/2 bg-dark-cl px-5 py-2 rounded-full text-white'>
           <div className='flex  items-center'>
             <span>{`${game.player2.userId === user.id ? game.player1.score : game.player2.score} `}</span>
           </div>
-          <div
-            className='flex gap-2 items-center 
-                  '
-          >
+          <div className='flex gap-2 items-center '>
             <span>{`${game.player2.userId === user.id ? game.player1.displayName : game.player2.displayName}`}</span>
             <img className='h-10 w-10 rounded-full' src={`${game.player2.userId === user.id ? game.player1.avatar : game.player2.avatar}`} alt='user avatar' />
           </div>
         </div>
       </div>
-      <div className='max-h-[75%] w-[80%]  aspect-video flex  justify-center bg-dark-cl p-4 rounded-xl '>
-        <canvas className=' aspect-video  relative z-50 border-4 border-solid border-gray-cl/25 ' width={1280} height={720} ref={canvasRef}></canvas>
+      <div className=' h-[720px] w-[1280px] flex  justify-center bg-dark-cl p-4 rounded-xl '>
+        <canvas className=' relative z-50 border-4 border-solid border-gray-cl/25 ' width={1280} height={720} ref={canvasRef}></canvas>
       </div>
     </div>
   );

@@ -113,7 +113,7 @@ function Messages() {
             {message.userId != user.id ? (
               <>
                 <img className='h-8 w-8 rounded-full border-2 border-solid border-dark-cl object-cover' src={message.user?.avatar} />
-                {message.blockedUsers?.find((id: number) => id == user.id) ? (
+                {message.blockedUsers?.find((id: number) => id == user.id) || message.message == 'Redacted' ? (
                   <p className='text-xs line-through text-dark-cl/75 bg-gray-cl rounded-3xl flex justify-center items-start p-3 max-w-xs break-words'>Redacted</p>
                 ) : (
                   <p className='text-md bg-gray-cl rounded-3xl flex justify-center items-start p-3 max-w-xs break-words'>{message.message}</p>
