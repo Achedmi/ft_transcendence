@@ -1,5 +1,5 @@
 import { Edit, Toggle } from '../../icons/icons';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import EditProfile from './EditProfile';
 import { useState, useCallback } from 'react';
 import { useUserStore } from '../../../stores/userStore';
@@ -49,11 +49,18 @@ function Profile() {
           <EditProfile showEditProfile={showEditProfile} setShowEditProfile={setShowEditProfile} />
         </motion.div>
       )}
-      {showTfa && (
-        <motion.div className='absolute  w-[500px]  max-w-[75%] bg-[#D9D9D9] z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-dark-cl border-[3px] border-solid rounded-xl'>
-          <HandleTfa showTfa={showTfa} setShowTfa={setShowTfa} />
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {showTfa && (
+          <motion.div
+            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            className='absolute  w-[500px]  max-w-[75%] bg-[#D9D9D9] z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-dark-cl border-[3px] border-solid rounded-xl'
+          >
+            <HandleTfa showTfa={showTfa} setShowTfa={setShowTfa} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className={showEditProfile || showTfa ? 'blur-md z-0 non-selectable pointer-events-none' : 'z-0'}>
         <div className='bg-dark-cl h-40  relative'>

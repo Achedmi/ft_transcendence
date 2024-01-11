@@ -50,7 +50,7 @@ function HandleTfa(props: HandleTfaProps) {
         <Tfa size='38' />
         <h1 className='mt-2 text-xl'>Setup authenticator app</h1>
         <motion.div className='hover:cursor-pointer' onHoverStart={() => setCloseHovered(true)} onHoverEnd={() => setCloseHovered(false)} onClick={() => props.setShowTfa(false)}>
-          <Close size='38' fillColor={!closeHovered ? '#433650' : '#C84D46'} />
+          <Close className='fill-dark-cl hover:fill-red-cl w-10 h-10' />
         </motion.div>
       </div>
 
