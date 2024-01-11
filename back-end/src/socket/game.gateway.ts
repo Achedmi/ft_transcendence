@@ -63,29 +63,23 @@ export class GameGateway {
   async handleConnection(client: Socket) {
     try {
       // const testToken = this.jwtService.sign({ id: client.id }, { secret: 'secret', expiresIn: '1m' });
-      // console.log(testToken);
       // const ff = this.jwtService.verify(
       //   'eyJhbGciOiJIUzI1NiIsInR5cCIsdsdf6IkpXVCJ9.eyJpZCI6ImJKcmJ3U3k1eWlQNWVZaTBBQUFCIiwiaWF0IjoxNzAzNDMxNzM3LCJleHAiOjE3MDM0MzE3OTd9.JK3lx4uhImMPrIjrW9fAERgwBDhtuqxK59NteeBRMh8',
       //   { secret: 'secret' },
       // );
-      // console.log('=============', ff);
 
       const token = client.handshake.headers.cookie?.split('userAT=')[1]?.split('; ')[0];
       const isValidToken = this.jwtService.verify(token, { publicKey: process.env.JWT_ACCESS_SECRET });
       if (!isValidToken || this.connectedUsers[isValidToken.id]) {
-        console.log('stuck in connected Users', this.connectedUsers[isValidToken.id]?.user || isValidToken?.usernae);
         client.disconnect();
         return;
       }
       const user = await this.userService.findUniqueWithoutSensitiveData({ id: isValidToken.id });
-      console.log('############################################################online', user.username);
       await this.updateUserStatus(user.id, Status.ONLINE, client.id);
       client['user'] = user;
       this.connectedUsers[user.id] = client;
 
-      // console.log('Client connected to Game socket: ', client['user'].username);
     } catch (err) {
-      console.log(err);
       client.disconnect();
     }
   }
@@ -94,7 +88,6 @@ export class GameGateway {
 
   async handleDisconnect(client) {
     if (!client.user) return;
-    console.log('Client disconnected from Game socket: ', client.user.username);
     delete this.connectedUsers[client.user.id];
     delete this.readyToPlayClassicQueue[client.user.id];
     delete this.readyToPlayPowerQueue[client.user.id];
@@ -143,7 +136,6 @@ export class GameGateway {
       players: [player1Socket['user'].id, player2Socket['user'].id],
       type: type == 'classic' ? GameType.CLASSIC : GameType.POWERUP,
     });
-    console.log('GAME CREATED', game.id);
     //
     player1Socket['gameId'] = game.id;
     player2Socket['gameId'] = game.id;
@@ -430,7 +422,6 @@ export class GameGateway {
 
   @SubscribeMessage('move')
   move(client: Socket, data: { userId: number; gameId: number; direction: string }) {
-    // console.log('AAAAAAAAAAAAA', this.games[data.gameId]);
     if (!this.games[data.gameId]) return;
     if (this.games[data.gameId].player1.userId === data.userId && data.direction === 'up') {
       this.games[data.gameId].player1.y -= 5;
@@ -459,7 +450,6 @@ export class GameGateway {
   //=================================================================================INVITES=================================================================================
   @SubscribeMessage('createInvite')
   async invite(client, data: { userId: number }) {
-    console.log('createInvite', data);
     const token = this.jwtService.sign({ id: client.user.id, username: client.user.username }, { secret: 'secret', expiresIn: '1m' });
     if (!this.invites[client.user.id]) this.invites[client.user.id] = [];
     this.invites[client.user.id].push(token);
@@ -469,20 +459,15 @@ export class GameGateway {
 
   @SubscribeMessage('acceptInvite')
   async acceptInvite(client, data: { token: string; from: number; inviteOwner: number }) {
-    console.log('acceptInvite', data);
     try {
       if (data.from == data.inviteOwner) return;
-      console.log(this.invites);
       if (!this.invites[data.inviteOwner]) {
         client.emit('invalidInvite', { message: 'Invalid token' });
         return;
       }
-      console.log('verifing token');
       const isValidToken = this.jwtService.verify(data.token, { secret: 'secret' });
-      console.log('token verified');
       delete this.invites[data.inviteOwner];
       this.server.to(this.connectedUsers[data.inviteOwner].id).emit('inviteAccepted', { id: client.user.id, username: client.user.username });
-      console.log('Create Game NOW');
 
       const user1 = await this.userService.findUnique({ id: data.inviteOwner });
       const user2 = await this.userService.findUnique({ id: client.user.id });
@@ -496,11 +481,9 @@ export class GameGateway {
       const player2Socket = this.connectedUsers[client.user.id];
 
       const game = await this.createGame(player1Socket, player2Socket, 'classic');
-      console.log('newwww game', game);
 
       this.startGame(game, player1Socket, player2Socket);
     } catch (error) {
-      console.log('invalid token');
       this.invites[data.inviteOwner] = this.invites[data.inviteOwner].filter((token) => token !== data.token);
       if (error.name === 'TokenExpiredError') {
         client.emit('invalidInvite', { message: 'Token expired' });

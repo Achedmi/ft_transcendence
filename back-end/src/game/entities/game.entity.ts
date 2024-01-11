@@ -37,7 +37,6 @@ type Ball = {
 let rooms: Array<any> = [];
 
 io.on("connection", (socket) => {
-	console.log("a user connected");
 	
 	socket.on('join', () => {
 
@@ -48,7 +47,6 @@ io.on("connection", (socket) => {
         if (rooms.length > 0 && rooms[rooms.length - 1].players.length === 1) {
             room = rooms[rooms.length - 1];
         }
-		console.log(room, rooms.length);
 		if (room) {
 			socket.join(room.id);
 			socket.emit('playerNo', 2);
@@ -102,12 +100,10 @@ io.on("connection", (socket) => {
 	socket.on('move', (data) => {
 		let room = rooms.find(room => room.id === data.roomID);
 		if (room) {
-			console.log(data);
 			// Check if playerNo is within the array bounds
 			if (data.playerNo >= 1 && data.playerNo <= room.players.length) {
 				const playerIndex = data.playerNo - 1;
 				const player = room.players[playerIndex];
-				console.log(player);
 	
 				// Ensure the player exists
 				if (player) {
@@ -116,7 +112,6 @@ io.on("connection", (socket) => {
 						if (player.y < 0){
 							player.y = 0;
 						}
-						console.log(player.y, player.x)
 					} else if (data.direction === 'down'){
 						player.y += 10;
 						if (player.y > 440){
@@ -139,7 +134,6 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("disconnect", () => {
-		console.log("user disconnected");
 	});
 });
 
@@ -228,5 +222,4 @@ function startGame(room: Room){
 }
 
 server.listen(3001, () => {
-	  console.log("listening on *:3001");
 });

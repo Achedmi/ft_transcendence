@@ -16,7 +16,6 @@ const Play = () => {
     async (type: string) => {
       const fetchedAbleToPlay = (await axios.get('/user/isAbleToPlay'))?.data;
       if (fetchedAbleToPlay == abelToPlay) return;
-      console.log('isAbleToPlay', fetchedAbleToPlay);
       setAbelToPlay(fetchedAbleToPlay);
       if (!fetchedAbleToPlay) {
         toast.promise(
@@ -32,7 +31,6 @@ const Play = () => {
         return;
       } else {
         socket?.game?.emit('readyToPlay', { userId: user.id, type });
-        console.log('readyToPlay sent');
       }
     },
     [abelToPlay, socket?.game],

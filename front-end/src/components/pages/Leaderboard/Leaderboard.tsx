@@ -39,11 +39,9 @@ const LeaderBoard = () =>{
             })
             .catch(error => {
                 setError(error);
-                console.log("the error:", error)
                 setLoading(false);
             });
     }, []);
-    // console.log(publicList[0])
     // if (loading){
     //     return(<div className="h-full w-full bg-repeat border-solid border-dark-cl border-[4px] rounded-xl bg-gray-cl">loading..</div>)
     // }

@@ -34,8 +34,6 @@ function CreateGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
   }, []);
 
   const handleOnSave = useCallback(async () => {
-    console.log('newGroup', newGroup);
-    console.log('newImage', newImage);
     const formData = new FormData();
     if (newImage) formData.append('image', newImage);
     if (newGroup.name) formData.append('name', newGroup.name);
@@ -49,7 +47,6 @@ function CreateGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
               'Content-Type': 'multipart/form-data',
             },
           });
-          console.log('response', response);
           chatStore.getChannelsPreview();
           setNewGroup({
             name: '',
@@ -151,7 +148,6 @@ function CreateGroup({ open, setOpen }: { open: boolean; setOpen: any }) {
                     type='text'
                     placeholder={'Group Name'}
                     onChange={(e) => {
-                      console.log(e.target.value);
                       setNewGroup({
                         ...newGroup,
                         name: e.target.value,

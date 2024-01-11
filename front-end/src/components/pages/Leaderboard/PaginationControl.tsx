@@ -25,7 +25,6 @@ function PaginationControl({pageNumber, mode, onIndexChange}:paginationProps){
     //     backgroundColor = `rgba(103, 185, 211, ${opacity})`
     // }
     function clickCircle(index){
-        // console.log("index = ", index + 1)
         onIndexChange(index * 3) 
         // setOpacity(1);
         setActiveIndex(index)

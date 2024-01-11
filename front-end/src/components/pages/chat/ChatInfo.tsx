@@ -69,7 +69,6 @@ function ActionDropDown({ member, currentMember, setActiveDropDown }: { member: 
             chatId: chatStore.selectedChatId,
             time: 5,
           });
-          console.log(response);
           chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
         } catch (error) {
           throw error;
@@ -101,7 +100,6 @@ function ActionDropDown({ member, currentMember, setActiveDropDown }: { member: 
             userId: member.id,
             chatId: chatStore.selectedChatId,
           });
-          console.log(response);
           chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
         } catch (error) {
           throw error;
@@ -133,7 +131,6 @@ function ActionDropDown({ member, currentMember, setActiveDropDown }: { member: 
             userId: member.id,
             chatId: chatStore.selectedChatId,
           });
-          console.log(response);
           chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
         } catch (error) {
           throw error;
@@ -165,7 +162,6 @@ function ActionDropDown({ member, currentMember, setActiveDropDown }: { member: 
             userId: member.id,
             chatId: chatStore.selectedChatId,
           });
-          console.log(response);
           chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
         } catch (error) {
           throw error;
@@ -325,7 +321,6 @@ function ChatInfo({ setEditGroupOpen }: { setEditGroupOpen: any }) {
   }, [chatStore.selectedChatId, user.id]);
 
   function handleEditGroup() {
-    console.log('edit group clicked: ', chatStore.chatInfo?.get(chatStore.selectedChatId)?.name, chatStore.selectedChatId);
 
     setEditGroupOpen(true);
   }

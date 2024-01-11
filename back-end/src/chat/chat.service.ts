@@ -137,7 +137,6 @@ export class ChatService {
       where: { id },
     });
     if (chat) {
-      // console.log(await this.prisma.chat.findUnique({ where: { id }, select: { members: true } }));
       chat['members'] = await this.getChatMembers(id);
       if (chat.type === ChatType.DM) {
         const otherUser = chat['members'].find((member) => member.userId !== me);
@@ -359,7 +358,6 @@ export class ChatService {
   }
 
   async isUserInChat(id: number, chatId: number) {
-    console.log(chatId);
     const chat = await this.prisma.chat.findFirst({
       where: {
         id: chatId,
@@ -373,7 +371,6 @@ export class ChatService {
         members: true,
       },
     });
-    console.log(chat);
     return chat;
   }
 

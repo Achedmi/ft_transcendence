@@ -76,13 +76,11 @@ export function GlobalCommandDialog() {
 
   useEffect(() => {
     socket?.game?.on('updateStatus', (status: string) => {
-      console.log('updateStatus', status);
       setUserData({ status });
     });
 
     socket?.game?.on('countdown', (count: number) => {
       game.setCounter(count);
-      console.log('countdown', count);
     });
 
     socket?.game?.on('gameEnded', (data: any) => {

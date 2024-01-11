@@ -51,7 +51,6 @@ export default function CommandSearchResults() {
         toast.promise(
           async () => {
             try {
-              console.log('response', response);
 
               chatStore.getChannelsPreview();
               chatStore.setSelectedChatId(response.data.id);
@@ -111,12 +110,10 @@ export default function CommandSearchResults() {
       {searchStore.filteredChannels.length > 0 && (
         <CommandGroup heading='Channels' className=''>
           {searchStore.filteredChannels.map((channel: any) => {
-            console.log('id', channel.id, 'name', channel.name);
             return (
               <CommandItem
                 key={'search-channel-' + channel.id}
                 onSelect={async () => {
-                  console.log('cnd', channel);
                   await handleSelectChat(channel.id, channel.visibility);
                 }}
                 className=''

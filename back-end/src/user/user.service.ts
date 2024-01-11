@@ -137,7 +137,6 @@ export class UserService {
       });
       updateUserDto.avatar = url;
     }
-    console.log(updateUserDto);
     const { TFAsecret, ...user } = await this.prisma.user.update({
       where: {
         id,

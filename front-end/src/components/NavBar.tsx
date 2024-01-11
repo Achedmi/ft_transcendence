@@ -37,7 +37,6 @@ const DropDown = ({ setShowDropDown }: any) => {
       );
       window.location.href = '/';
     } catch (error: AxiosError | any) {
-      console.log(error);
       if (error instanceof AxiosError) alert(error.response?.data.message);
     }
   };

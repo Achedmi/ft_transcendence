@@ -48,7 +48,6 @@ export const useSearchStore = create<SearchState>((set) => ({
         set({ filteredUsers: [], isLoading: false });
       }
     } catch (error) {
-      console.log(error);
       set({ isLoading: false });
     }
   },
@@ -61,14 +60,12 @@ export const useSearchStore = create<SearchState>((set) => ({
         const privateChats = chatStore.ChannelsPreview.filter(
           (channel: ChatPreview) => channel.visibility === 'PRIVATE' && channel.name.toLowerCase().includes(search.toLowerCase()),
         );
-        console.log('privateChats', privateChats);
 
         set({ filteredChannels: [...publicAndProtectedChats.data?.chat, ...privateChats] || [], isLoading: false });
       } else {
         set({ filteredChannels: [], isLoading: false });
       }
     } catch (error) {
-      console.log(error);
       set({ isLoading: false });
     }
   },

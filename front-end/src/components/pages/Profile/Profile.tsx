@@ -37,7 +37,6 @@ function Profile() {
           }),
         );
       } catch (error) {
-        console.log(error);
       }
     } else setShowTfa(true);
   }, [user?.isTFAenabled]);

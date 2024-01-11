@@ -4,7 +4,6 @@ interface InfoProps{
     win_loss:{wins: number, losses:number};
 }
 function Info({username, points, win_loss}){
-    console.log(win_loss)
     return (<div className=" hidden md:block h-24 w-24 rounded-lg absolute bottom-0 mb-[-50px] right-0 truncate text-center p-3 bg-light-gray-cl border-solid border-l border-t border-dark-cl border-4 ">
         <span className=" text-sm ">{username}</span>
         <div className=" text-sm ">points: {points}</div>

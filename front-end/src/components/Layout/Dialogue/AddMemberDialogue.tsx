@@ -18,7 +18,6 @@ function CommandSearchResults() {
         async () => {
           try {
             const response = await axiosInstance.post(`chat/addMember`, { userId, chatId: chatStore.selectedChatId });
-            console.log('selectedChatId', chatStore.selectedChatId);
             chatStore.updateChatInfo(chatStore.selectedChatId, response.data);
             searchStore.setIsOpen(false);
             return response;

@@ -40,13 +40,10 @@ function SetupProfile() {
       async () => {
         try {
           const response = await axiosInstance.post('/user/finishSetup', formData);
-          console.log(response);
           setUserData(response.data);
-          console.log(response.data);
           //   window.location.replace(`http://${import.meta.env.VITE_ADDRESS}:6969/`);
           navigate('/');
         } catch (error) {
-          console.log(error);
           setNewProfile({
             displayName: '',
             bio: '',

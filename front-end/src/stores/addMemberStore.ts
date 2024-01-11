@@ -38,7 +38,6 @@ export const useAddGroupStore = create<searchState>((set) => ({
         set({ filteredUsers: [], isLoading: false });
       }
     } catch (error) {
-      console.log(error);
       set({ isLoading: false });
     }
   },

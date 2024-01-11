@@ -32,7 +32,6 @@ function Users() {
           await axiosInstance.post(`user/block`, { userId: data.id });
           await refetch();
         } catch (error) {
-          console.log(error);
         }
       },
       toastConfig({
@@ -50,7 +49,6 @@ function Users() {
           await axiosInstance.post(`user/unblock`, { userId: data.id });
           await refetch();
         } catch (error) {
-          console.log(error);
           throw error;
         }
       },
@@ -64,7 +62,6 @@ function Users() {
 
   const handleLoaded = useCallback(() => {
     setIsLoaded(true);
-    console.log('loaded');
   }, [isLoaded, setIsLoaded, data?.avatar, data?.username, data?.displayName, data?.bio, data?.wins, data?.losses]);
 
   useEffect(() => {
@@ -84,7 +81,6 @@ function Users() {
           // await axiosInstance.post(`/user/addfriend/${data.id}`);
           await refetch();
         } catch (error) {
-          console.log(error);
           throw error;
         }
       },

@@ -49,7 +49,6 @@ function EditProfile(props: EditProfileProps) {
               'Content-Type': 'multipart/form-data',
             },
           });
-          console.log(response);
           setUserData(response.data);
           props.setShowEditProfile(false);
           return response;

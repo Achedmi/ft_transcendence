@@ -30,7 +30,6 @@ function PrivateRoutes() {
     setSocket({ chat: chatSocket, game: gameSocket });
 
     chatSocket?.on('connect', () => {
-      console.log('connected');
     });
 
     return () => {
@@ -48,17 +47,14 @@ function PrivateRoutes() {
 
   useEffect(() => {
     socket?.chat?.on('message', (data: any) => {
-      console.log('new message', data);
 
       if (!chatStore.DmsPreview.find((chat: any) => chat.id == data.chatId)) {
-        console.log('refetching dms');
         chatStore.getDmsPreview();
         if (chatStore.selectedChatId != data.chatId) {
           chatStore.addNewUnreadMessage(data.chatId, ChatType.CHANNEL);
         }
       }
       if (!chatStore.ChannelsPreview.find((chat: any) => chat.id == data.chatId)) {
-        console.log('refetching channels');
         chatStore.getChannelsPreview();
         if (chatStore.selectedChatId != data.chatId) {
           chatStore.addNewUnreadMessage(data.chatId, ChatType.DM);

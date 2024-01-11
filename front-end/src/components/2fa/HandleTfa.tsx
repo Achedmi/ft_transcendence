@@ -39,7 +39,6 @@ function HandleTfa(props: HandleTfaProps) {
           }),
         );
       } catch (error) {
-        console.log(error);
       }
     }
   }, [code]);

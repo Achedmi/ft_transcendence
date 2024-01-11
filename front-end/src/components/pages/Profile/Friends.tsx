@@ -38,7 +38,6 @@ export const userFriendsStore = create<FriendsState>((set) => ({
       set({ friends: response.data });
       return response.data;
     } catch (error) {
-      console.log(error);
     }
   },
   fetchUserAndFriends: async (userName: string) => {
@@ -47,14 +46,12 @@ export const userFriendsStore = create<FriendsState>((set) => ({
       set({ friends: response.data?.friends });
       return response.data;
     } catch (error) {
-      console.log(error);
     }
   },
   unfriend: async (id: number) => {
     try {
       await axios.delete(`/user/unfriend/${id}`);
     } catch (error) {
-      console.log(error);
     }
   },
   beFriends: async (id: number) => {
@@ -62,21 +59,18 @@ export const userFriendsStore = create<FriendsState>((set) => ({
       await axios.post(`/user/addfriend/${id}`);
     } catch (error) {
       throw error;
-      console.log(error);
     }
   },
   block: async (id: number) => {
     try {
       await axios.post(`/user/block/`, { userId: id });
     } catch (error) {
-      console.log(error);
     }
   },
   unBlock: async (id: number) => {
     try {
       await axios.post(`/user/block/`, { userId: id });
     } catch (error) {
-      console.log(error);
     }
   },
 }));
@@ -130,7 +124,6 @@ function FriendRow({
         toastConfig({ success: 'Friend removed successfully', pending: 'Removing friend...', error: 'Error removing friend' }),
       );
     } catch (error) {
-      console.log(error);
     }
   }, [id]);
 
@@ -148,7 +141,6 @@ function FriendRow({
         }),
       );
     } catch (error) {
-      console.log(error);
     }
   }, [id]);
 
@@ -190,7 +182,6 @@ function FriendRow({
           )}
           <div
             onClick={() => {
-              console.log('hi');
             }}
             className=' bg-blue-cl gap-2 rounded-2xl h-9  text-center flex items-center justify-center  cursor-pointer text-white border-solid border-dark-cl border-[2px] p-2'
           >
@@ -221,7 +212,6 @@ export default function () {
     '
     >
       {friendsStore.friends.map((friend: any) => {
-        console.log('friend', friend);
         return (
           <FriendRow
             username={friend.username}

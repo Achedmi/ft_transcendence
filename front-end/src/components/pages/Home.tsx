@@ -14,22 +14,16 @@ function Home() {
   // const [inviteOwner, setInviteOwner] = useState(0);
 
   // const handleAccept = useCallback(() => {
-  //   console.log('token:', token);
-  //   console.log('user:', user);
-  //   console.log('inviteOwner:', inviteOwner);
   //   socket?.game?.emit('acceptInvite', { token: token, from: user.id, inviteOwner });
   // }, []);
 
   // useEffect(() => {
   //   socket?.game?.on('invite', (data: any) => {
-  //     console.log(data);
   //     setToken(data.token);
   //     setInviteOwner(data.from);
   //   });
 
   //   socket?.game?.on('invalidInvite', (data: any) => {
-  //     console.log('invalid invite');
-  //     console.log(data);
   //   });
 
   //   return () => {

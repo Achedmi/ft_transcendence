@@ -5,7 +5,6 @@ import {Avatar} from "./Avatar";
 function Podium({mode='', firsts=[]}){
 
     // firsts = first_3
-    // console.log(firsts)
     let borderColor = mode === 'classic' ? "#C84D46" : "#67B9D3"
     let boxShadow = mode === 'classic' ? "0px 4px 12px 1px rgba(200,77,70,0.75)": "0px 4px 12px 1px rgba(103, 185, 211, 0.75)"
     

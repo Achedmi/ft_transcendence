@@ -12,7 +12,7 @@ export class ChatGateway {
   server: Server;
 
   afterInit(server: Server) {
-    console.log('chat Socket initialized');
+    
   }
 
   private connectedUsers = {};
@@ -22,12 +22,10 @@ export class ChatGateway {
       const token = client.handshake.headers.cookie?.split('userAT=')[1]?.split('; ')[0];
       const isValidToken = this.jwtService.verify(token, { publicKey: process.env.JWT_ACCESS_SECRET });
       if (!isValidToken || this.connectedUsers[isValidToken.id]) {
-        console.log('----------', isValidToken?.usernae);
         client.disconnect();
         return;
       }
       const user = await this.userService.findUnique({ id: isValidToken.id });
-      console.log('========================================online', user.username);
       client['user'] = user;
       this.connectedUsers[user.id] = client;
       const chats = await this.prisma.chat.findMany({
@@ -44,20 +42,16 @@ export class ChatGateway {
       });
 
       chats.forEach((chat) => {
-        console.log('user: ' + user.username + ' joining room: ', chat.id);
         client.join(String(chat.id));
       });
 
-      console.log('Client connected to Game socket: ', user.username);
     } catch (err) {
-      console.log(err);
       client.disconnect();
     }
   }
 
   handleDisconnect(client) {
     if (!client.user) return;
-    console.log('Client disconnected from Chat socket: ', client.user.username);
     delete this.connectedUsers[client.user.id];
   }
 
@@ -67,19 +61,15 @@ export class ChatGateway {
 
   @SubscribeMessage('joinChat')
   joinChat(client: Socket, data) {
-    console.log(client.id, 'joining room: ', data.chatId);
     client.join(data.chatId);
   }
 
   @SubscribeMessage('leaveChat')
   leaveChat(client: Socket, data) {
-    console.log(client.id, ' leaving room: ', data.chatId);
     client.leave(data.chatId);
   }
 
   toChat(data, to?) {
-    console.log('toChat', data);
-    console.log(this.connectedUsers[data.userId].rooms.has(String(data.chatId)));
     if (to && !this.connectedUsers[data.userId].rooms.has(String(data.chatId))) {
       this.connectedUsers[data.userId].join(String(data.chatId));
       this.connectedUsers[String(to)]?.join(String(data.chatId));
