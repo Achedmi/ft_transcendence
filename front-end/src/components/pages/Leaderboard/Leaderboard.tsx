@@ -7,18 +7,47 @@ import PlayerBox from "./PlayerBox";
 import PaginationControl from "./PaginationControl";
 
 const LeaderBoard = () =>{
+    //the public classic one
+    // const [initialList, setInitList] = useState(['a']);
+
+    const [publicList, setPublicList] = useState([[{username:"dummy"}], [{username:"dummy"}]]);
+    const [workingList, setWorkingList] = useState([{username:"dummy"}])
+    // default is public, friendsOnly == false
+    const [friendsOnly, setFriendsOnly] = useState(false);
+    //default state classic mode public list
+    const [mode, setMode] = useState('classic')
+    const [index, setIndex] = useState(0)
+    // const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        fetch(`http://${import.meta.env.VITE_ADDRESS}:9696/leaderboard/stats/public/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // setInitList(data);
+                setPublicList(data)
+                // setLoading(false);
+            })
+            .catch(error => {
+                setError(error);
+                console.log("the error:", error)
+                // setLoading(false);
+            });
+    }, []);
+    // console.log(the_list)
 
     const [searchTerm, setSearchTerm] = useState('');
+
     const handleSearchTerm = (term:string) =>{
         setSearchTerm(term.toLowerCase())
     }
 
-    // default is public, friendsOnly == false
-    const [friendsOnly, setFriendsOnly] = useState(false);
-    //default state classic mode public list
-    const [the_list, setList] = useState(classic_mode_list_public);
-    const [mode, setMode] = useState('classic')
-    const [index, setIndex] = useState(0)
+    
     
     const handleIndexChange = (newIndex:number) =>{
         setIndex(newIndex)
@@ -34,44 +63,43 @@ const LeaderBoard = () =>{
 
     useEffect(() => {
         if (friendsOnly && mode === 'classic') {
-            setList(classic_mode_list_friends);
+            setWorkingList(publicList[0])
+            // setList(the_list);
         } 
         else if (!friendsOnly && mode === 'classic') {
-            setList(classic_mode_list_public);
+            setWorkingList(publicList[0])
+            // setList(the_list);
         }
         else if (friendsOnly && mode === 'powerups'){
-            setList(power_mode_list_friends)
+            setWorkingList(publicList[1])
+            // setList(the_list)
         }
         else{
-            setList(power_mode_list_public)
+            setWorkingList(publicList[1])
+            // setList(the_list)
         }
     }, [friendsOnly, mode]);
 
 
 
     const [displayedPlayers, setDisplayedPlayers] = useState([]);
-    // const [i, setI] = useEffect(0)
-    // let i = 0
     useEffect(() => {
-
-        const filteredPlayers = the_list
-            .filter(player => player.name.toLowerCase().includes(searchTerm))
-            .slice(index, index + 3);
+            const filteredPlayers = workingList.filter(player => player.username.toLowerCase().includes(searchTerm)).slice(index, index + 3);
         // setDisplayedPlayers(the_list.slice(index, index + 3));
         // console.log(displayedPlayers)
         // setRemainingPlayers(the_list.slice(3));
         setDisplayedPlayers(filteredPlayers)
-    }, [the_list, index, searchTerm]);
+    }, [workingList, index, searchTerm]);
 
 
-    let pageNumber  = Math.ceil(the_list.length/3)
+    let pageNumber = workingList ? Math.ceil(workingList.length / 3) : 0;
     return(
         <div className="h-full w-full bg-repeat border-solid border-dark-cl border-[4px] rounded-xl bg-gray-cl">
       <Podium  mode={mode}/>
       <Choices friendsOnly={friendsOnly} onFriendsChange={handleFriendsChange} onModeChange={handleModeChange} mode={mode} onSearchTerm={handleSearchTerm}/>
       <BoardList mode={mode}>
         {displayedPlayers.map((x) => {
-        return <PlayerBox mode={mode} player={{size: 60, src: x.src, name: x.name, score: x.points}} win_loss={{win: x.wins, loss: x.loss}} />;
+        return <PlayerBox  mode={mode} player={{size: 60, src: x.avatar, name: x.username, score: x.totalScore}} win_loss={{win: x.wins, loss: x.losses}} />;
         })}
         </BoardList>
         <PaginationControl pageNumber={pageNumber} mode={mode} onIndexChange={handleIndexChange} />
